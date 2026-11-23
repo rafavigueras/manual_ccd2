@@ -326,3 +326,5 @@ scikit-learn). Si se toca un script, hay que revisar el texto que cita sus cifra
   TEDR; EPUB y AZW3 con Calibre ("Manual de Credito al Consumo (CCD2)"), `revision.py` OK. **Sin
   publicar nada**: pendiente de Rafa decidir si se sube a GitHub (repo privado o público) y si se
   quita la fila de costes de 26.4; sin revisar en un Kindle real. Huecos sin verificar: ver nota (7).
+
+- **2026-11-23** — Publicado a petición de Rafa en repo **privado**: https://github.com/rafavigueras/manual_ccd2 (remoto `origin`). Sin GitHub Pages.
