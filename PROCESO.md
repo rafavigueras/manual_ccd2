@@ -60,11 +60,10 @@ Esos dos textos son el criterio de aceptación de todo lo que se escriba.
 | **Repositorio** | Git local en esta carpeta, **sin remoto**. Publicar en GitHub (como `manual_st`) solo si Rafa lo pide de forma explícita |
 | **Máquina** | Mac. Python con `python3 -m venv .venv` (no hay `uv`). Calibre en `/Applications/calibre.app/Contents/MacOS/` |
 
-### 2.2 Propuestas, pendientes de que Rafa las confirme en F0
+### 2.2 Valores por defecto, adoptados al lanzar el proyecto (2026-11-23)
 
-Se planteó la pregunta el 2026-11-23 y no hubo respuesta todavía. Lo que sigue es el valor por
-defecto con el que se ha hecho este plan. **La primera acción de la sesión que lance el proyecto es
-confirmarlas** (ver `LANZAMIENTO.md`, paso 1).
+Rafa no contestó a las cuatro preguntas, pero ordenó lanzar el proyecto ("empieza a desarrollar").
+Se adoptan los valores por defecto de la columna Propuesta. Reabrir solo si Rafa lo pide.
 
 | Decisión | Propuesta | Alternativa |
 |---|---|---|
@@ -111,8 +110,8 @@ manual_ccd2/
 | Fase | Entregable | Estado |
 |---|---|---|
 | F0 · Arranque | Carpeta, repo local, este archivo, `LANZAMIENTO.md`, índice v0.1, briefs de research, verificación y especialista, nota de seguimiento en el vault | ✅ 2026-11-23, salvo confirmar §2.2 con Rafa |
-| F1 · Research | Seis notas R1-R6 (Sonnet) | ⏳ Pendiente |
-| F1-bis · Verificación | `investigacion/verificacion/informe-v1.md` (Opus) y notas corregidas | ⏳ Pendiente |
+| F1 · Research | Seis notas R1-R6 (Sonnet) | ✅ 2026-11-23 |
+| F1-bis · Verificación | `investigacion/verificacion/informe-v1.md` (Opus) y notas corregidas | ✅ 2026-11-23 (correcciones aplicadas; hallazgos en `investigacion/README.md`) |
 | F2 · Índice a 3 niveles | `00-indice-manual-ccd2.md` v0.2, aprobado por Rafa | ⏳ Pendiente |
 | F3 · Base | `estilo.css` con acento propio, `index.html`, `parte-00.html`, `revision.py` adaptado | ⏳ Pendiente |
 | F4 · Redacción | Partes I, II, III, V y VI (sesión principal) | ⏳ Pendiente |
@@ -272,3 +271,10 @@ scikit-learn). Si se toca un script, hay que revisar el texto que cita sus cifra
   `construir_kindle.py`, `generar_portada.py` y `herramientas/revision.py`, **sin adaptar todavía**.
   Nota de seguimiento en el vault: `work/projects/2026-manual-ccd2.md`. Pendiente: confirmar §2.2 con
   Rafa y lanzar F1.
+- **2026-11-23** (2) — F1 y F1-bis. Seis agentes Sonnet escribieron R1-R6 (1.707 líneas); ninguna hubo que
+  relanzar. El verificador Opus (V1) falló una vez por límite de gasto y se reanudó. Veredicto: las seis
+  fiables con correcciones (4 afirmaciones falsas, 17 corregidas, 27 confirmadas, 6 no verificables).
+  Correcciones aplicadas al final de cada nota, originales en `investigacion/verificacion/originales/`.
+  Hallazgo mayor: Cortes disueltas el 6-oct-2026, elecciones el 29-nov, proyectos caducados; no hay
+  transposición antes de 2027. Cambios propuestos al índice en `investigacion/README.md`. **Parado antes
+  de F2:** falta el OK de Rafa; luego, índice v0.2.
