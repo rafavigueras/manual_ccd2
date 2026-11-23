@@ -114,7 +114,7 @@ manual_ccd2/
 | F1-bis · Verificación | `investigacion/verificacion/informe-v1.md` (Opus) y notas corregidas | ✅ 2026-11-23 (correcciones aplicadas; hallazgos en `investigacion/README.md`) |
 | F2 · Índice a 3 niveles | `00-indice-manual-ccd2.md` v0.2, aprobado por Rafa | ✅ v0.2 aprobado por Rafa, 2026-11-23 |
 | F3 · Base | `estilo.css` con acento propio, `index.html`, `parte-00.html`, `revision.py` adaptado | ✅ 2026-11-23 (portada y `construir_kindle` completos en F7) |
-| F4 · Redacción | Partes I, II, III, V y VI (sesión principal) | 🟡 Partes I y II hechas 2026-11-23; III, V y VI pendientes del OK de Rafa |
+| F4 · Redacción | Partes I, II, III, V y VI (sesión principal) | ✅ Partes I, II, III, V y VI redactadas 2026-11-23 (pendiente: OK de Rafa antes de anexos, revisión y publicación) |
 | F4-E · Parte IV | Modelos de admisión, por el agente especialista | ✅ 2026-11-23 (revisada por la sesión principal; decisiones de fondo para Rafa en `especialista/decisiones-parte-04.md`) |
 | F5 · Anexos de código | S1-S3 ejecutados | ✅ S1, S2 y S3 ejecutados 2026-11-23 |
 | F6 · Revisión | `revision.py` en OK, QUÉ VIENE inventariados, fugas revisadas | ⏳ Pendiente |
@@ -302,3 +302,15 @@ scikit-learn). Si se toca un script, hay que revisar el texto que cita sus cifra
   diferencias de la propia salida). Visual en claro y oscuro OK. Pendiente de Rafa (ver decisiones §3 y
   §5): costes de 26.4 son estimaciones del autor; tres afirmaciones de conocimiento propio por verificar;
   C-203/22 sin leer. Parado antes de las Partes III, V y VI.
+- **2026-11-23** (7) — F4 cierre. Redactadas la Parte III (caps. 15-19, ~5.600 palabras), la V (caps.
+  27-31, ~4.400) y la VI (caps. 32-35, ~3.100); al menos un CASO por capítulo en III a VI; QUÉ VIENE sin
+  fechas firmes; remisiones a la Parte IV en texto. Cifras de la V sacadas de S1 y S2. `revision.py` OK
+  tras cada parte. **No se usó el navegador** para cerrar huecos: lo que sigue sin verificar queda en
+  cualitativo en el texto y aquí: (1) texto íntegro de las SSTS (628/2015, 149/2020, 258/2023, 154/2025,
+  482/2026 y la de préstamo personal de 2026), que van "según notas del CGPJ y comentarios"; (2) texto de
+  septiembre del anteproyecto y borrador de RD, citados según CNMC y CES; (3) perfil regulatorio de
+  cada operador BNPL (cap. 6.4); (4) BOE del RD 806/2026; (5) art. 21.5 Ley 50/1997 y art. 21.2 LO 3/1980
+  (de memoria, marcados "sin verificar"); (6) origen legal de los 50 € de la AEPD; (7) C-203/22, directrices
+  de la Comisión sobre sistema de IA y RTS EBA/RTS/2026/05. Pendiente de Rafa: anexos de referencia
+  (R1-R6, incluida la tabla de equivalencias CCD2/RGPD/AI Act/GL 2020/06), anexos-codigo.html, revisión
+  final de QUÉ VIENE y de fugas, renumeración del cap. 12 y publicación (F5-F7).

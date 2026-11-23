@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parte VI · Retos</title>
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+<p class="eyebrow">Parte VI <span class="nivel n3">N3</span></p>
+<h1>Retos</h1>
+<p class="subtitulo">Lo que queda abierto cuando la implantación ya está en marcha: la IA en solvencia, el acceso a datos de cuenta, la litigiosidad masiva y lo que viene.</p>
+
+<p class="lead">Esta parte no explica obligaciones nuevas. Recoge los cuatro asuntos que seguirán abiertos cuando la entidad haya hecho lo exigible: una frontera entre dos normas europeas que se aplican a la vez, un acceso a datos que ayuda a decidir mejor y exige más cuidado, un tipo de litigio que ya se conoce en España y un conjunto de cambios en curso que no tienen fecha. Todo lo que depende de la tramitación o de actos no publicados va en bloques QUÉ VIENE y no debe usarse en un entregable sin comprobar su estado (a fecha de 2026-11-23).</p>
+
+<hr/>
+
+<h2 id="cap32">Capítulo 32 · IA en solvencia: AI Act y CCD2 a la vez</h2>
+
+<p>La Parte IV desarrolló qué hay que cambiar en un modelo de admisión (caps. 20 a 26) y en el cap. 23 trató la explicabilidad con las tres normas a la vez. Este capítulo recoge lo que queda como reto: dónde se solapan, dónde no y qué preguntas siguen sin respuesta.</p>
+
+<h3 id="s32-1">32.1 Dos normas, un mismo proceso</h3>
+
+<p>El Reglamento de Inteligencia Artificial clasifica como de alto riesgo los sistemas destinados a evaluar la solvencia de personas físicas o a establecer su calificación crediticia, salvo los destinados a detectar fraude financiero (anexo III, punto 5, letra b). Un sistema del anexo III puede escapar a la calificación si no plantea riesgo importante, pero siempre es de alto riesgo si elabora perfiles de personas físicas (art. 6.3, último párrafo), y un <i>scoring</i> de crédito los elabora. Las obligaciones de alto riesgo se aplican desde el 2 de diciembre de 2027 tras el <i>Digital Omnibus</i> sobre IA, firmado el 8 de julio de 2026. Para el responsable del despliegue, es decir, la entidad que usa el sistema, incluyen supervisión humana encomendada a personas con competencia, formación y autoridad (art. 26.2), conservación de registros al menos seis meses (art. 26.6), información a las personas afectadas y una evaluación de impacto en derechos fundamentales antes de desplegar, obligatoria para solvencia (art. 27.1). El incumplimiento de las obligaciones del responsable del despliegue puede sancionarse con hasta 15 millones de euros o el 3 % del volumen de negocios mundial (art. 99.4).</p>
+
+<p>La CCD2 no es la misma norma con otro nombre. La CCD2 se centra en el resultado para el cliente: una evaluación en su interés, con datos pertinentes y verificados, y un derecho a intervención humana con explicación, punto de vista y revisión (art. 18). El AI Act se centra en el sistema: gestión de riesgos, gobernanza del dato, documentación técnica, transparencia, exactitud. El RGPD añade la protección de datos y las decisiones automatizadas (art. 22). Para el derecho a explicaciones, el propio art. 86 del AI Act se aparta en la medida en que otro lugar del derecho de la Unión ya lo prevea, y el art. 18.8 CCD2 y el art. 22 RGPD son esos otros lugares (lectura del manual, no confirmada por ninguna fuente).</p>
+
+<div class="bloque b-norma">
+<span class="etiqueta">Norma</span>
+<p><strong>Art. 18(8) CCD2; arts. 6.3, 26 y 27 y anexo III.5.b del Reglamento (UE) 2024/1689; art. 22 RGPD.</strong> Tres normas sobre la misma decisión. <strong>Derecho español:</strong> la Ley 16/2011 (art. 14) y la LOPDGDD (art. 20 y art. 22 a través del RGPD); sin equivalente al AI Act hasta que haya ley nacional de designación de autoridades. <strong>Anteproyecto:</strong> texto de enero, arts. 31 a 33; versión de septiembre, arts. 28 a 30 según la CNMC.</p>
+</div>
+
+<h3 id="s32-2">32.2 Lo que sigue abierto</h3>
+
+<ul>
+<li><strong>¿Es una <i>scorecard</i> logística un «sistema de IA»?</strong> Depende de la definición del art. 3.1 del Reglamento y de las directrices de la Comisión sobre esa definición, que no se han leído para este manual. La recomendación de la Parte IV es gobernarla como si lo fuera, porque el coste marginal es bajo y el de equivocarse, alto.</li>
+<li><strong>¿Qué es un «cambio significativo de diseño»?</strong> El art. 111.2, en la redacción del <i>Omnibus</i>, deja fuera de las obligaciones de alto riesgo a los sistemas puestos en servicio antes de la fecha de aplicación, mientras no sufran modificaciones significativas. No hay criterio publicado. La entidad debe fijar uno por escrito y revisarlo cuando cambie un modelo; el riesgo es que un reentrenamiento por la CCD2, hecho antes de diciembre de 2027, sea considerado un cambio significativo.</li>
+<li><strong>¿Quién vigila?</strong> El art. 74.6 atribuye la vigilancia del mercado de sistemas de alto riesgo usados por entidades financieras reguladas a la autoridad nacional de supervisión financiera. El proyecto de ley orgánica de gobernanza de la IA, que designaba al Banco de España en su art. 5.5, caducó con la disolución de las Cortes, de modo que hoy es una propuesta caducada. Un prestamista sin supervisor financiero competente podría caer en la autoridad general de IA, pero ningún texto lo dice.</li>
+<li><strong>Datos para detectar sesgo.</strong> El AI Act permite tratar excepcionalmente categorías especiales para detectar y corregir sesgos, con condiciones estrictas, y el <i>Omnibus</i> añade un art. 4a con régimen propio. La CCD2 prohíbe <i>usar</i> esas categorías para evaluar solvencia (arts. 18(3) y 19(5)). Las dos cosas conviven: tratar para medir no es usar para decidir. La entidad debe separar los dos procesos y documentarlo (cap. 24).</li>
+</ul>
+
+<div class="bloque b-viene">
+<span class="etiqueta">Qué viene</span>
+<p>Tres cosas condicionan lo anterior y no tienen fecha firme: las directrices definitivas de la Comisión sobre alto riesgo (hoy existe un borrador en consulta), las directrices sobre la definición de sistema de IA, y la designación de la autoridad española. El número oficial del reglamento <i>Omnibus</i> no está confirmado en fuente primaria. Ninguna fecha o cifra de este bloque debe usarse en un entregable sin comprobarla.</p>
+</div>
+
+<div class="bloque b-caso">
+<span class="etiqueta">Caso</span>
+<dl>
+<dt>Qué llega</dt>
+<dd>El comité de modelos de una entidad discute si reentrenar este trimestre la <i>scorecard</i> para quitar variables en duda, o esperar a diciembre de 2027. Un proveedor sostiene que reentrenar ahora hace perder la excepción del art. 111.2.</dd>
+<dt>Qué hay detrás</dt>
+<dd>Dos obligaciones tiran en sentidos distintos: la CCD2 es aplicable ya, y retirar datos prohibidos es exigible; el AI Act, en cambio, puede no aplicar a un sistema anterior mientras no cambie de forma significativa. Qué es significativo no está definido.</dd>
+<dt>La respuesta que funciona</dt>
+<dd>No condicionar el cumplimiento de la CCD2 a una excepción incierta. Reentrenar para cumplir lo que ya es exigible, documentar el cambio con un criterio escrito de qué considera la entidad significativo y por qué, y gobernar el modelo desde ahora como de alto riesgo, de modo que el reentrenamiento no sea un problema con la fecha de aplicación.</dd>
+<dt>La que empeora las cosas</dt>
+<dd>Retrasar la retirada de datos prohibidos para conservar una exención del AI Act. Un riesgo ya presente (un modelo con datos que el art. 18(3) prohíbe) se cambia por uno futuro e incierto.</dd>
+</dl>
+</div>
+
+<hr/>
+
+<h2 id="cap33">Capítulo 33 · <i>Open banking</i>: PSD2/PSR y datos de cuenta</h2>
+
+<h3 id="s33-1">33.1 Lo que permite la PSD2</h3>
+
+<p>El proveedor de servicios de información sobre cuentas presta el servicio exclusivamente sobre la base del consentimiento explícito del usuario, accede solo a las cuentas designadas y a sus operaciones, no pide datos de pago sensibles y no usa, almacena ni accede a datos para fines distintos del servicio expresamente solicitado por el usuario (Directiva (UE) 2015/2366, art. 67.2). Con ese marco, el solicitante puede compartir su historial de cuenta con el prestamista, a través de un proveedor autorizado o directamente si el prestamista lo es, y esa información alimenta la evaluación de solvencia a petición del propio solicitante. Encaja con el art. 18(3) CCD2, que pide información pertinente y exacta sobre ingresos y gastos.</p>
+
+<p>En el ejercicio de S2, las variables de movimientos de cuenta son la palanca con más efecto: con todos los clientes compartiendo cuentas, el Gini sube 4,3 puntos sobre el modelo integrado y la aprobación a igual morosidad pasa a 74,5 %; con el 53 % que consiente en la cartera sintética, a 71,8 %. Y verifican los ingresos, que es lo que pide el art. 18(3) cuando exige verificar «adecuadamente».</p>
+
+<h3 id="s33-2">33.2 Lo que no permite</h3>
+
+<ul>
+<li><strong>Reutilizar los datos para otro fin.</strong> El art. 67.2(f) impide usarlos para modelos de marketing o para entrenar un modelo con datos de terceros sin base propia.</li>
+<li><strong>Usar lo que los datos revelan.</strong> Los movimientos de cuenta pueden contener categorías especiales inferibles (pagos a entidades sanitarias, sindicatos, partidos o confesiones) y datos de terceros, como el beneficiario de una transferencia. Los arts. 18(3) y 19(5) CCD2 prohíben usarlas para evaluar solvencia, de modo que la construcción de variables sobre los movimientos debe excluirlas desde el diseño.</li>
+<li><strong>Presionar el consentimiento.</strong> Condicionar la oferta a que el cliente comparta sus cuentas, sin alternativa, convierte el consentimiento en dudoso. Una alternativa razonable, aunque no sea la más rentable, hay que ofrecerla y probarla (cap. 21.3).</li>
+</ul>
+
+<div class="bloque b-trampa">
+<span class="etiqueta">Trampa</span>
+<p>Tratar las variables de cuenta como una mejora técnica sin pasar por la revisión de datos prohibidos. Un modelo que alimenta categorías de gasto sin filtrar las que revelan salud o afiliación puede estar usando justo lo que el art. 18(3) prohíbe, y el efecto no se ve en las métricas de poder predictivo.</p>
+</div>
+
+<h3 id="s33-3">33.3 Lo que se mueve</h3>
+
+<div class="bloque b-viene">
+<span class="etiqueta">Qué viene</span>
+<p>La propuesta de Reglamento de acceso a datos financieros (FiDA), que habría ampliado el acceso a más datos, figura según fuentes secundarias como retirada en el programa de trabajo de la Comisión para 2027, sin comprobar en el documento oficial. Por eso este manual no la trata como parte del marco. El reglamento de servicios de pago (PSR) y la PSD3 tuvieron acuerdo político provisional a finales de 2025, con publicación en el DOUE esperada, sin confirmar a fecha de consulta; buscan reducir los obstáculos al acceso de los proveedores de información sobre cuentas. Una entidad que construya su modelo sobre datos de cuenta debe diseñar para que un cambio de este marco sea un cambio de proceso y no de modelo.</p>
+</div>
+
+<div class="bloque b-caso">
+<span class="etiqueta">Caso</span>
+<dl>
+<dt>Qué llega</dt>
+<dd>El equipo de datos de una entidad propone usar los movimientos de cuenta que los clientes comparten en la solicitud para mejorar también el modelo de venta cruzada de seguros. El responsable de protección de datos pide un informe antes de aprobar.</dd>
+<dt>Qué hay detrás</dt>
+<dd>La base del acceso es el consentimiento explícito del cliente para evaluar su solvencia. Reutilizar los datos para otro fin choca con el art. 67.2(f) de la PSD2 y con el principio de limitación de la finalidad del RGPD. Y los movimientos de cuenta pueden contener categorías especiales.</dd>
+<dt>La respuesta que funciona</dt>
+<dd>Separar los datos de la solicitud de cualquier uso comercial, documentar la finalidad única en el expediente y, si negocio quiere un uso adicional, pedir un consentimiento distinto, voluntario y sin condicionar la concesión.</dd>
+<dt>La que empeora las cosas</dt>
+<dd>Reutilizar los datos y dejar para después la base legal. Es el tipo de uso que la autoridad de protección de datos sanciona, y que además daña la confianza en el consentimiento que sostiene el modelo de solvencia.</dd>
+</dl>
+</div>
+
+<hr/>
+
+<h2 id="cap34">Capítulo 34 · Litigiosidad masiva: el próximo frente</h2>
+
+<h3 id="s34-1">34.1 El patrón</h3>
+
+<p>La litigiosidad masiva en España sigue un patrón: una práctica generalizada, una sentencia que la califica de nula o abusiva, un efecto retroactivo y una industria de reclamaciones que capta clientes. Las cláusulas suelo, los gastos de formalización hipotecarios y el <i>revolving</i> lo han seguido (cap. 19.3). La CCD2 añade dos ingredientes que pueden mover el siguiente ciclo: obligaciones nuevas con consecuencias civiles y un deber de evaluación «en interés del consumidor» con una carga de prueba que recae en la entidad.</p>
+
+<h3 id="s34-2">34.2 Dónde puede estar el siguiente frente</h3>
+
+<p>Con la información disponible, y marcado como criterio del manual y no como hecho, hay cuatro candidatos. <strong>La evaluación de solvencia:</strong> una demanda que sostenga que la entidad no evaluó en interés del consumidor, apoyada en el art. 14 de la Ley 16/2011 leído a la luz de la directiva; el anteproyecto prevé consecuencias civiles para ese incumplimiento (pérdida o reducción de intereses, según la CNMC), pero la ley vigente no recoge una consecuencia específica, punto que no está verificado en fuente primaria. <strong>La transparencia en el móvil:</strong> la extensión de la doctrina sobre transparencia del <i>revolving</i> a otros productos digitales. <strong>El BNPL:</strong> contratos de importe pequeño con obligaciones que no estaban en el ámbito, en un mercado con operadores de licencia diversa; con el anteproyecto, la nulidad por falta de autorización. <strong>El recobro y los ficheros:</strong> reclamaciones por gastos, demora e inscripciones indebidas, donde la doctrina ya es estable.</p>
+
+<div class="bloque b-viene">
+<span class="etiqueta">Qué viene</span>
+<p>Si el anteproyecto llegase a ser ley con la reserva de actividad, la nulidad de los contratos del no autorizado y el certificado de registro para demandar cambiarían el escenario para los operadores no bancarios y para sus financiadores. La cartera de contratos originados por socios, hoy una cuestión de diligencia, pasaría a ser una cuestión de validez. No hay fecha ni texto firme.</p>
+</div>
+
+<h3 id="s34-3">34.3 Qué puede hacer una entidad hoy</h3>
+
+<ul>
+<li><strong>Inventario de exposición:</strong> contratos activos en los supuestos que la jurisprudencia considera dudosos, con el tipo del mes de contratación, las subidas de tipo y las comisiones (cap. 18.5).</li>
+<li><strong>Reconstrucción por contrato:</strong> poder aportar la información precontractual, el histórico de tipos y avisos, y el expediente de concesión de cada contrato.</li>
+<li><strong>Política de acuerdos:</strong> decidida antes de la primera demanda, con criterios y un presupuesto, y no caso a caso.</li>
+<li><strong>Vigilancia de la doctrina:</strong> un responsable que lea las sentencias en texto íntegro (y no por comentarios) cuando cambie el criterio, porque el coste de actuar sobre un resumen equivocado es alto.</li>
+</ul>
+
+<div class="bloque b-caso">
+<span class="etiqueta">Caso</span>
+<dl>
+<dt>Qué llega</dt>
+<dd>Una entidad recibe en un mes treinta demandas idénticas, de un mismo despacho, sobre tarjetas contratadas entre 2017 y 2019, con una petición de nulidad por usura y otra de abusividad por falta de transparencia.</dd>
+<dt>Qué hay detrás</dt>
+<dd>El despacho ha identificado una práctica de la entidad, un mecanismo de reposición poco explicado y un tipo por encima de la referencia más seis puntos, y ha captado a los clientes con una campaña. Cada demanda es pequeña; la cartera expuesta no lo es.</dd>
+<dt>La respuesta que funciona</dt>
+<dd>Medir la exposición de la cartera completa, no de las treinta demandas; aplicar la política de acuerdos a las que cumplen los criterios de la doctrina; defender las que no los cumplen con el expediente completo; y corregir el proceso para los contratos nuevos.</dd>
+<dt>La que empeora las cosas</dt>
+<dd>Litigar las treinta como si fueran casos aislados. El coste de defensa acumulado, el riesgo de una sentencia colectiva y el daño reputacional superan lo que cuesta un acuerdo bien calculado.</dd>
+</dl>
+</div>
+
+<hr/>
+
+<h2 id="cap35">Capítulo 35 · Qué viene</h2>
+
+<p>Este capítulo reúne lo que está en movimiento y no tiene fecha firme. Se escribe para que el lector sepa dónde mirar, no para que cite nada de lo que aquí aparece. Todo lo que sigue es a fecha de 2026-11-23.</p>
+
+<div class="bloque b-viene">
+<span class="etiqueta">Qué viene</span>
+<p><strong>La ley española.</strong> No existe y su calendario depende de la formación de Gobierno tras las elecciones del 29 de noviembre de 2026. Las vías posibles son un real decreto-ley, un Gobierno nuevo que retome el anteproyecto o un retraso largo (cap. 15.3). El anteproyecto tiene dos versiones y cambiará antes de ser ley. El real decreto de desarrollo, con los topes concretos, no se ha podido leer.</p>
+</div>
+
+<div class="bloque b-viene">
+<span class="etiqueta">Qué viene</span>
+<p><strong>La respuesta a la Comisión.</strong> El dictamen motivado de 1 de octubre de 2026 tiene un plazo de respuesta que vence hacia el 1 de diciembre de 2026. La respuesta no es pública. Si la Comisión no queda satisfecha, podría acudir al Tribunal de Justicia y pedir sanciones económicas; no hay plazo legal. La Comisión publicará las medidas de coste de los Estados a más tardar el 20 de noviembre de 2027, y la EBA debe publicar un informe sobre metodologías de límites de coste antes del 20 de noviembre de 2029 (art. 31(3) y (4)). La evaluación de la directiva por la Comisión es posterior a esa fecha (art. 46).</p>
+</div>
+
+<div class="bloque b-viene">
+<span class="etiqueta">Qué viene</span>
+<p><strong>IA y datos.</strong> Las obligaciones de alto riesgo del AI Act se aplican a partir del 2 de diciembre de 2027 según el <i>Omnibus</i>, y quedan por publicar las directrices sobre alto riesgo y sobre la definición de sistema de IA. La CIRBE baja su umbral a 1.000 euros el 2 de enero de 2027. El marco de acceso a datos de cuenta (PSR y PSD3) está en proceso de publicación, y FiDA figura como retirada, sin confirmar en el documento oficial.</p>
+</div>
+
+<div class="bloque b-viene">
+<span class="etiqueta">Qué viene</span>
+<p><strong>Jurisprudencia y supervisión.</strong> Hay varias sentencias del Supremo de 2026 que solo se conocen por su número y fecha. La doctrina sobre usura en préstamos personales está abierta. El Banco de España tiene una propuesta de expediente por préstamo responsable (Memoria de 2025), cuya resolución, si la hay, no se ha publicado. La Ley 10/2025 de atención a la clientela tiene una transitoria de doce meses. Ninguna de estas cosas debe citarse sin comprobar el texto original.</p>
+</div>
+
+<h3 id="s35-1">Lo que no cambia</h3>
+
+<p>Entre todo lo que se mueve hay una constante. Una entidad que sabe de dónde nace cada obligación, que ha clasificado lo exigible, lo prudente y lo que espera a la ley, que puede reconstruir qué vio y decidió cada cliente, que evalúa la solvencia en interés del cliente y puede explicarla, y que tiene un expediente de sus propias decisiones, está preparada para casi cualquier versión de la ley que llegue. Lo que cambia con cada versión son las cifras y los artículos, y esos se actualizan en una tarde. El resto es oficio.</p>
+
+<div class="bloque b-caso">
+<span class="etiqueta">Caso</span>
+<dl>
+<dt>Qué llega</dt>
+<dd>Cuando se publique la ley española, el consejo de administración pide una nota que resuma si la entidad está preparada y qué cambia respecto al plan.</dd>
+<dt>Qué hay detrás</dt>
+<dd>Si la entidad aplicó una implantación en tres capas con un expediente de decisiones, lo esperable es que la ley final difiera del anteproyecto en cifras y en artículos más que en su estructura: las capas exigible y prudente ya están hechas y la de la ley requiere sobre todo ajustar parámetros.</dd>
+<dt>La respuesta que funciona</dt>
+<dd>Presentar una tabla de diferencias entre la ley publicada y el plan (qué parámetros cambian, qué procesos no), con responsables y fechas, y apoyarse en el expediente para enseñar que las decisiones previas estaban documentadas.</dd>
+<dt>La que empeora las cosas</dt>
+<dd>Presentar la ley como una sorpresa que obliga a rehacer el programa. Si lo fue, es señal de que el programa se hizo contra un texto y no contra la directiva.</dd>
+</dl>
+</div>
+
+<nav class="nav">
+<p><a href="parte-05.html">← Parte V: Implantación en la entidad</a> · <a href="index.html">Índice general</a> · <a href="anexos-codigo.html">Anexos de código →</a></p>
+</nav>
+
+</body>
+</html>
