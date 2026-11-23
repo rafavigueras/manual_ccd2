@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anexos de código</title>
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+<p class="eyebrow">Anexos · Código</p>
+<h1>Anexos de código</h1>
+<p class="subtitulo">Los programas que producen las cifras del manual, con su salida.</p>
+
+<p class="lead">Las cifras de los bloques NÚMEROS, PALANCA y CASO que no salen de una fuente pública salen de estos tres programas, y la salida que aparece debajo de cada uno es la de la última ejecución, hecha antes de publicar. Los datos de S2 y S3 son sintéticos y los de S1 son productos ilustrativos: sirven para ver el orden de magnitud y el mecanismo, no para predecir una entidad real. Si se cambia un programa, hay que revisar el texto que cita sus cifras. Para ejecutarlos: <code>python3 -m venv .venv</code>, instalar <code>numpy pandas scipy scikit-learn</code> y lanzar cada uno con la orden indicada, desde la raíz del proyecto.</p>
+
+<hr/>
+
+<h2 id="S1">Anexo S1 · La TAE de los productos de la entidad de referencia</h2>
+<p>Resuelve la ecuación de la TAE del anexo III de la Directiva (UE) 2023/2225 con los flujos de una tarjeta <i>revolving</i>, un préstamo personal y dos formas de BNPL, y los compara con tres referencias (TEDR de tarjetas, margen de seis puntos del Supremo y tope transitorio del texto de enero del anteproyecto). Los supuestos son del programa, no los del anexo III.</p>
+<p class="small">Se usa en: capítulos 5, 10, 18 y 28. Ejecución: <code>.venv/bin/python -I anexos/s1_tae.py</code>.</p>
+<h3>s1_tae.py</h3>
+<pre><code>&quot;&quot;&quot;S1. TAE de los tres productos de la entidad de referencia.
+
+La TAE es el tipo anual X que iguala el valor actual de las disposiciones con el de los
+pagos del consumidor (ecuacion del anexo III de la Directiva (UE) 2023/2225):
+    sum_k A_k / (1+X)^t_k  =  sum_l D_l / (1+X)^s_l
+con t en anos y meses de igual duracion (1/12 de ano).
+
+Los tres productos son sinteticos. Los supuestos de cada uno (importe, plazo, cuotas) son
+de este script y sirven para ilustrar el calculo; no son los supuestos obligatorios del
+anexo III para cada tipo de credito.
+
+Referencias de comparacion (ilustrativas, ver cap. 18 del manual):
+  - TEDR de tarjetas de credito y revolving, ago-2026 (provisional): 18,26 % (Banco de Espana).
+  - Margen de 6 puntos sobre el tipo medio de la categoria que usa el Supremo
+    (STS 258/2023, segun nota del CGPJ).
+  - Tope transitorio del anteproyecto, texto de enero de 2026: 22 (DT 2.a); aun no es derecho.
+
+Uso:  .venv/bin/python -I anexos/s1_tae.py
+&quot;&quot;&quot;
+from scipy.optimize import brentq
+
+TEDR_TARJETAS = 18.26
+MARGEN_SUPREMO = 6.0
+TOPE_ANTEPROYECTO_ENERO = 22.0
+
+
+def tae(disposiciones, pagos):
+    &quot;&quot;&quot;disposiciones y pagos: listas de (mes, importe). Devuelve la TAE en %.&quot;&quot;&quot;
+    def f(x):
+        va_a = sum(a / (1 + x) ** (m / 12) for m, a in disposiciones)
+        va_d = sum(d / (1 + x) ** (m / 12) for m, d in pagos)
+        return va_a - va_d
+    return brentq(f, -0.5, 10.0, xtol=1e-12) * 100
+
+
+def cuota_francesa(capital, tin_anual, n):
+    i = tin_anual / 12
+    return capital * i / (1 - (1 + i) ** -n) if i else capital / n
+
+
+def tarjeta_revolving():
+    &quot;&quot;&quot;Limite 3.000 EUR dispuesto el primer dia; TIN 21,5 %; sin cuota anual.
+    Reembolso con el criterio de la Orden EHA/2899/2011 art. 18.2.e: 25 % del limite al ano
+    en doce cuotas mensuales iguales de principal, mas intereses sobre el saldo.&quot;&quot;&quot;
+    limite, tin = 3000.0, 0.215
+    amort = limite * 0.25 / 12
+    saldo, pagos = limite, []
+    for m in range(1, 49):
+        interes = saldo * tin / 12
+        pagos.append((m, amort + interes))
+        saldo -= amort
+    return [(0, limite)], pagos, limite, tin
+
+
+def prestamo_personal():
+    &quot;&quot;&quot;Prestamo digital de 6.000 EUR a 36 meses, TIN 9,9 %, comision de apertura 1,5 %
+    cobrada al desembolsar (el consumidor recibe 5.910 y devuelve las cuotas del principal).&quot;&quot;&quot;
+    capital, tin, n, com = 6000.0, 0.099, 36, 0.015
+    cuota = cuota_francesa(capital, tin, n)
+    pagos = [(m, cuota) for m in range(1, n + 1)]
+    return [(0, capital * (1 - com))], pagos, capital, tin
+
+
+def bnpl_cero():
+    &quot;&quot;&quot;BNPL de 120 EUR en 3 pagos de 40 EUR (en el acto, a 1 y a 2 meses), sin coste para el
+    consumidor: lo paga el comercio.&quot;&quot;&quot;
+    return [(0, 120.0)], [(0, 40.0), (1, 40.0), (2, 40.0)], 120.0, 0.0
+
+
+def bnpl_largo():
+    &quot;&quot;&quot;BNPL de 600 EUR a 12 meses con comision del 3 % para el consumidor, sin TIN.&quot;&quot;&quot;
+    capital, n, com = 600.0, 12, 0.03
+    cuota = capital * (1 + com) / n
+    return [(0, capital)], [(m, cuota) for m in range(1, n + 1)], capital, 0.0
+
+
+def main():
+    casos = [
+        (&quot;Tarjeta revolving (3.000 EUR, TIN 21,5 %)&quot;, tarjeta_revolving()),
+        (&quot;Préstamo personal digital (6.000 EUR, 36 m, TIN 9,9 %, apertura 1,5 %)&quot;, prestamo_personal()),
+        (&quot;BNPL corto (120 EUR en 3 pagos, sin coste)&quot;, bnpl_cero()),
+        (&quot;BNPL largo (600 EUR a 12 m, comisión 3 %)&quot;, bnpl_largo()),
+    ]
+    ref_sup = TEDR_TARJETAS + MARGEN_SUPREMO
+    print(f&quot;Referencias: TEDR tarjetas {TEDR_TARJETAS:.2f} %; &quot;
+          f&quot;TEDR + {MARGEN_SUPREMO:.0f} puntos = {ref_sup:.2f} %; &quot;
+          f&quot;tope transitorio anteproyecto (enero) {TOPE_ANTEPROYECTO_ENERO:.0f}\n&quot;)
+    for nombre, (disp, pagos, capital, tin) in casos:
+        x = tae(disp, pagos)
+        total = sum(p for _, p in pagos)
+        tin_equiv = ((1 + tin / 12) ** 12 - 1) * 100 if tin else 0.0
+        print(f&quot;{nombre}&quot;)
+        print(f&quot;  Importe recibido {sum(a for _, a in disp):10.2f} | pagos totales {total:10.2f} | &quot;
+              f&quot;coste total {total - sum(a for _, a in disp):9.2f}&quot;)
+        print(f&quot;  TIN {tin*100:5.2f} % (equivalente anual {tin_equiv:5.2f} %) | TAE {x:6.2f} %&quot;)
+        if x &gt; 0:
+            print(f&quot;  frente a TEDR + 6: {x - ref_sup:+6.2f} puntos | frente a 22: {x - TOPE_ANTEPROYECTO_ENERO:+6.2f} puntos&quot;)
+        print()
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre>
+<h3>Salida de la ejecución</h3>
+<pre class="salida">Referencias: TEDR tarjetas 18.26 %; TEDR + 6 puntos = 24.26 %; tope transitorio anteproyecto (enero) 22
+
+Tarjeta revolving (3.000 EUR, TIN 21,5 %)
+  Importe recibido    3000.00 | pagos totales    4316.88 | coste total   1316.88
+  TIN 21.50 % (equivalente anual 23.75 %) | TAE  23.75 %
+  frente a TEDR + 6:  -0.51 puntos | frente a 22:  +1.75 puntos
+
+Préstamo personal digital (6.000 EUR, 36 m, TIN 9,9 %, apertura 1,5 %)
+  Importe recibido    5910.00 | pagos totales    6959.58 | coste total   1049.58
+  TIN  9.90 % (equivalente anual 10.36 %) | TAE  11.51 %
+  frente a TEDR + 6: -12.75 puntos | frente a 22: -10.49 puntos
+
+BNPL corto (120 EUR en 3 pagos, sin coste)
+  Importe recibido     120.00 | pagos totales     120.00 | coste total      0.00
+  TIN  0.00 % (equivalente anual  0.00 %) | TAE   0.00 %
+  frente a TEDR + 6: -24.26 puntos | frente a 22: -22.00 puntos
+
+BNPL largo (600 EUR a 12 m, comisión 3 %)
+  Importe recibido     600.00 | pagos totales     618.00 | coste total     18.00
+  TIN  0.00 % (equivalente anual  0.00 %) | TAE   5.63 %
+  frente a TEDR + 6: -18.63 puntos | frente a 22: -16.37 puntos
+
+</pre>
+<hr/>
+
+<h2 id="S2">Anexo S2 · <i>Scorecard</i> sintética de admisión</h2>
+<p>Una cartera sintética de 300.000 solicitudes de los tres productos de la entidad de referencia, con semilla fija. Mide el efecto de retirar variables en duda, de añadir una regla de capacidad de pago, de usar datos de cuenta con consentimiento y de evaluar con los aprobados del modelo viejo, y estima el esfuerzo del programa de modelos (con supuestos del autor).</p>
+<p class="small">Se usa en: Parte IV (caps. 20 a 26) y caps. 28 y 31. Ejecución: <code>.venv/bin/python -I anexos/s2_scorecard.py</code>.</p>
+<h3>s2_scorecard.py</h3>
+<pre><code>&quot;&quot;&quot;S2 · Scorecard sintética de admisión de consumo y su adaptación a la CCD2.
+
+Anexo de código del Manual de crédito al consumo (Parte IV). Genera una cartera sintética
+de solicitudes de la entidad de referencia del manual (tarjeta revolving, préstamo personal
+digital y BNPL en el punto de venta), entrena una scorecard logística de referencia y mide:
+
+  (a) el efecto en Gini y en tasa de aprobación a igual morosidad de retirar tres variables
+      que con la CCD2 pasan a estar prohibidas o en duda (señal de redes sociales,
+      nacionalidad y gama del dispositivo);
+  (b) el efecto de añadir una regla de capacidad de pago (secuencial e integrada, estricta y
+      proporcional), y qué perfiles se caen;
+  (c) la mejora de añadir variables derivadas de movimientos de cuenta (open banking);
+  (d) el sesgo de medir un modelo nuevo solo con los aprobados por el modelo viejo;
+  (e) los motivos de denegación de un solicitante concreto y un contrafactual;
+  (f) el orden de magnitud del esfuerzo del programa de modelos, con supuestos explícitos
+      (estimación del autor, no una medición de mercado).
+
+Todo es sintético: ninguna cifra describe a una entidad real ni al mercado español. Lo que
+importa son los órdenes de magnitud y el método, no los decimales.
+
+Uso:  .venv/bin/python -I anexos/s2_scorecard.py      (desde la raíz del proyecto)
+&quot;&quot;&quot;
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_auc_score
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+
+SEMILLA = 20261120          # fecha de aplicación de la CCD2
+N = 300_000                 # solicitudes
+APROBACION_REFERENCIA = 0.70  # punto de operación del modelo actual
+PROB_CONSENTIMIENTO_OB = 0.50  # parte de solicitantes que comparte sus cuentas
+
+PRODUCTOS = [&quot;revolving&quot;, &quot;prestamo&quot;, &quot;bnpl&quot;]
+
+# Supuestos de esfuerzo del programa de modelos (persona-mes): banco grande con IRB y varias
+# scorecards propias; entidad pequeña sin modelos internos y con scorecard de proveedor.
+ESFUERZO = [
+    (&quot;Diagnóstico e inventario de modelos, reglas y variables&quot;, 6.0, 1.5),
+    (&quot;Reentrenamiento y validación de scorecards&quot;, 30.0, 5.0),
+    (&quot;Regla de capacidad de pago y estimación de gastos&quot;, 8.0, 2.0),
+    (&quot;Integración y variables de open banking&quot;, 12.0, 3.0),
+    (&quot;Motivos de denegación, explicaciones y revisión humana&quot;, 10.0, 3.0),
+    (&quot;Pruebas de sesgo y gobierno del dato&quot;, 6.0, 1.5),
+    (&quot;Impacto en IRB, IFRS 9, pricing y stress test&quot;, 12.0, 1.0),
+    (&quot;Documentación (art. 18.4 CCD2 y AI Act)&quot;, 8.0, 2.0),
+]
+COSTE_PM = {&quot;grande&quot;: 13000, &quot;pequena&quot;: 11000}  # coste medio interno y externo, EUR
+
+
+# ---------------------------------------------------------------------------
+# 1. Generación de la cartera sintética
+# ---------------------------------------------------------------------------
+
+def generar_cartera(n=N, semilla=SEMILLA):
+    &quot;&quot;&quot;Devuelve un DataFrame con una fila por solicitud y su resultado a 12 meses.&quot;&quot;&quot;
+    rng = np.random.default_rng(semilla)
+    d = pd.DataFrame(index=range(n))
+
+    d[&quot;producto&quot;] = rng.choice(PRODUCTOS, size=n, p=[0.35, 0.40, 0.25])
+    d[&quot;extranjero&quot;] = (rng.random(n) &lt; 0.14).astype(int)
+
+    # Edad: los extranjeros de la muestra son algo más jóvenes.
+    edad = rng.normal(43, 12, n) - 6 * d[&quot;extranjero&quot;]
+    d[&quot;edad&quot;] = np.clip(edad, 18, 79).round()
+
+    d[&quot;miembros_hogar&quot;] = rng.choice([1, 2, 3, 4, 5], size=n, p=[0.25, 0.30, 0.22, 0.17, 0.06])
+
+    # Situación laboral.
+    u = rng.random(n)
+    p_temporal = 0.16 + 0.12 * d[&quot;extranjero&quot;] + 0.10 * (d[&quot;edad&quot;] &lt; 30)
+    contrato = np.where(u &lt; p_temporal, &quot;temporal&quot;,
+               np.where(u &lt; p_temporal + 0.12, &quot;autonomo&quot;, &quot;indefinido&quot;))
+    contrato = np.where(d[&quot;edad&quot;] &gt;= 66, &quot;pensionista&quot;, contrato)
+    d[&quot;contrato&quot;] = contrato
+    d[&quot;antig_empleo_m&quot;] = np.round(
+        rng.exponential(24 + 2.2 * np.clip(d[&quot;edad&quot;] - 18, 0, None), n)
+        * np.where(d[&quot;contrato&quot;] == &quot;temporal&quot;, 0.3, 1.0))
+
+    # Rasgo latente de comportamiento de pago: no observable directamente.
+    z = rng.normal(0, 1, n)
+    d[&quot;_z&quot;] = z
+
+    # Ingresos netos mensuales reales.
+    log_ing = (np.log(1650) + 0.18 * np.tanh((d[&quot;edad&quot;] - 25) / 15)
+               - 0.20 * (d[&quot;contrato&quot;] == &quot;temporal&quot;) - 0.12 * d[&quot;extranjero&quot;]
+               + 0.10 * z + rng.normal(0, 0.38, n))
+    d[&quot;ingresos_reales&quot;] = np.exp(log_ing).round()
+    # Ingresos declarados: se sobredeclaran más cuanto peor es el rasgo latente.
+    sobre = np.clip(rng.normal(0.06 - 0.05 * z, 0.10, n), -0.05, None)
+    d[&quot;ingresos_declarados&quot;] = (d[&quot;ingresos_reales&quot;] * (1 + sobre)).round()
+
+    # Zona postal: índice de riesgo de 1 (bajo) a 10 (alto). Correlaciona con renta y origen.
+    zona_lat = (-0.8 * (log_ing - log_ing.mean()) / log_ing.std() + 1.0 * d[&quot;extranjero&quot;]
+                + rng.normal(0, 1, n))
+    d[&quot;zona&quot;] = pd.qcut(zona_lat, 10, labels=False) + 1
+
+    # Datos de bureau y CIR.
+    d[&quot;meses_historial&quot;] = np.round(np.clip(
+        rng.gamma(2.0, 40, n) * np.clip((d[&quot;edad&quot;] - 18) / 25, 0.15, 1.6)
+        * np.where(d[&quot;extranjero&quot;] == 1, 0.40, 1.0), 0, 480))
+    d[&quot;incidencias&quot;] = (rng.random(n) &lt; 1 / (1 + np.exp(2.7 + 0.9 * z))).astype(int)
+    d[&quot;consultas_6m&quot;] = rng.poisson(np.exp(0.2 - 0.35 * z + 0.25 * (d[&quot;producto&quot;] == &quot;bnpl&quot;)))
+    d[&quot;utilizacion&quot;] = np.clip(1 / (1 + np.exp(0.6 + 0.8 * z + rng.normal(0, 0.8, n))), 0, 1)
+    # Un 30 % no tiene otras deudas; el resto paga cuotas que suben cuanto peor es el rasgo latente.
+    ratio_cuotas = np.where(rng.random(n) &lt; 0.30, 0.0,
+                            np.clip(rng.beta(1.6, 9, n) * (1.25 - 0.25 * z), 0, 0.8))
+    d[&quot;cuotas_existentes&quot;] = (ratio_cuotas * d[&quot;ingresos_reales&quot;]).round()
+
+    # Importe solicitado y cuota mensual según producto.
+    ing = d[&quot;ingresos_reales&quot;].to_numpy()
+    imp = np.zeros(n)
+    cuota = np.zeros(n)
+    rev = d[&quot;producto&quot;].eq(&quot;revolving&quot;).to_numpy()
+    pre = d[&quot;producto&quot;].eq(&quot;prestamo&quot;).to_numpy()
+    bnp = d[&quot;producto&quot;].eq(&quot;bnpl&quot;).to_numpy()
+    imp[rev] = rng.choice([1000, 1500, 2000, 3000, 4000, 6000], rev.sum(),
+                          p=[0.15, 0.20, 0.25, 0.20, 0.12, 0.08])
+    # Criterio del art. 18.2.e) de la Orden EHA/2899/2011: cuota que amortice el 25 % anual
+    # del límite en doce plazos mensuales iguales (sin intereses, simplificación).
+    cuota[rev] = imp[rev] * 0.25 / 12
+    imp[pre] = np.clip(rng.lognormal(np.log(9000), 0.6, pre.sum()) * (ing[pre] / 1650) ** 0.4,
+                       3000, 30000).round(-2)
+    plazo = rng.choice([36, 48, 60, 72, 84, 96], pre.sum())
+    i_m = 0.099 / 12          # tipo nominal del préstamo de la entidad de referencia (cap. 5)
+    cuota[pre] = imp[pre] * i_m / (1 - (1 + i_m) ** -plazo)
+    imp[bnp] = np.clip(rng.lognormal(np.log(420), 0.7, bnp.sum()), 60, 1500).round()
+    cuota[bnp] = imp[bnp] / rng.choice([3, 6, 12], bnp.sum(), p=[0.45, 0.35, 0.20])
+    d[&quot;importe&quot;] = imp
+    d[&quot;cuota_nueva&quot;] = cuota.round(2)
+
+    # Variables que la CCD2 pone en duda o prohíbe.
+    # Señal de un proveedor de &quot;huella digital&quot; construida en parte con redes sociales.
+    d[&quot;senal_redes&quot;] = 0.55 * z - 0.25 * (d[&quot;edad&quot;] - 43) / 12 + rng.normal(0, 0.85, n)
+    # Gama alta del dispositivo desde el que se solicita (proxy de renta y edad).
+    p_gama = 1 / (1 + np.exp(-(0.9 * (log_ing - np.log(1650)) / 0.4 - 0.02 * (d[&quot;edad&quot;] - 43)
+                               + 0.25 * z - 0.2)))
+    d[&quot;gama_alta&quot;] = (rng.random(n) &lt; p_gama).astype(int)
+
+    # Movimientos de cuenta (open banking), disponibles si el cliente consiente.
+    dsti_real = (d[&quot;cuotas_existentes&quot;] + d[&quot;cuota_nueva&quot;]) / d[&quot;ingresos_reales&quot;]
+    d[&quot;ob_ingresos&quot;] = (d[&quot;ingresos_reales&quot;] * rng.normal(1.0, 0.04, n)).round()
+    d[&quot;ob_dias_descubierto&quot;] = rng.poisson(np.exp(0.4 - 0.85 * z + 1.5 * np.clip(dsti_real, 0, 1)))
+    d[&quot;ob_devoluciones&quot;] = rng.poisson(np.exp(-1.4 - 0.8 * z))
+    gasto_esencial = np.clip(rng.normal(0.55, 0.12, n) + 0.04 * (d[&quot;miembros_hogar&quot;] - 2)
+                             - 0.05 * z, 0.2, 1.1)
+    d[&quot;ob_ratio_gasto&quot;] = gasto_esencial.round(3)
+    p_cons = PROB_CONSENTIMIENTO_OB + 0.10 * (d[&quot;edad&quot;] &lt; 40) - 0.10 * (d[&quot;edad&quot;] &gt;= 60)
+    d[&quot;consiente_ob&quot;] = (rng.random(n) &lt; p_cons).astype(int)
+
+    # Resultado: impago de 90 días o más en los 12 meses siguientes.
+    renta_residual = d[&quot;ingresos_reales&quot;] * (1 - gasto_esencial) - d[&quot;cuotas_existentes&quot;] - d[&quot;cuota_nueva&quot;]
+    base = {&quot;revolving&quot;: -3.05, &quot;prestamo&quot;: -3.45, &quot;bnpl&quot;: -3.15}
+    logit = (d[&quot;producto&quot;].map(base)
+             - 1.05 * z
+             + 0.95 * d[&quot;incidencias&quot;]
+             + 0.10 * d[&quot;consultas_6m&quot;]
+             + 0.55 * (d[&quot;contrato&quot;] == &quot;temporal&quot;) + 0.30 * (d[&quot;contrato&quot;] == &quot;autonomo&quot;)
+             - 0.12 * np.log1p(d[&quot;antig_empleo_m&quot;])
+             + 0.60 * d[&quot;utilizacion&quot;]
+             + 0.025 * (d[&quot;zona&quot;] - 5.5)
+             - 0.004 * d[&quot;meses_historial&quot;].clip(0, 120)
+             + 3.0 * np.clip(dsti_real - 0.35, 0, None)
+             + 0.9 * (renta_residual &lt; 0))
+    d[&quot;impago&quot;] = (rng.random(n) &lt; 1 / (1 + np.exp(-logit))).astype(int)
+    d[&quot;dsti_real&quot;] = dsti_real
+    d[&quot;renta_residual_real&quot;] = renta_residual
+    d[&quot;muestra&quot;] = np.where(rng.random(n) &lt; 0.5, &quot;desarrollo&quot;, &quot;prueba&quot;)
+    return d
+
+
+# ---------------------------------------------------------------------------
+# 2. Variables y modelos
+# ---------------------------------------------------------------------------
+
+def matriz(d, variables):
+    &quot;&quot;&quot;Construye la matriz de entrada con las transformaciones habituales de una scorecard.&quot;&quot;&quot;
+    x = pd.DataFrame(index=d.index)
+    for v in variables:
+        if v == &quot;producto&quot;:
+            x[&quot;prod_rev&quot;] = (d[&quot;producto&quot;] == &quot;revolving&quot;).astype(int)
+            x[&quot;prod_bnpl&quot;] = (d[&quot;producto&quot;] == &quot;bnpl&quot;).astype(int)
+        elif v == &quot;contrato&quot;:
+            for c in [&quot;temporal&quot;, &quot;autonomo&quot;, &quot;pensionista&quot;]:
+                x[&quot;contrato_&quot; + c] = (d[&quot;contrato&quot;] == c).astype(int)
+        elif v == &quot;edad&quot;:
+            x[&quot;edad_menor_25&quot;] = (d[&quot;edad&quot;] &lt; 25).astype(int)
+            x[&quot;edad_25_35&quot;] = ((d[&quot;edad&quot;] &gt;= 25) &amp; (d[&quot;edad&quot;] &lt; 35)).astype(int)
+            x[&quot;edad_mayor_60&quot;] = (d[&quot;edad&quot;] &gt;= 60).astype(int)
+        elif v in (&quot;ingresos_declarados&quot;, &quot;ob_ingresos&quot;):
+            x[&quot;log_&quot; + v] = np.log(d[v].clip(300))
+        elif v == &quot;dti_existente&quot;:
+            x[v] = (d[&quot;cuotas_existentes&quot;] / d[&quot;ingresos_declarados&quot;]).clip(0, 1.5)
+        elif v == &quot;dsti_declarado&quot;:
+            x[v] = ((d[&quot;cuotas_existentes&quot;] + d[&quot;cuota_nueva&quot;]) / d[&quot;ingresos_declarados&quot;]).clip(0, 1.5)
+        elif v == &quot;dsti_ob&quot;:
+            x[v] = ((d[&quot;cuotas_existentes&quot;] + d[&quot;cuota_nueva&quot;]) / d[&quot;ob_ingresos&quot;]).clip(0, 1.5)
+        elif v == &quot;antig_empleo_m&quot;:
+            x[&quot;log_antig_empleo&quot;] = np.log1p(d[v])
+        elif v == &quot;meses_historial&quot;:
+            x[&quot;historial_120&quot;] = d[v].clip(0, 120)
+        else:
+            x[v] = d[v]
+    return x
+
+
+COMUNES = [&quot;producto&quot;, &quot;edad&quot;, &quot;contrato&quot;, &quot;antig_empleo_m&quot;, &quot;zona&quot;, &quot;meses_historial&quot;,
+           &quot;incidencias&quot;, &quot;consultas_6m&quot;, &quot;utilizacion&quot;, &quot;dti_existente&quot;]
+VARS_ACTUAL = COMUNES + [&quot;ingresos_declarados&quot;, &quot;senal_redes&quot;, &quot;extranjero&quot;, &quot;gama_alta&quot;]
+VARS_LIMPIO = COMUNES + [&quot;ingresos_declarados&quot;]
+VARS_OB = [v for v in COMUNES if v != &quot;dti_existente&quot;] + [
+    &quot;ob_ingresos&quot;, &quot;ob_dias_descubierto&quot;, &quot;ob_devoluciones&quot;, &quot;ob_ratio_gasto&quot;]
+
+
+def entrenar(d, variables, filtro=None):
+    &quot;&quot;&quot;Regresión logística sobre la muestra de desarrollo (o un subconjunto).&quot;&quot;&quot;
+    des = d[d[&quot;muestra&quot;] == &quot;desarrollo&quot;]
+    if filtro is not None:
+        des = des[filtro.loc[des.index]]
+    modelo = make_pipeline(StandardScaler(), LogisticRegression(max_iter=2000, C=1.0))
+    modelo.fit(matriz(des, variables), des[&quot;impago&quot;])
+    return modelo
+
+
+def puntuar(modelo, d, variables):
+    return modelo.predict_proba(matriz(d, variables))[:, 1]
+
+
+def gini(y, pd_):
+    return 2 * roc_auc_score(y, pd_) - 1
+
+
+def corte_por_aprobacion(pd_, tasa):
+    &quot;&quot;&quot;Umbral de PD que aprueba la proporción `tasa` de solicitudes.&quot;&quot;&quot;
+    return np.quantile(pd_, tasa)
+
+
+def aprobacion_a_igual_morosidad(y, pd_, mora_objetivo):
+    &quot;&quot;&quot;Máxima tasa de aprobación cuya morosidad de aprobados no supera la objetivo.&quot;&quot;&quot;
+    orden = np.argsort(pd_)
+    y_ord = np.asarray(y)[orden]
+    mora_acum = np.cumsum(y_ord) / np.arange(1, len(y_ord) + 1)
+    validos = np.where(mora_acum &lt;= mora_objetivo)[0]
+    return (validos.max() + 1) / len(y_ord) if len(validos) else 0.0
+
+
+def pct(x, dec=1):
+    return f&quot;{100 * x:.{dec}f} %&quot;.replace(&quot;.&quot;, &quot;,&quot;)
+
+
+def pp(x):
+    &quot;&quot;&quot;Diferencia en puntos porcentuales con signo y coma decimal.&quot;&quot;&quot;
+    return f&quot;{100 * x:+.1f} p.&quot;.replace(&quot;.&quot;, &quot;,&quot;, 1)
+
+
+def num(x, dec=0):
+    s = f&quot;{x:,.{dec}f}&quot;
+    return s.replace(&quot;,&quot;, &quot;X&quot;).replace(&quot;.&quot;, &quot;,&quot;).replace(&quot;X&quot;, &quot;.&quot;)
+
+
+# ---------------------------------------------------------------------------
+# 3. Regla de capacidad de pago
+# ---------------------------------------------------------------------------
+
+def gastos_baremo(d):
+    &quot;&quot;&quot;Gasto mínimo de vida mensual por hogar: baremo sintético, no una cifra del INE.&quot;&quot;&quot;
+    return 450 + 150 * (d[&quot;miembros_hogar&quot;] - 1)
+
+
+def regla_capacidad(d, ingresos, dsti_max=0.40, proporcional=False):
+    &quot;&quot;&quot;True si la solicitud pasa la regla de capacidad de pago.
+
+    Dos condiciones: cuotas totales sobre ingresos (DSTI) no superior a `dsti_max` y renta
+    residual no negativa tras gastos de baremo, cuotas existentes y cuota nueva. En la versión
+    proporcional, los BNPL de hasta 300 EUR y las tarjetas de hasta 1.500 EUR solo comprueban
+    un DSTI de hasta el 50 %, sin baremo de gastos.
+    &quot;&quot;&quot;
+    dsti = (d[&quot;cuotas_existentes&quot;] + d[&quot;cuota_nueva&quot;]) / ingresos
+    residual = ingresos - gastos_baremo(d) - d[&quot;cuotas_existentes&quot;] - d[&quot;cuota_nueva&quot;]
+    pasa = (dsti &lt;= dsti_max) &amp; (residual &gt;= 0)
+    if proporcional:
+        pequeno = ((d[&quot;producto&quot;] == &quot;bnpl&quot;) &amp; (d[&quot;importe&quot;] &lt;= 300)) | \
+                  ((d[&quot;producto&quot;] == &quot;revolving&quot;) &amp; (d[&quot;importe&quot;] &lt;= 1500))
+        pasa = np.where(pequeno, dsti &lt;= 0.50, pasa)
+    return pd.Series(pasa, index=d.index).astype(bool)
+
+
+# ---------------------------------------------------------------------------
+# 4. Ejecución
+# ---------------------------------------------------------------------------
+
+def titulo(t):
+    print(&quot;\n&quot; + t)
+    print(&quot;-&quot; * len(t))
+
+
+def main():
+    d = generar_cartera()
+    p = d[d[&quot;muestra&quot;] == &quot;prueba&quot;].copy()
+    y = p[&quot;impago&quot;].to_numpy()
+
+    titulo(&quot;0. Cartera sintética&quot;)
+    print(f&quot;Solicitudes: {num(len(d))} (desarrollo {num((d[&#x27;muestra&#x27;] == &#x27;desarrollo&#x27;).sum())}, &quot;
+          f&quot;prueba {num(len(p))})&quot;)
+    for prod in PRODUCTOS:
+        s = d[d[&quot;producto&quot;] == prod]
+        print(f&quot;  {prod:10} {pct(len(s) / len(d))} de las solicitudes · importe medio &quot;
+              f&quot;{num(s[&#x27;importe&#x27;].mean())} EUR · cuota media {num(s[&#x27;cuota_nueva&#x27;].mean())} EUR · &quot;
+              f&quot;impago a 12 meses (todas las solicitudes) {pct(s[&#x27;impago&#x27;].mean())}&quot;)
+    print(f&quot;  Total: impago medio de las solicitudes {pct(d[&#x27;impago&#x27;].mean())}; &quot;
+          f&quot;extranjeros {pct(d[&#x27;extranjero&#x27;].mean())}; consienten open banking &quot;
+          f&quot;{pct(d[&#x27;consiente_ob&#x27;].mean())}&quot;)
+
+    # (a) Modelo actual y retirada de variables -----------------------------------
+    m_act = entrenar(d, VARS_ACTUAL)
+    pd_act = puntuar(m_act, p, VARS_ACTUAL)
+    g_act = gini(y, pd_act)
+    corte = corte_por_aprobacion(pd_act, APROBACION_REFERENCIA)
+    aprob = pd_act &lt;= corte
+    mora_obj = y[aprob].mean()
+
+    titulo(&quot;a) Retirada de variables prohibidas o en duda&quot;)
+    print(f&quot;Modelo actual (14 variables): Gini {pct(g_act)}; aprobando el &quot;
+          f&quot;{pct(APROBACION_REFERENCIA, 0)}, morosidad de aprobados {pct(mora_obj, 2)}&quot;)
+    print(&quot;Esa morosidad es la referencia: cada modelo se compara por la aprobación que alcanza sin superarla.&quot;)
+
+    filas = [(&quot;Actual&quot;, VARS_ACTUAL)]
+    for v, nombre in [(&quot;senal_redes&quot;, &quot;sin señal de redes sociales&quot;),
+                      (&quot;extranjero&quot;, &quot;sin nacionalidad&quot;),
+                      (&quot;gama_alta&quot;, &quot;sin gama del dispositivo&quot;)]:
+        filas.append((nombre, [x for x in VARS_ACTUAL if x != v]))
+    filas.append((&quot;Limpio (sin las tres)&quot;, VARS_LIMPIO))
+    filas.append((&quot;Limpio y sin edad (sensibilidad)&quot;, [x for x in VARS_LIMPIO if x != &quot;edad&quot;]))
+    resultados_a = {}
+    for nombre, vars_ in filas:
+        m = m_act if nombre == &quot;Actual&quot; else entrenar(d, vars_)
+        pd_ = puntuar(m, p, vars_)
+        g = gini(y, pd_)
+        ap = aprobacion_a_igual_morosidad(y, pd_, mora_obj)
+        resultados_a[nombre] = (g, ap, m, pd_)
+        print(f&quot;  {nombre:33} Gini {pct(g)} ({pp(g - g_act)})  aprobación a igual &quot;
+              f&quot;morosidad {pct(ap)} ({pp(ap - APROBACION_REFERENCIA)})&quot;)
+
+    g_lim, ap_lim, m_lim, pd_lim = resultados_a[&quot;Limpio (sin las tres)&quot;]
+    # Retirada sin reentrenar: se pone la variable a su media (lo que hace quien &quot;apaga&quot; la variable).
+    p_neutra = p.copy()
+    des = d[d[&quot;muestra&quot;] == &quot;desarrollo&quot;]
+    for v in [&quot;senal_redes&quot;, &quot;extranjero&quot;, &quot;gama_alta&quot;]:
+        p_neutra[v] = des[v].mean()
+    pd_neutra = puntuar(m_act, p_neutra, VARS_ACTUAL)
+    g_neutra = gini(y, pd_neutra)
+    print(f&quot;  {&#x27;Apagadas sin reentrenar&#x27;:33} Gini {pct(g_neutra)} ({pp(g_neutra - g_act)})  &quot;
+          f&quot;aprobación a igual morosidad {pct(aprobacion_a_igual_morosidad(y, pd_neutra, mora_obj))}; &quot;
+          f&quot;con el corte actual, morosidad {pct(y[pd_neutra &lt;= corte].mean(), 2)}&quot;)
+    # Si se mantiene el corte de PD del modelo actual con el modelo limpio:
+    aprob_lim_mismo_corte = pd_lim &lt;= corte
+    print(f&quot;  Limpio con el mismo corte de PD que el actual: aprobación &quot;
+          f&quot;{pct(aprob_lim_mismo_corte.mean())}, morosidad {pct(y[aprob_lim_mismo_corte].mean(), 2)}&quot;)
+    coincide = (aprob == (pd_lim &lt;= corte_por_aprobacion(pd_lim, APROBACION_REFERENCIA))).mean()
+    print(f&quot;  Al 70 % de aprobación, el modelo actual y el limpio coinciden en el {pct(coincide)} &quot;
+          f&quot;de las decisiones (el resto son cambios de sentido)&quot;)
+
+    # (b) Regla de capacidad de pago ----------------------------------------------
+    titulo(&quot;b) Regla de capacidad de pago (DSTI &lt;= 40 % y renta residual &gt;= 0, sobre el modelo limpio)&quot;)
+    corte_lim = corte_por_aprobacion(pd_lim, APROBACION_REFERENCIA)
+    ap_score = pd_lim &lt;= corte_lim
+    regla_decl = regla_capacidad(p, p[&quot;ingresos_declarados&quot;]).to_numpy()
+    regla_prop = regla_capacidad(p, p[&quot;ingresos_declarados&quot;], proporcional=True).to_numpy()
+    regla_ob = regla_capacidad(p, p[&quot;ob_ingresos&quot;]).to_numpy()
+    print(f&quot;Solo scorecard limpia: aprobación {pct(ap_score.mean())}, morosidad {pct(y[ap_score].mean(), 2)}&quot;)
+    for nombre, regla in [(&quot;Secuencial, ingresos declarados&quot;, regla_decl),
+                          (&quot;Secuencial, proporcional por importe&quot;, regla_prop),
+                          (&quot;Secuencial, ingresos verificados (cuentas)&quot;, regla_ob)]:
+        ap = ap_score &amp; regla
+        caen = ap_score &amp; ~regla
+        print(f&quot;  {nombre:42} aprobación {pct(ap.mean())} ({pp(ap.mean() - ap_score.mean())}), &quot;
+              f&quot;morosidad {pct(y[ap].mean(), 2)}; caen {pct(caen.mean())} de las solicitudes con &quot;
+              f&quot;morosidad {pct(y[caen].mean(), 1)}&quot;)
+    caen = ap_score &amp; ~regla_decl
+    quedan = ap_score &amp; regla_decl
+    print(&quot;  Quién se cae con la regla estricta (frente a quien sigue aprobado):&quot;)
+    perfil = pd.DataFrame({
+        &quot;caen&quot;: [p.loc[caen, &quot;ingresos_declarados&quot;].median(), p.loc[caen, &quot;edad&quot;].mean(),
+                 (p.loc[caen, &quot;contrato&quot;] == &quot;temporal&quot;).mean(), p.loc[caen, &quot;miembros_hogar&quot;].mean(),
+                 (p.loc[caen, &quot;cuotas_existentes&quot;] / p.loc[caen, &quot;ingresos_declarados&quot;]).median()],
+        &quot;siguen&quot;: [p.loc[quedan, &quot;ingresos_declarados&quot;].median(), p.loc[quedan, &quot;edad&quot;].mean(),
+                   (p.loc[quedan, &quot;contrato&quot;] == &quot;temporal&quot;).mean(), p.loc[quedan, &quot;miembros_hogar&quot;].mean(),
+                   (p.loc[quedan, &quot;cuotas_existentes&quot;] / p.loc[quedan, &quot;ingresos_declarados&quot;]).median()]},
+        index=[&quot;ingreso declarado mediano&quot;, &quot;edad media&quot;, &quot;temporales&quot;, &quot;miembros del hogar&quot;,
+               &quot;DTI existente mediano&quot;])
+    for idx, r in perfil.iterrows():
+        if idx in (&quot;temporales&quot;,):
+            print(f&quot;    {idx:28} {pct(r[&#x27;caen&#x27;])} frente a {pct(r[&#x27;siguen&#x27;])}&quot;)
+        elif idx == &quot;DTI existente mediano&quot;:
+            print(f&quot;    {idx:28} {pct(r[&#x27;caen&#x27;])} frente a {pct(r[&#x27;siguen&#x27;])}&quot;)
+        else:
+            print(f&quot;    {idx:28} {num(r[&#x27;caen&#x27;], 1)} frente a {num(r[&#x27;siguen&#x27;], 1)}&quot;)
+    print(&quot;  Caída de aprobación por producto (estricta / proporcional):&quot;)
+    for prod in PRODUCTOS:
+        mk = (p[&quot;producto&quot;] == prod).to_numpy()
+        base_ap = ap_score[mk].mean()
+        print(f&quot;    {prod:10} {pct(base_ap)} -&gt; {pct((ap_score &amp; regla_decl)[mk].mean())} / &quot;
+              f&quot;{pct((ap_score &amp; regla_prop)[mk].mean())}&quot;)
+    # Pasan con ingresos declarados y no con los verificados.
+    solo_decl = ap_score &amp; regla_decl &amp; ~regla_ob
+    print(f&quot;  Aprobados por score que pasan con ingreso declarado y no con el verificado: &quot;
+          f&quot;{pct(solo_decl.sum() / max((ap_score &amp; regla_decl).sum(), 1))} de los que pasan; &quot;
+          f&quot;su morosidad {pct(y[solo_decl].mean(), 1)}&quot;)
+
+    # Integrada: DSTI de la nueva operación como variable del modelo.
+    vars_int = VARS_LIMPIO + [&quot;dsti_declarado&quot;]
+    m_int = entrenar(d, vars_int)
+    pd_int = puntuar(m_int, p, vars_int)
+    g_int = gini(y, pd_int)
+    ap_int = aprobacion_a_igual_morosidad(y, pd_int, mora_obj)
+    print(f&quot;  Integrada (DSTI dentro del modelo): Gini {pct(g_int)} ({pp(g_int - g_lim)} &quot;
+          f&quot;sobre el limpio), aprobación a igual morosidad {pct(ap_int)}&quot;)
+    # Morosidad de la combinación secuencial al mismo volumen que la integrada a igual mora.
+    ap_seq = ap_score &amp; regla_decl
+    print(f&quot;  Secuencial: aprobación {pct(ap_seq.mean())} con morosidad {pct(y[ap_seq].mean(), 2)}; &quot;
+          f&quot;la integrada, a esa misma aprobación, tiene morosidad &quot;
+          f&quot;{pct(y[pd_int &lt;= corte_por_aprobacion(pd_int, ap_seq.mean())].mean(), 2)}&quot;)
+    # Integrada + regla como suelo (lo que se recomienda en el texto).
+    ap_int_corte = pd_int &lt;= corte_por_aprobacion(pd_int, APROBACION_REFERENCIA)
+    ap_int_regla = ap_int_corte &amp; regla_prop
+    print(f&quot;  Integrada al 70 % + regla proporcional como suelo: aprobación {pct(ap_int_regla.mean())}, &quot;
+          f&quot;morosidad {pct(y[ap_int_regla].mean(), 2)}&quot;)
+
+    # (c) Open banking ------------------------------------------------------------
+    titulo(&quot;c) Variables de movimientos de cuenta (open banking)&quot;)
+    vars_ob = VARS_OB + [&quot;dsti_ob&quot;]
+    m_ob = entrenar(d, vars_ob)
+    pd_ob = puntuar(m_ob, p, vars_ob)
+    g_ob = gini(y, pd_ob)
+    ap_ob = aprobacion_a_igual_morosidad(y, pd_ob, mora_obj)
+    print(f&quot;  Cobertura total (todos comparten): Gini {pct(g_ob)} ({pp(g_ob - g_int)} sobre la &quot;
+          f&quot;integrada; {pp(g_ob - g_act)} sobre el actual), aprobación a igual morosidad {pct(ap_ob)}&quot;)
+    cons = (p[&quot;consiente_ob&quot;] == 1).to_numpy()
+    pd_mix = np.where(cons, pd_ob, pd_int)
+    g_mix = gini(y, pd_mix)
+    ap_mix = aprobacion_a_igual_morosidad(y, pd_mix, mora_obj)
+    print(f&quot;  Cobertura parcial ({pct(cons.mean(), 0)} comparten; el resto con la integrada): Gini &quot;
+          f&quot;{pct(g_mix)}, aprobación a igual morosidad {pct(ap_mix)}&quot;)
+    print(f&quot;  Dentro de quienes comparten: Gini integrada {pct(gini(y[cons], pd_int[cons]))} frente a &quot;
+          f&quot;open banking {pct(gini(y[cons], pd_ob[cons]))}&quot;)
+
+    # (d) Evaluar con datos generados por el modelo viejo ---------------------------
+    titulo(&quot;d) Medir el modelo nuevo solo con los aprobados del modelo viejo&quot;)
+    des = d[d[&quot;muestra&quot;] == &quot;desarrollo&quot;]
+    pd_des_act = puntuar(m_act, des, VARS_ACTUAL)
+    aprob_hist = pd.Series(pd_des_act &lt;= np.quantile(pd_des_act, APROBACION_REFERENCIA), index=des.index)
+    filtro = pd.Series(False, index=d.index)
+    filtro.loc[aprob_hist.index] = aprob_hist
+    m_kgb = entrenar(d, vars_int, filtro=filtro)
+    pd_kgb = puntuar(m_kgb, p, vars_int)
+    ap_p_act = pd_act &lt;= corte
+    print(f&quot;  Modelo integrado entrenado con toda la población: Gini en toda la población {pct(g_int)}, &quot;
+          f&quot;medido solo en aprobados por el actual {pct(gini(y[ap_p_act], pd_int[ap_p_act]))}&quot;)
+    print(f&quot;  Mismo modelo entrenado solo con aprobados: Gini en toda la población {pct(gini(y, pd_kgb))}, &quot;
+          f&quot;en aprobados {pct(gini(y[ap_p_act], pd_kgb[ap_p_act]))}&quot;)
+    rech = ~ap_p_act
+    print(f&quot;  Morosidad real de los rechazados por el actual: {pct(y[rech].mean(), 1)}; PD media que les &quot;
+          f&quot;asigna el modelo entrenado solo con aprobados: {pct(pd_kgb[rech].mean(), 1)}; el de toda la &quot;
+          f&quot;población: {pct(pd_int[rech].mean(), 1)}&quot;)
+
+    # (e) Motivos de denegación y contrafactual -----------------------------------
+    titulo(&quot;e) Motivos de denegación de un solicitante (scorecard integrada, puntos PDO 20)&quot;)
+    corte_int = corte_por_aprobacion(pd_int, APROBACION_REFERENCIA)
+    x = matriz(p, vars_int)
+    esc = m_int.named_steps[&quot;standardscaler&quot;]
+    lr = m_int.named_steps[&quot;logisticregression&quot;]
+    xs = (x - esc.mean_) / esc.scale_
+    factor = 20 / np.log(2)
+    puntos = -xs * lr.coef_[0] * factor        # puntos frente al solicitante medio (positivo = mejor)
+    # Ejemplo elegido a propósito: el primer préstamo personal denegado cerca del corte, sin
+    # incidencias, cuyo motivo principal es la carga de cuotas (el caso que ilustra el cap. 22).
+    cand = p[(pd_int &gt; corte_int) &amp; (pd_int &lt; corte_int * 1.35) &amp; (p[&quot;producto&quot;] == &quot;prestamo&quot;)
+             &amp; (p[&quot;incidencias&quot;] == 0)]
+    i = next(j for j in cand.index if puntos.loc[j].idxmin() == &quot;dsti_declarado&quot;)
+    fila = p.loc[i]
+    print(f&quot;  Solicitante {i}: préstamo de {num(fila[&#x27;importe&#x27;])} EUR, cuota {num(fila[&#x27;cuota_nueva&#x27;])} EUR, &quot;
+          f&quot;ingreso declarado {num(fila[&#x27;ingresos_declarados&#x27;])} EUR, edad {int(fila[&#x27;edad&#x27;])}, &quot;
+          f&quot;contrato {fila[&#x27;contrato&#x27;]}, antigüedad {int(fila[&#x27;antig_empleo_m&#x27;])} meses&quot;)
+    pd_i = pd_int[p.index.get_loc(i)]
+    print(f&quot;  PD estimada {pct(pd_i, 2)} frente a un corte de {pct(corte_int, 2)}&quot;)
+    pts = puntos.loc[i].sort_values()
+    print(&quot;  Tres variables que más restan frente al solicitante medio:&quot;)
+    for var, v in pts.head(3).items():
+        print(f&quot;    {var:22} {v:+.0f} puntos&quot;)
+    print(f&quot;  Regla de capacidad (proporcional) con el importe solicitado: &quot;
+          f&quot;{&#x27;pasa&#x27; if regla_prop[p.index.get_loc(i)] else &#x27;no pasa&#x27;}&quot;)
+    # Contrafactual: mayor importe, en pasos del 5 %, con el que se aprobaría (mismo plazo):
+    # tiene que quedar por debajo del corte de PD y pasar la regla de capacidad de pago.
+    for factor_imp in np.arange(0.95, 0.20, -0.05):
+        q = p.loc[[i]].copy()
+        q[&quot;importe&quot;] = fila[&quot;importe&quot;] * factor_imp
+        q[&quot;cuota_nueva&quot;] = fila[&quot;cuota_nueva&quot;] * factor_imp
+        if (puntuar(m_int, q, vars_int)[0] &lt;= corte_int
+                and regla_capacidad(q, q[&quot;ingresos_declarados&quot;], proporcional=True).iloc[0]):
+            print(f&quot;  Contrafactual: con un importe de {num(q[&#x27;importe&#x27;].iloc[0], 0)} EUR &quot;
+                  f&quot;({pct(factor_imp, 0)} del solicitado) la solicitud se aprobaría&quot;)
+            break
+    else:
+        print(&quot;  Contrafactual: reducir el importe no basta para aprobar&quot;)
+
+    # (f) Esfuerzo del programa ------------------------------------------------------
+    titulo(&quot;f) Esfuerzo del programa de modelos (supuestos del autor, persona-mes)&quot;)
+    print(f&quot;  {&#x27;Frente de trabajo&#x27;:56} {&#x27;grande&#x27;:&gt;7} {&#x27;pequeña&#x27;:&gt;8}&quot;)
+    tot_g = tot_p = 0.0
+    for frente, g_pm, p_pm in ESFUERZO:
+        tot_g += g_pm
+        tot_p += p_pm
+        print(f&quot;  {frente:56} {num(g_pm, 1):&gt;7} {num(p_pm, 1):&gt;8}&quot;)
+    print(f&quot;  {&#x27;Total persona-mes&#x27;:56} {num(tot_g, 1):&gt;7} {num(tot_p, 1):&gt;8}&quot;)
+    print(f&quot;  Coste a {num(COSTE_PM[&#x27;grande&#x27;])} / {num(COSTE_PM[&#x27;pequena&#x27;])} EUR por persona-mes: &quot;
+          f&quot;{num(tot_g * COSTE_PM[&#x27;grande&#x27;] / 1e6, 2)} M EUR / {num(tot_p * COSTE_PM[&#x27;pequena&#x27;] / 1e6, 2)} M EUR &quot;
+          f&quot;(sin licencias ni motor de decisión)&quot;)
+
+    titulo(&quot;Resumen&quot;)
+    print(f&quot;  Gini: actual {pct(g_act)} · limpio {pct(g_lim)} · integrado {pct(g_int)} · &quot;
+          f&quot;open banking total {pct(g_ob)} · parcial {pct(g_mix)}&quot;)
+    print(f&quot;  Aprobación a la morosidad de referencia ({pct(mora_obj, 2)}): actual {pct(APROBACION_REFERENCIA, 0)} · &quot;
+          f&quot;limpio {pct(ap_lim)} · integrado {pct(ap_int)} · open banking total {pct(ap_ob)} · parcial {pct(ap_mix)}&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre>
+<h3>Salida de la ejecución</h3>
+<pre class="salida">
+0. Cartera sintética
+--------------------
+Solicitudes: 300.000 (desarrollo 150.391, prueba 149.609)
+  revolving  34,9 % de las solicitudes · importe medio 2.509 EUR · cuota media 52 EUR · impago a 12 meses (todas las solicitudes) 9,7 %
+  prestamo   39,9 % de las solicitudes · importe medio 10.972 EUR · cuota media 235 EUR · impago a 12 meses (todas las solicitudes) 9,4 %
+  bnpl       25,1 % de las solicitudes · importe medio 520 EUR · cuota media 117 EUR · impago a 12 meses (todas las solicitudes) 10,2 %
+  Total: impago medio de las solicitudes 9,7 %; extranjeros 14,0 %; consienten open banking 53,4 %
+
+a) Retirada de variables prohibidas o en duda
+---------------------------------------------
+Modelo actual (14 variables): Gini 63,8 %; aprobando el 70 %, morosidad de aprobados 3,64 %
+Esa morosidad es la referencia: cada modelo se compara por la aprobación que alcanza sin superarla.
+  Actual                            Gini 63,8 % (+0,0 p.)  aprobación a igual morosidad 70,0 % (+0,0 p.)
+  sin señal de redes sociales       Gini 62,6 % (-1,2 p.)  aprobación a igual morosidad 68,2 % (-1,8 p.)
+  sin nacionalidad                  Gini 63,8 % (+0,0 p.)  aprobación a igual morosidad 70,0 % (-0,0 p.)
+  sin gama del dispositivo          Gini 63,7 % (-0,1 p.)  aprobación a igual morosidad 70,0 % (+0,0 p.)
+  Limpio (sin las tres)             Gini 62,5 % (-1,3 p.)  aprobación a igual morosidad 68,3 % (-1,7 p.)
+  Limpio y sin edad (sensibilidad)  Gini 62,5 % (-1,3 p.)  aprobación a igual morosidad 68,2 % (-1,8 p.)
+  Apagadas sin reentrenar           Gini 62,3 % (-1,5 p.)  aprobación a igual morosidad 68,1 %; con el corte actual, morosidad 3,98 %
+  Limpio con el mismo corte de PD que el actual: aprobación 69,8 %, morosidad 3,78 %
+  Al 70 % de aprobación, el modelo actual y el limpio coinciden en el 94,4 % de las decisiones (el resto son cambios de sentido)
+
+b) Regla de capacidad de pago (DSTI &lt;= 40 % y renta residual &gt;= 0, sobre el modelo limpio)
+------------------------------------------------------------------------------------------
+Solo scorecard limpia: aprobación 70,0 %, morosidad 3,79 %
+  Secuencial, ingresos declarados            aprobación 63,9 % (-6,1 p.), morosidad 3,50 %; caen 6,1 % de las solicitudes con morosidad 6,8 %
+  Secuencial, proporcional por importe       aprobación 64,4 % (-5,6 p.), morosidad 3,53 %; caen 5,6 % de las solicitudes con morosidad 6,8 %
+  Secuencial, ingresos verificados (cuentas) aprobación 62,5 % (-7,5 p.), morosidad 3,41 %; caen 7,5 % de las solicitudes con morosidad 6,9 %
+  Quién se cae con la regla estricta (frente a quien sigue aprobado):
+    ingreso declarado mediano    1.379,0 frente a 2.044,0
+    edad media                   41,6 frente a 43,1
+    temporales                   17,8 % frente a 13,7 %
+    miembros del hogar           2,9 frente a 2,5
+    DTI existente mediano        22,8 % frente a 5,1 %
+  Caída de aprobación por producto (estricta / proporcional):
+    revolving  69,5 % -&gt; 66,7 % / 67,5 %
+    prestamo   71,5 % -&gt; 61,8 % / 61,8 %
+    bnpl       68,3 % -&gt; 63,3 % / 64,1 %
+  Aprobados por score que pasan con ingreso declarado y no con el verificado: 2,9 % de los que pasan; su morosidad 6,9 %
+  Integrada (DSTI dentro del modelo): Gini 63,1 % (+0,6 p. sobre el limpio), aprobación a igual morosidad 69,0 %
+  Secuencial: aprobación 63,9 % con morosidad 3,50 %; la integrada, a esa misma aprobación, tiene morosidad 3,27 %
+  Integrada al 70 % + regla proporcional como suelo: aprobación 65,0 %, morosidad 3,59 %
+
+c) Variables de movimientos de cuenta (open banking)
+----------------------------------------------------
+  Cobertura total (todos comparten): Gini 67,5 % (+4,3 p. sobre la integrada; +3,7 p. sobre el actual), aprobación a igual morosidad 74,5 %
+  Cobertura parcial (53 % comparten; el resto con la integrada): Gini 65,5 %, aprobación a igual morosidad 71,8 %
+  Dentro de quienes comparten: Gini integrada 62,9 % frente a open banking 67,3 %
+
+d) Medir el modelo nuevo solo con los aprobados del modelo viejo
+----------------------------------------------------------------
+  Modelo integrado entrenado con toda la población: Gini en toda la población 63,1 %, medido solo en aprobados por el actual 36,7 %
+  Mismo modelo entrenado solo con aprobados: Gini en toda la población 63,0 %, en aprobados 36,8 %
+  Morosidad real de los rechazados por el actual: 23,7 %; PD media que les asigna el modelo entrenado solo con aprobados: 20,5 %; el de toda la población: 23,1 %
+
+e) Motivos de denegación de un solicitante (scorecard integrada, puntos PDO 20)
+-------------------------------------------------------------------------------
+  Solicitante 4: préstamo de 28.200 EUR, cuota 467 EUR, ingreso declarado 1.282 EUR, edad 24, contrato temporal, antigüedad 5 meses
+  PD estimada 10,21 % frente a un corte de 9,42 %
+  Tres variables que más restan frente al solicitante medio:
+    dsti_declarado         -28 puntos
+    contrato_temporal      -12 puntos
+    log_antig_empleo       -6 puntos
+  Regla de capacidad (proporcional) con el importe solicitado: no pasa
+  Contrafactual: con un importe de 18.330 EUR (65 % del solicitado) la solicitud se aprobaría
+
+f) Esfuerzo del programa de modelos (supuestos del autor, persona-mes)
+----------------------------------------------------------------------
+  Frente de trabajo                                         grande  pequeña
+  Diagnóstico e inventario de modelos, reglas y variables      6,0      1,5
+  Reentrenamiento y validación de scorecards                  30,0      5,0
+  Regla de capacidad de pago y estimación de gastos            8,0      2,0
+  Integración y variables de open banking                     12,0      3,0
+  Motivos de denegación, explicaciones y revisión humana      10,0      3,0
+  Pruebas de sesgo y gobierno del dato                         6,0      1,5
+  Impacto en IRB, IFRS 9, pricing y stress test               12,0      1,0
+  Documentación (art. 18.4 CCD2 y AI Act)                      8,0      2,0
+  Total persona-mes                                           92,0     19,0
+  Coste a 13.000 / 11.000 EUR por persona-mes: 1,20 M EUR / 0,21 M EUR (sin licencias ni motor de decisión)
+
+Resumen
+-------
+  Gini: actual 63,8 % · limpio 62,5 % · integrado 63,1 % · open banking total 67,5 % · parcial 65,5 %
+  Aprobación a la morosidad de referencia (3,64 %): actual 70 % · limpio 68,3 % · integrado 69,0 % · open banking total 74,5 % · parcial 71,8 %
+</pre>
+<hr/>
+
+<h2 id="S3">Anexo S3 · Prueba de sesgo sobre la <i>scorecard</i> de S2</h2>
+<p>Reutiliza la cartera y los modelos de S2. Mide si la nacionalidad se reconstruye a partir de otras variables, la disparidad de aprobación con y sin la variable, el efecto de retirar la zona postal y la calibración por grupo.</p>
+<p class="small">Se usa en: caps. 24 y 32. Ejecución: <code>.venv/bin/python -I anexos/s3_sesgo.py</code>.</p>
+<h3>s3_sesgo.py</h3>
+<pre><code>&quot;&quot;&quot;S3 · Pruebas de sesgo y disparidad sobre la scorecard de S2.
+
+Anexo de código del Manual de crédito al consumo (caps. 24 y 32). Usa la misma cartera
+sintética y los mismos modelos de `s2_scorecard.py` y mide, para un atributo protegido
+sintético (nacionalidad extranjera, que el art. 6 CCD2 nombra expresamente):
+
+  1. cuánto del atributo se puede reconstruir desde las variables del modelo (prueba de proxy);
+  2. disparidad de resultados con el corte al 70 % de aprobación: tasa de aprobación por grupo
+     y su cociente, igualdad de oportunidades (aprobación entre quienes no impagan) y
+     morosidad de los aprobados por grupo;
+  3. calibración por grupo: PD media estimada frente a impago observado, global y por tramo;
+  4. qué cuesta en Gini y qué gana en disparidad retirar la variable proxy (zona postal).
+
+Todo es sintético. La nacionalidad no tiene efecto causal directo en el impago en el modelo
+generador: su relación con el impago pasa por la situación laboral, el historial y la renta.
+
+Uso:  .venv/bin/python -I anexos/s3_sesgo.py      (desde la raíz del proyecto)
+&quot;&quot;&quot;
+import sys
+from pathlib import Path
+
+import numpy as np
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_auc_score
+from sklearn.pipeline import make_pipeline
+from sklearn.preprocessing import StandardScaler
+
+# Con -I Python no añade la carpeta del script a la ruta: se añade a mano para importar S2.
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import s2_scorecard as s2  # noqa: E402
+
+APROBACION = s2.APROBACION_REFERENCIA
+
+
+def auc_atributo(d, variables):
+    &quot;&quot;&quot;AUC de predecir la nacionalidad con las variables dadas (0,5 = no la revelan).&quot;&quot;&quot;
+    des = d[d[&quot;muestra&quot;] == &quot;desarrollo&quot;]
+    pru = d[d[&quot;muestra&quot;] == &quot;prueba&quot;]
+    m = make_pipeline(StandardScaler(), LogisticRegression(max_iter=2000))
+    m.fit(s2.matriz(des, variables), des[&quot;extranjero&quot;])
+    return roc_auc_score(pru[&quot;extranjero&quot;], m.predict_proba(s2.matriz(pru, variables))[:, 1])
+
+
+def metricas_grupo(p, pd_, corte):
+    y = p[&quot;impago&quot;].to_numpy()
+    g = p[&quot;extranjero&quot;].to_numpy()
+    ap = pd_ &lt;= corte
+    r = {}
+    for k, nombre in [(0, &quot;nacionales&quot;), (1, &quot;extranjeros&quot;)]:
+        m = g == k
+        buenos = m &amp; (y == 0)
+        r[nombre] = {
+            &quot;aprobacion&quot;: ap[m].mean(),
+            &quot;aprob_buenos&quot;: ap[buenos].mean(),
+            &quot;mora_aprobados&quot;: y[m &amp; ap].mean(),
+            &quot;pd_media&quot;: pd_[m].mean(),
+            &quot;impago_obs&quot;: y[m].mean(),
+        }
+    return r
+
+
+def calibracion_por_tramo(p, pd_, n_tramos=10):
+    &quot;&quot;&quot;Diferencia máxima entre impago observado y PD media por grupo dentro de cada tramo.&quot;&quot;&quot;
+    y = p[&quot;impago&quot;].to_numpy()
+    g = p[&quot;extranjero&quot;].to_numpy()
+    tramos = np.quantile(pd_, np.linspace(0, 1, n_tramos + 1))
+    idx = np.clip(np.searchsorted(tramos, pd_, side=&quot;right&quot;) - 1, 0, n_tramos - 1)
+    filas = []
+    for t in range(n_tramos):
+        fila = [t + 1]
+        for k in (0, 1):
+            m = (idx == t) &amp; (g == k)
+            fila += [pd_[m].mean(), y[m].mean(), m.sum()]
+        filas.append(fila)
+    return filas
+
+
+def main():
+    d = s2.generar_cartera()
+    p = d[d[&quot;muestra&quot;] == &quot;prueba&quot;].copy()
+    y = p[&quot;impago&quot;].to_numpy()
+
+    s2.titulo(&quot;0. El atributo protegido en la cartera sintética&quot;)
+    for k, nombre in [(0, &quot;nacionales&quot;), (1, &quot;extranjeros&quot;)]:
+        m = p[&quot;extranjero&quot;] == k
+        print(f&quot;  {nombre:12} {s2.pct(m.mean())} de las solicitudes · impago observado &quot;
+              f&quot;{s2.pct(p.loc[m, &#x27;impago&#x27;].mean())} · temporales {s2.pct((p.loc[m, &#x27;contrato&#x27;] == &#x27;temporal&#x27;).mean())} &quot;
+              f&quot;· historial mediano {int(p.loc[m, &#x27;meses_historial&#x27;].median())} meses · zona media &quot;
+              f&quot;{s2.num(p.loc[m, &#x27;zona&#x27;].mean(), 1)}&quot;)
+
+    s2.titulo(&quot;1. Prueba de proxy: ¿cuánto revelan las variables la nacionalidad? (AUC)&quot;)
+    vars_int = s2.VARS_LIMPIO + [&quot;dsti_declarado&quot;]
+    vars_sin_zona = [v for v in vars_int if v != &quot;zona&quot;]
+    for nombre, vars_ in [(&quot;solo zona postal&quot;, [&quot;zona&quot;]),
+                          (&quot;solo meses de historial&quot;, [&quot;meses_historial&quot;]),
+                          (&quot;solo tipo de contrato&quot;, [&quot;contrato&quot;]),
+                          (&quot;todas las del modelo integrado&quot;, vars_int),
+                          (&quot;todas menos la zona&quot;, vars_sin_zona)]:
+        print(f&quot;  {nombre:34} AUC {s2.num(auc_atributo(d, vars_), 3)}&quot;)
+
+    s2.titulo(&quot;2. Disparidad de resultados con el corte al 70 % de aprobación&quot;)
+    modelos = [(&quot;Actual (con nacionalidad)&quot;, s2.VARS_ACTUAL),
+               (&quot;Integrado (sin nacionalidad)&quot;, vars_int),
+               (&quot;Integrado sin zona postal&quot;, vars_sin_zona)]
+    resumen = []
+    for nombre, vars_ in modelos:
+        m = s2.entrenar(d, vars_)
+        pd_ = s2.puntuar(m, p, vars_)
+        corte = s2.corte_por_aprobacion(pd_, APROBACION)
+        r = metricas_grupo(p, pd_, corte)
+        nac, ext = r[&quot;nacionales&quot;], r[&quot;extranjeros&quot;]
+        air = ext[&quot;aprobacion&quot;] / nac[&quot;aprobacion&quot;]
+        eo = ext[&quot;aprob_buenos&quot;] - nac[&quot;aprob_buenos&quot;]
+        g = s2.gini(y, pd_)
+        resumen.append((nombre, g, air, eo, pd_, vars_))
+        print(f&quot;\n  {nombre}  (Gini {s2.pct(g)})&quot;)
+        print(f&quot;    aprobación          nacionales {s2.pct(nac[&#x27;aprobacion&#x27;])} · extranjeros &quot;
+              f&quot;{s2.pct(ext[&#x27;aprobacion&#x27;])} · cociente {s2.num(air, 2)}&quot;)
+        print(f&quot;    aprobación de quienes no impagan (igualdad de oportunidades): &quot;
+              f&quot;{s2.pct(nac[&#x27;aprob_buenos&#x27;])} frente a {s2.pct(ext[&#x27;aprob_buenos&#x27;])} ({s2.pp(eo)})&quot;)
+        print(f&quot;    morosidad de los aprobados: {s2.pct(nac[&#x27;mora_aprobados&#x27;], 2)} frente a &quot;
+              f&quot;{s2.pct(ext[&#x27;mora_aprobados&#x27;], 2)}&quot;)
+        print(f&quot;    calibración global: PD media {s2.pct(nac[&#x27;pd_media&#x27;], 2)} / impago {s2.pct(nac[&#x27;impago_obs&#x27;], 2)} &quot;
+              f&quot;(nacionales); {s2.pct(ext[&#x27;pd_media&#x27;], 2)} / {s2.pct(ext[&#x27;impago_obs&#x27;], 2)} (extranjeros)&quot;)
+
+    s2.titulo(&quot;3. Calibración por tramo de PD (modelo integrado): PD media / impago observado&quot;)
+    pd_int = resumen[1][4]
+    print(&quot;  tramo   nacionales (n)              extranjeros (n)&quot;)
+    peor = 0.0
+    for t, pd0, y0, n0, pd1, y1, n1 in calibracion_por_tramo(p, pd_int):
+        print(f&quot;  {t:&gt;5}   {s2.pct(pd0, 1):&gt;7} / {s2.pct(y0, 1):&gt;7} ({n0:&gt;5})   &quot;
+              f&quot;{s2.pct(pd1, 1):&gt;7} / {s2.pct(y1, 1):&gt;7} ({n1:&gt;4})&quot;)
+        if n1 &gt;= 200:
+            peor = max(peor, abs((y1 - pd1) - (y0 - pd0)))
+    print(f&quot;  Mayor diferencia entre grupos del error de calibración (tramos con 200 o más &quot;
+          f&quot;extranjeros): {s2.num(100 * peor, 1)} p.&quot;)
+
+    s2.titulo(&quot;4. Qué cuesta retirar la zona postal&quot;)
+    _, g_int, air_int, eo_int, pd_i, _ = resumen[1]
+    _, g_sz, air_sz, eo_sz, pd_sz, _ = resumen[2]
+    mora_obj = y[pd_i &lt;= s2.corte_por_aprobacion(pd_i, APROBACION)].mean()
+    ap_sz = s2.aprobacion_a_igual_morosidad(y, pd_sz, mora_obj)
+    print(f&quot;  Gini {s2.pct(g_int)} -&gt; {s2.pct(g_sz)} ({s2.pp(g_sz - g_int)}); cociente de aprobación &quot;
+          f&quot;{s2.num(air_int, 2)} -&gt; {s2.num(air_sz, 2)}; brecha de igualdad de oportunidades &quot;
+          f&quot;{s2.pp(eo_int)} -&gt; {s2.pp(eo_sz)}&quot;)
+    print(f&quot;  Aprobación a la morosidad del integrado ({s2.pct(mora_obj, 2)}): &quot;
+          f&quot;{s2.pct(APROBACION, 0)} -&gt; {s2.pct(ap_sz)}&quot;)
+
+    s2.titulo(&quot;5. Cuánta disparidad explica el riesgo&quot;)
+    ext = p[&quot;extranjero&quot;].to_numpy() == 1
+    print(f&quot;  Impago observado: nacionales {s2.pct(y[~ext].mean())}, extranjeros {s2.pct(y[ext].mean())} &quot;
+          f&quot;(cociente {s2.num(y[ext].mean() / y[~ext].mean(), 2)})&quot;)
+    # Disparidad con un modelo &quot;oráculo&quot; que conociera la probabilidad real de impago.
+    # Referencia: un modelo que añade a las variables legítimas el rasgo latente y la carga real,
+    # que ninguna entidad observa. La disparidad que deja es la que explica el riesgo.
+    vars_or = vars_sin_zona + [&quot;_z&quot;, &quot;dsti_real&quot;]
+    m_or = s2.entrenar(d, vars_or)
+    pd_or = s2.puntuar(m_or, p, vars_or)
+    r_or = metricas_grupo(p, pd_or, s2.corte_por_aprobacion(pd_or, APROBACION))
+    nac, ext_ = r_or[&quot;nacionales&quot;], r_or[&quot;extranjeros&quot;]
+    print(f&quot;  Con un modelo que viera también el rasgo latente y la carga real (no observable): &quot;
+          f&quot;Gini {s2.pct(s2.gini(y, pd_or))}, cociente de aprobación &quot;
+          f&quot;{s2.num(ext_[&#x27;aprobacion&#x27;] / nac[&#x27;aprobacion&#x27;], 2)}, brecha de igualdad de oportunidades &quot;
+          f&quot;{s2.pp(ext_[&#x27;aprob_buenos&#x27;] - nac[&#x27;aprob_buenos&#x27;])}&quot;)
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre>
+<h3>Salida de la ejecución</h3>
+<pre class="salida">
+0. El atributo protegido en la cartera sintética
+------------------------------------------------
+  nacionales   86,0 % de las solicitudes · impago observado 9,2 % · temporales 16,7 % · historial mediano 59 meses · zona media 5,1
+  extranjeros  14,0 % de las solicitudes · impago observado 12,3 % · temporales 30,8 % · historial mediano 18 meses · zona media 7,8
+
+1. Prueba de proxy: ¿cuánto revelan las variables la nacionalidad? (AUC)
+------------------------------------------------------------------------
+  solo zona postal                   AUC 0,771
+  solo meses de historial            AUC 0,806
+  solo tipo de contrato              AUC 0,585
+  todas las del modelo integrado     AUC 0,876
+  todas menos la zona                AUC 0,822
+
+2. Disparidad de resultados con el corte al 70 % de aprobación
+--------------------------------------------------------------
+
+  Actual (con nacionalidad)  (Gini 63,8 %)
+    aprobación          nacionales 71,5 % · extranjeros 61,1 % · cociente 0,85
+    aprobación de quienes no impagan (igualdad de oportunidades): 75,9 % frente a 66,8 % (-9,1 p.)
+    morosidad de los aprobados: 3,58 % frente a 4,10 %
+    calibración global: PD media 9,28 % / impago 9,25 % (nacionales); 12,24 % / 12,32 % (extranjeros)
+
+  Integrado (sin nacionalidad)  (Gini 63,1 %)
+    aprobación          nacionales 71,5 % · extranjeros 60,6 % · cociente 0,85
+    aprobación de quienes no impagan (igualdad de oportunidades): 75,9 % frente a 66,3 % (-9,6 p.)
+    morosidad de los aprobados: 3,67 % frente a 4,12 %
+    calibración global: PD media 9,27 % / impago 9,25 % (nacionales); 12,42 % / 12,32 % (extranjeros)
+
+  Integrado sin zona postal  (Gini 63,0 %)
+    aprobación          nacionales 71,2 % · extranjeros 62,5 % · cociente 0,88
+    aprobación de quienes no impagan (igualdad de oportunidades): 75,6 % frente a 68,3 % (-7,4 p.)
+    morosidad de los aprobados: 3,65 % frente a 4,22 %
+    calibración global: PD media 9,36 % / impago 9,25 % (nacionales); 11,87 % / 12,32 % (extranjeros)
+
+3. Calibración por tramo de PD (modelo integrado): PD media / impago observado
+------------------------------------------------------------------------------
+  tramo   nacionales (n)              extranjeros (n)
+      1     1,0 % /   1,0 % (14061)     1,1 % /   1,2 % ( 900)
+      2     1,7 % /   1,6 % (13563)     1,7 % /   1,5 % (1398)
+      3     2,3 % /   2,2 % (13195)     2,4 % /   2,5 % (1766)
+      4     3,2 % /   3,1 % (13026)     3,2 % /   2,5 % (1935)
+      5     4,3 % /   4,0 % (12873)     4,3 % /   4,5 % (2087)
+      6     5,8 % /   6,3 % (12717)     5,8 % /   5,7 % (2244)
+      7     8,0 % /   8,1 % (12642)     8,0 % /   7,6 % (2319)
+      8    11,5 % /  11,9 % (12479)    11,5 % /  10,6 % (2482)
+      9    18,3 % /  17,8 % (12246)    18,4 % /  19,0 % (2715)
+     10    40,8 % /  40,7 % (11935)    41,9 % /  42,1 % (3026)
+  Mayor diferencia entre grupos del error de calibración (tramos con 200 o más extranjeros): 1,3 p.
+
+4. Qué cuesta retirar la zona postal
+------------------------------------
+  Gini 63,1 % -&gt; 63,0 % (-0,1 p.); cociente de aprobación 0,85 -&gt; 0,88; brecha de igualdad de oportunidades -9,6 p. -&gt; -7,4 p.
+  Aprobación a la morosidad del integrado (3,73 %): 70 % -&gt; 70,2 %
+
+5. Cuánta disparidad explica el riesgo
+--------------------------------------
+  Impago observado: nacionales 9,2 %, extranjeros 12,3 % (cociente 1,33)
+  Con un modelo que viera también el rasgo latente y la carga real (no observable): Gini 70,1 %, cociente de aprobación 0,90, brecha de igualdad de oportunidades -5,8 p.
+</pre>
+
+<nav class="nav">
+<p><a href="parte-06.html">← Parte VI: Retos</a> · <a href="index.html">Índice general</a> · <a href="anexos-referencia.html">Anexos de referencia →</a></p>
+</nav>
+
+</body>
+</html>
