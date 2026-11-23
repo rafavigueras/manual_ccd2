@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parte 0 · Cómo usar este manual</title>
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+<p class="eyebrow">Parte 0</p>
+<h1>Cómo usar este manual</h1>
+<p class="subtitulo">Qué se asume de ti, por dónde empezar según lo que necesites y cómo trabajar con unas fuentes que todavía se están moviendo.</p>
+
+<p class="lead">La Directiva (UE) 2023/2225 se aplica desde el 20 de noviembre de 2026 y España no tiene ley que la transponga. Eso hace este tema distinto de casi cualquier otro de la banca: el texto que manda es europeo, el que llegará es un anteproyecto con dos versiones, y mientras tanto la entidad tiene que seguir concediendo crédito. Quien aprende solo la directiva no sabe qué hacer el lunes; quien aprende solo el anteproyecto trabaja sobre algo que puede cambiar. Esta parte explica cómo está construido el manual para que aprendas las dos cosas y sepas cuál usar en cada momento.</p>
+
+<hr/>
+
+<h2 id="s0-1">0.1 Para quién es</h2>
+
+<h3 id="s0-1-1">0.1.1 Lo que se asume y lo que no</h3>
+
+<p>El manual está escrito para un profesional de banca o de una entidad de <i>lending</i> (riesgos, cumplimiento, negocio, producto o tecnología) que conoce el crédito al consumo como negocio. Se da por sabido:</p>
+
+<ul>
+<li><strong>Qué es un préstamo personal, una tarjeta y una financiación en el punto de venta</strong>, y cómo ganan dinero y cómo lo pierden.</li>
+<li><strong>Nociones de riesgo de crédito</strong>: probabilidad de impago (PD), qué es una <i>scorecard</i> y para qué sirve. Hacen falta sobre todo para la Parte IV.</li>
+</ul>
+
+<p>No se asume nada más. No hace falta conocer la Ley 16/2011 de contratos de crédito al consumo: el capítulo 3 la sitúa y el resto del manual la usa como punto de comparación. No hace falta saber cómo se transpone una directiva ni qué ocurre si el Estado llega tarde: el capítulo 4 lo explica. Y no hace falta haber leído jurisprudencia de usura: el capítulo 18 la construye desde el principio.</p>
+
+<h3 id="s0-1-2">0.1.2 Lo que este manual no es</h3>
+
+<p><strong>No es un dictamen jurídico.</strong> Explica la norma y su práctica; no sustituye al asesoramiento de un abogado sobre un caso concreto. Esta es la única vez que se dice: ningún capítulo lo repite.</p>
+
+<p><strong>No es la directiva leída artículo por artículo.</strong> Es el manual de cómo una entidad española implanta una norma que ya se aplica y una ley que no existe: qué obliga, dónde deja margen, qué se hace cuando falta ley nacional y cómo se defiende lo hecho ante el supervisor, un juez o un cliente. Para consultar un artículo concreto, el anexo R2 permite buscar desde el artículo.</p>
+
+<p><strong>No es un resumen de despacho.</strong> Cuando cita un artículo lo hace para decir en una frase qué exige y pasar a lo que importa en la práctica.</p>
+
+<p><strong>No es un catálogo de anécdotas.</strong> Los bloques CASO describen situaciones con el supervisor, un juzgado o un cliente a partir de patrones reales y siempre anonimizados. Una entidad aparece con su nombre solo cuando se usan datos públicos, y entonces con su fuente y su fecha.</p>
+
+<h3 id="s0-1-3">0.1.3 La meta</h3>
+
+<p>El objetivo no es que sepas qué dice la directiva. Es que, al terminar el nivel N3, puedas sostener esta conversación sin pedir tiempo para pensar:</p>
+
+<blockquote>
+&ndash; Un cliente reclama que le expliquemos por qué se le denegó la tarjeta y que lo revise una persona. Dice que lo exige la directiva nueva y que la ley española aún no existe.<br/>
+&ndash; La directiva da ese derecho en su art. 18(8), y se aplica desde el 20 de noviembre. Sin ley nacional no podemos asumir que obligue a una entidad privada en un pleito, pero un juez español la usará para interpretar la Ley 16/2011, y el RGPD ya da una base parecida si nuestra decisión se apoya en un <i>score</i>. Lo prudente es dar la explicación y la revisión humana, y dejar escrito por qué.<br/>
+&ndash; ¿Y si el <i>score</i> lo calcula un proveedor?<br/>
+&ndash; Entonces seguimos siendo nosotros quienes decidimos apoyándonos en él, y lo que pide el RGPD cae en la entidad. Lo que hay que tener es el motivo en un lenguaje que el cliente entienda y a alguien con autoridad para cambiar la decisión.
+</blockquote>
+
+<p>Casi nada de esa conversación es memoria de artículos. Es saber de dónde nace cada obligación, cuál es exigible hoy, cuál es prudente y cómo se documenta la decisión. Por eso cada capítulo de las Partes III a VI lleva al menos un bloque CASO.</p>
+
+<div class="bloque b-trampa">
+<span class="etiqueta">Trampa</span>
+<p>Esperar a que haya ley española para empezar. La directiva ya se aplica, la Comisión ha enviado a España un dictamen motivado y, con las Cortes disueltas, la ley no llegará antes de 2027. Una entidad que se quede quieta hasta entonces acumula un año de contratos concedidos con un proceso que quizá no sostenga ante un juez.</p>
+</div>
+
+<hr/>
+
+<h2 id="s0-2">0.2 Rutas</h2>
+
+<h3 id="s0-2-1">0.2.1 La ruta completa</h3>
+
+<p>Leído por orden, el manual va de lo básico a lo experto. Los tres niveles son los mismos del resto de la serie:</p>
+
+<div class="tabla-scroll">
+<table>
+<caption>Cada capítulo lleva su nivel. Se puede leer por orden o saltar al nivel que toque.</caption>
+<thead><tr><th>Nivel</th><th>Al terminar</th><th>Partes</th></tr></thead>
+<tbody>
+<tr><td><span class="nivel n1">N1</span> Fundamentos</td><td>Entiendes qué regula la CCD2, por qué y cómo llega a España.</td><td>0 y I</td></tr>
+<tr><td><span class="nivel n2">N2</span> Practicante</td><td>Puedes trabajar en un programa de implantación sin que te expliquen la norma.</td><td>II, III y IV (caps. 20 a 24)</td></tr>
+<tr><td><span class="nivel n3">N3</span> Experto</td><td>Diagnosticas, priorizas y defiendes la adaptación de una entidad.</td><td>IV (caps. 25 y 26), V y VI</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>Cada parte termina con un recuadro de lo que deberías saber hacer al acabarla, y el anexo R5 tiene una autoevaluación corta por parte.</p>
+
+<h3 id="s0-2-2">0.2.2 Por rol</h3>
+
+<div class="tabla-scroll">
+<table>
+<caption>Rutas mínimas por tipo de trabajo. «Núcleo» son los capítulos sin los que no puedes trabajar; «apoyo», los que vas a consultar. Los capítulos 4 y 5 son núcleo para todos.</caption>
+<thead><tr><th>Rol</th><th>Núcleo</th><th>Apoyo</th></tr></thead>
+<tbody>
+<tr><td>Cumplimiento</td><td>6, 7, 8, 9, 10, 11, 13, 15, 16, 17, 19</td><td>3, 14, 18, 27, 30</td></tr>
+<tr><td>Riesgos (Head of Risk: Parte IV directa)</td><td>9, 18, 20 a 26, 32</td><td>10, 13, 31</td></tr>
+<tr><td>Negocio y producto</td><td>6, 7, 10, 18, 28, 31</td><td>8, 11, 13, 14, 16</td></tr>
+<tr><td>Tecnología y datos</td><td>8, 9, 21, 23, 29</td><td>20, 22, 28</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3 id="s0-2-3">0.2.3 Incorporación urgente a un programa CCD2 en marcha</h3>
+
+<p>Lo habitual es llegar a un programa que ya ha empezado y tener que ser útil en una semana. Para eso:</p>
+
+<ol>
+<li><strong>Días 1 y 2.</strong> Capítulos 4 y 5: qué hace una entidad cuando una directiva se aplica sin ley, y el recorrido de un crédito de principio a fin con los tres productos de la entidad de referencia.</li>
+<li><strong>Día 3.</strong> El capítulo de la Parte II que corresponda a tu tarea, con el anexo R2 abierto al lado. No lo leas entero: localiza en él cada artículo.</li>
+<li><strong>Día 4.</strong> Los capítulos 15 y 17, que dicen qué es exigible hoy y qué es prudente, y el capítulo 27 sobre cómo se monta el programa.</li>
+<li><strong>Día 5.</strong> El anexo R3, el <i>checklist</i> de <i>gaps</i>, para saber en qué punto está tu entidad.</li>
+</ol>
+
+<p>Después vuelve a la Parte I y léela entera.</p>
+
+<h3 id="s0-2-4">0.2.4 Modo referencia</h3>
+
+<p>Si lo que tienes es un artículo y quieres saber qué implica, empieza por el anexo R2: una tabla que, para cada artículo de la CCD2, da su equivalente en la CCD1, en la Ley 16/2011 y en el anteproyecto, con el capítulo del manual donde se desarrolla. Los bloques NORMA de cada capítulo repiten esa información en el sitio donde se necesita.</p>
+
+<hr/>
+
+<h2 id="s0-3">0.3 Cómo trabajar con las fuentes</h2>
+
+<h3 id="s0-3-1">0.3.1 Los textos de cabecera</h3>
+
+<p>Hay tres textos que conviene tener abiertos mientras se lee:</p>
+
+<ul>
+<li><strong>La Directiva (UE) 2023/2225</strong> en español, con sus dos correcciones de errores: la de diciembre de 2023, que toca el art. 48(1), y la de 22 de septiembre de 2026, que corrige cuatro puntos técnicos. Cuando el manual cita un artículo, es el de este texto.</li>
+<li><strong>La Ley 16/2011</strong> de contratos de crédito al consumo, que sigue vigente y casi sin cambios desde 2014. Es el derecho español que manda hoy.</li>
+<li><strong>El anteproyecto de ley de contratos de crédito al consumo</strong>, que trata de transponer la directiva y cambiará antes de ser ley.</li>
+</ul>
+
+<h3 id="s0-3-2">0.3.2 Directiva, anteproyecto, proyecto, ley: no trabajar con la versión equivocada</h3>
+
+<p>Son cuatro cosas distintas y se confunden con facilidad. La <strong>directiva</strong> obliga al Estado, no directamente a la entidad. El <strong>anteproyecto</strong> es un texto del Gobierno, aprobado en primera vuelta el 7 de enero de 2026, sin valor normativo. El <strong>proyecto de ley</strong> es el texto que el Gobierno envía a las Cortes: aquí no existe, y las Cortes están disueltas. La <strong>ley</strong> es lo único que obligaría a una entidad frente a un cliente.</p>
+
+<p>Hay además un segundo problema: el anteproyecto tiene dos versiones, la de enero y la de septiembre de 2026, y su numeración no coincide. Por eso, en este manual, <strong>toda cita del anteproyecto lleva su versión</strong>.</p>
+
+<div class="bloque b-norma">
+<span class="etiqueta">Norma</span>
+<p>La directiva fija el 20 de noviembre de 2025 como fecha límite de transposición y el 20 de noviembre de 2026 como fecha de aplicación (arts. 47 y 48). Equivalente español: sin ley de transposición; anteproyecto en primera vuelta (a fecha de 2026-11-23).</p>
+</div>
+
+<h3 id="s0-3-3">0.3.3 Qué caduca cuando se apruebe la ley española</h3>
+
+<p>Una parte del manual envejecerá en el momento en que se publique la ley española, y conviene saber cuál antes de citarla.</p>
+
+<p><strong>Caduca con la ley:</strong> el estado de la tramitación, los números de artículo del anteproyecto, los topes de TAE y de coste, los plazos de adaptación y todo lo que dependa de las opciones nacionales que España acabe eligiendo. Es el contenido de la Parte III y de las referencias al anteproyecto del resto.</p>
+
+<p><strong>Caduca más despacio:</strong> la lectura de la Ley 16/2011 a la luz de la directiva, la jurisprudencia de usura y la doctrina sobre efecto de las directivas no transpuestas.</p>
+
+<p><strong>No caduca:</strong> la directiva y sus obligaciones (Parte II), y los problemas de fondo de la Parte IV: cómo se evalúa la capacidad de pago de forma explicable, cómo se retiran variables sin destruir el poder predictivo, cómo se diseña una revisión humana que no sea un sello.</p>
+
+<div class="bloque b-viene">
+<span class="etiqueta">Qué viene</span>
+<p>Los bloques como este señalan cambios en curso y qué trabajo van a generar. Tres cautelas:</p>
+<ul>
+<li><strong>Caducan antes que el resto del texto.</strong> Un anteproyecto puede cambiar o no llegar a ley.</li>
+<li><strong>Ninguna fecha ni cifra de estos bloques debe usarse en un entregable</strong> sin comprobar antes su estado en la fuente.</li>
+<li><strong>Lo estable es la dirección:</strong> más obligaciones de conducta, límites de coste y supervisión de quien presta fuera del perímetro bancario.</li>
+</ul>
+</div>
+
+<hr/>
+
+<h2 id="s0-4">Una advertencia antes de empezar</h2>
+
+<p>Este manual se escribe en un momento de cambio. La directiva ya se aplica, la ley española no existe y su calendario depende de unas elecciones. Lo que no cambia es el oficio: saber de dónde nace cada obligación, qué es exigible hoy, qué margen queda y cómo se defiende una decisión cuando alguien la discute. Los números y las fechas envejecerán; ese criterio, no.</p>
+
+<nav class="nav">
+<p><a href="index.html">← Índice general</a> · <a href="parte-01.html">Parte I: Fundamentos →</a></p>
+</nav>
+
+</body>
+</html>

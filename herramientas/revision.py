@@ -24,8 +24,14 @@ ETIQUETAS = {
     "b-norma": "Norma", "b-porque": "Por qué", "b-margen": "Margen",
     "b-palanca": "Palanca", "b-trampa": "Trampa", "b-numeros": "Números",
     "b-codigo": "Código", "b-defensa": "Defensa", "b-viene": "Qué viene",
-    "b-caso": "Caso JST",
+    "b-caso": "Caso",
 }
+# Ficheros que el manual completo debe acabar teniendo (se avisa de los que faltan).
+ESPERADOS = [
+    "index.html", "parte-00.html", "parte-01.html", "parte-02.html", "parte-03.html",
+    "parte-04.html", "parte-05.html", "parte-06.html",
+    "anexos-codigo.html", "anexos-referencia.html",
+]
 VACIAS = {"meta", "link", "br", "hr", "img", "input", "col", "wbr"}
 
 
@@ -164,6 +170,9 @@ def main():
         print("\nFicheros enlazados que aún no existen (pendientes de escribir):")
         for destino, origenes in sorted(pendientes.items()):
             print(f"    · {destino} (desde {', '.join(sorted(origenes))})")
+    faltan = [f for f in ESPERADOS if f not in lectores]
+    if faltan:
+        print("\nPartes del manual aún sin escribir: " + ", ".join(faltan))
     print(f"\n{'OK' if errores == 0 else f'{errores} problema(s)'}")
     return 1 if errores else 0
 

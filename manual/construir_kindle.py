@@ -33,17 +33,17 @@ MANUAL_DIR = Path(__file__).resolve().parent
 
 ORDEN = [
     "index.html",
-    "parte-00.html", "parte-01.html", "parte-02.html", "parte-03a.html", "parte-03b.html",
+    "parte-00.html", "parte-01.html", "parte-02.html", "parte-03.html",
     "parte-04.html", "parte-05.html", "parte-06.html",
     "anexos-codigo.html", "anexos-referencia.html",
 ]
-TITULO = "Stress Test de Riesgo de Credito"
-NOMBRE = "Manual de Stress Test"
+TITULO = "Credito al Consumo: la CCD2 en Espana"
+NOMBRE = "Manual de Credito al Consumo (CCD2)"
 
 RE_BODY = re.compile(r"<body[^>]*>(.*)</body>", re.DOTALL | re.IGNORECASE)
 RE_NAV = re.compile(r"<nav class=\"nav\">.*?</nav>", re.DOTALL)
-RE_XLINK = re.compile(r'href="(?:parte-\d\d[ab]?|anexos-codigo|anexos-referencia|index)\.html#')
-RE_XFILE = re.compile(r'href="((?:parte-\d\d[ab]?|anexos-codigo|anexos-referencia|index))\.html"')
+RE_XLINK = re.compile(r'href="(?:parte-\d\d|anexos-codigo|anexos-referencia|index)\.html#')
+RE_XFILE = re.compile(r'href="((?:parte-\d\d|anexos-codigo|anexos-referencia|index))\.html"')
 RE_H1 = re.compile(r"<h1(?![^>]*\bid=)", re.IGNORECASE)
 
 
@@ -89,7 +89,7 @@ def fusionar_html() -> Path:
     duplicados = sorted({i for i in re.findall(r'id="([^"]+)"', html) if html.count(f'id="{i}"') > 1})
     if duplicados:
         raise SystemExit(f"Anclas duplicadas tras la fusion: {duplicados}")
-    restantes = re.findall(r'href="(?:parte-\d\d[ab]?|anexos-codigo|anexos-referencia|index)\.html[^"]*"', html)
+    restantes = re.findall(r'href="(?:parte-\d\d|anexos-codigo|anexos-referencia|index)\.html[^"]*"', html)
     if restantes:
         raise SystemExit(f"Enlaces cruzados sin reescribir: {restantes}")
 
@@ -166,7 +166,7 @@ def convertir(fuente: Path, salida_nombre: str, extra_args: list[str]) -> None:
         ebook_convert, str(fuente), str(MANUAL_DIR / salida_nombre),
         "--title", TITULO,
         "--authors", "Rafael Vigueras",
-        "--comments", "Stress testing de riesgo de credito en grupos bancarios con filiales dentro y fuera de Europa: metodologia EBA, supervisor y comparabilidad",
+        "--comments", "Directiva (UE) 2023/2225 de credito al consumo y su aplicacion en Espana: norma, transposicion, modelos de admision e implantacion",
         "--cover", str(portada),
         "--language", "es",
         "--output-profile", "kindle_pw",

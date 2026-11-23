@@ -112,8 +112,8 @@ manual_ccd2/
 | F0 · Arranque | Carpeta, repo local, este archivo, `LANZAMIENTO.md`, índice v0.1, briefs de research, verificación y especialista, nota de seguimiento en el vault | ✅ 2026-11-23, salvo confirmar §2.2 con Rafa |
 | F1 · Research | Seis notas R1-R6 (Sonnet) | ✅ 2026-11-23 |
 | F1-bis · Verificación | `investigacion/verificacion/informe-v1.md` (Opus) y notas corregidas | ✅ 2026-11-23 (correcciones aplicadas; hallazgos en `investigacion/README.md`) |
-| F2 · Índice a 3 niveles | `00-indice-manual-ccd2.md` v0.2, aprobado por Rafa | 🟡 v0.2 escrito 2026-11-23; falta la aprobación final de Rafa |
-| F3 · Base | `estilo.css` con acento propio, `index.html`, `parte-00.html`, `revision.py` adaptado | ⏳ Pendiente |
+| F2 · Índice a 3 niveles | `00-indice-manual-ccd2.md` v0.2, aprobado por Rafa | ✅ v0.2 aprobado por Rafa, 2026-11-23 |
+| F3 · Base | `estilo.css` con acento propio, `index.html`, `parte-00.html`, `revision.py` adaptado | ✅ 2026-11-23 (portada y `construir_kindle` completos en F7) |
 | F4 · Redacción | Partes I, II, III, V y VI (sesión principal) | ⏳ Pendiente |
 | F4-E · Parte IV | Modelos de admisión, por el agente especialista | ⏳ Pendiente, después de F2 |
 | F5 · Anexos de código | S1-S3 ejecutados | ⏳ Pendiente |
@@ -282,3 +282,9 @@ scikit-learn). Si se toca un script, hay que revisar el texto que cita sus cifra
   verificados, cap. 12 fusionado en 11.7, 11.6 (contratos vigentes), 11.8, 13.5 (dos fechas de la
   tolerancia), 15.0 y reescrito el 15, 16.5 (reserva de actividad), 17.5, 19.2 a QUÉ VIENE, 21.5, 23.1
   con calendario del AI Act, 27.4, 30.4 y 30.5, cap. 33 sin FiDA. Pendiente: aprobación final de Rafa.
+- **2026-11-23** (4) — F3. Rafa aprueba el índice v0.2. Acento burdeos `#7b2d4a` (oscuro `#e19ab4`),
+  distinto del verde del IRB y del azul de `manual_st`. `index.html` a 2 niveles, `parte-00.html`
+  escrita (norma 1, trampa 1, qué viene 1). `revision.py`: etiqueta del bloque CASO es "Caso" y avisa de
+  las partes que faltan. `construir_kindle.py`: una sola `parte-03.html` y títulos nuevos. Pendiente de
+  F7: portada (`generar_portada.py` sigue con el motivo de stress test). Verificación visual en claro y
+  oscuro con copias de CSS incrustado en `.capturas/`. `revision.py`: OK. Parado antes de F4.

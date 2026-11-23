@@ -1,5 +1,5 @@
 /* ============================================================
-   Manual de Stress Test de Riesgo de Credito
+   Manual de Credito al Consumo: la CCD2 en Espana
    Hoja de estilo compartida (derivada de la del manual IRB) — compatible con navegador y EPUB
    Evita grid/flex avanzado por compatibilidad con lectores e-ink
    ============================================================ */
@@ -9,8 +9,8 @@
   --tinta-suave:  #4a4a4a;
   --papel:        #ffffff;
   --regla:        #d8d8d2;
-  --acento:       #1f4e79;
-  --acento-claro: #e9f0f7;
+  --acento:       #7b2d4a;
+  --acento-claro: #f6eaef;
 }
 
 body {
@@ -276,7 +276,7 @@ dl.glosario dd { margin: 0.15em 0 0 1.2em; }
   margin-left: 0.4em;
 }
 .n1 { color: #2f6b3a; }
-.n2 { color: #1f4e79; }
+.n2 { color: #7b2d4a; }
 .n3 { color: #7a2f2f; }
 
 /* Cierre de parte: lo que deberias saber hacer */
@@ -367,8 +367,8 @@ sup.nota a { border-bottom: none; font-weight: 600; }
     --tinta-suave: #a9a6a0;
     --papel:       #16181a;
     --regla:       #34383c;
-    --acento:      #7fb0e0;
-    --acento-claro:#1b2633;
+    --acento:      #e19ab4;
+    --acento-claro:#2b1a23;
   }
   h1, h2, h3, h4 { color: var(--tinta); }
   h3 { color: var(--acento); }
@@ -399,7 +399,7 @@ sup.nota a { border-bottom: none; font-weight: 600; }
   .b-caso    { background: #2a1e16; border-left-color: #d0844f; }
   .b-caso    > .etiqueta { color: #e3a173; }
   .n1 { color: #86c99a; }
-  .n2 { color: #7fb0e0; }
+  .n2 { color: #e19ab4; }
   .n3 { color: #e08c8c; }
   .notas li:target { background: #2a2418; }
 }
