@@ -355,6 +355,8 @@ sup.nota a { border-bottom: none; font-weight: 600; }
 
 /* ---------- Utilidades ---------- */
 
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+
 .lead { font-size: 1.08rem; color: var(--tinta-suave); }
 .small { font-size: 0.85rem; color: var(--tinta-suave); }
 .centrado { text-align: center; }
