@@ -116,9 +116,9 @@ manual_ccd2/
 | F3 · Base | `estilo.css` con acento propio, `index.html`, `parte-00.html`, `revision.py` adaptado | ✅ 2026-11-23 (portada y `construir_kindle` completos en F7) |
 | F4 · Redacción | Partes I, II, III, V y VI (sesión principal) | ✅ Partes I, II, III, V y VI redactadas 2026-11-23 (pendiente: OK de Rafa antes de anexos, revisión y publicación) |
 | F4-E · Parte IV | Modelos de admisión, por el agente especialista | ✅ 2026-11-23 (revisada por la sesión principal; decisiones de fondo para Rafa en `especialista/decisiones-parte-04.md`) |
-| F5 · Anexos de código | S1-S3 ejecutados | ✅ S1, S2 y S3 ejecutados 2026-11-23 |
-| F6 · Revisión | `revision.py` en OK, QUÉ VIENE inventariados, fugas revisadas | ⏳ Pendiente |
-| F7 · Publicación | `manual-completo.html`, EPUB, AZW3, portada | ⏳ Pendiente |
+| F5 · Anexos de código | S1-S3 ejecutados | ✅ 2026-11-23 (`anexos-codigo.html` con código y salidas) |
+| F6 · Revisión | `revision.py` en OK, QUÉ VIENE inventariados, fugas revisadas | ✅ 2026-11-23 |
+| F7 · Publicación | `manual-completo.html`, EPUB, AZW3, portada | ✅ generados 2026-11-23; sin publicar (GitHub solo si Rafa lo pide) |
 
 ---
 
@@ -314,3 +314,15 @@ scikit-learn). Si se toca un script, hay que revisar el texto que cita sus cifra
   de la Comisión sobre sistema de IA y RTS EBA/RTS/2026/05. Pendiente de Rafa: anexos de referencia
   (R1-R6, incluida la tabla de equivalencias CCD2/RGPD/AI Act/GL 2020/06), anexos-codigo.html, revisión
   final de QUÉ VIENE y de fugas, renumeración del cap. 12 y publicación (F5-F7).
+- **2026-11-23** (8) — F5-F7. `anexos-codigo.html` (S1, S2 y S3 con código y salida de la última
+  ejecución) y `anexos-referencia.html` (R1 glosario, R2 tabla de correspondencia de 50 artículos con
+  CCD1, Ley 16/2011 y anteproyecto con versión, R3 checklist, R4 fuentes, R5 autoevaluación, R6 tres
+  casos integrados; sin raya en las celdas). Inventario de QUÉ VIENE: 19 bloques, ninguno con fecha de
+  aplicación pendiente ni número de norma en negociación (se quitó el número 2026/1744 del bloque de la
+  Parte I; las fechas que quedan son de normas ya adoptadas o plazos de la directiva). Revisión de fugas:
+  `manual-completo.html` sin rutas locales ni nombres internos; se corrigió una mención al "research del
+  manual"; las únicas entidades con nombre son Wizink y Cofidis (sanciones publicadas en el BOE, con
+  fecha) y ASNEF, FAES y OCU como posiciones públicas. Portada nueva con las cuatro TAE de S1 frente al
+  TEDR; EPUB y AZW3 con Calibre ("Manual de Credito al Consumo (CCD2)"), `revision.py` OK. **Sin
+  publicar nada**: pendiente de Rafa decidir si se sube a GitHub (repo privado o público) y si se
+  quita la fila de costes de 26.4; sin revisar en un Kindle real. Huecos sin verificar: ver nota (7).
