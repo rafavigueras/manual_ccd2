@@ -1,15 +1,17 @@
 # Manual de Crédito al Consumo: la CCD2 en España
-## Índice detallado, versión de trabajo v0.1 (2026-11-23, provisional hasta cerrar F1)
+## Índice detallado, versión de trabajo v0.2 (2026-11-23, tras F1 y F1-bis; pendiente de aprobación de Rafa)
 
 **Objetivo:** llevar a un profesional de banca que conoce el crédito al consumo como negocio, pero no su normativa de conducta, hasta el nivel de experto: alguien capaz de diagnosticar, implantar y defender la adaptación de una entidad española a la CCD2.
 **Lo que se asume:** qué es un préstamo personal, una tarjeta y una financiación en el punto de venta; nociones de riesgo de crédito (PD, *scoring*) para la Parte IV. **Nada más:** ni la Ley 16/2011, ni la mecánica de las directivas, ni la jurisprudencia de usura.
 **Perímetro (propuesto, §2.2 de `PROCESO.md`):** Directiva (UE) 2023/2225 y su transposición; usura y *revolving*; solvencia con IA (AI Act, RGPD); atención a la clientela (Ley 10/2025) y recobro donde toca al consumo.
 **Fuera de perímetro:** crédito hipotecario (Ley 5/2019) salvo como comparación; servicios de pago; prudencial (capital) salvo el enlace con los modelos IRB en el cap. 25.
-**Fecha de referencia:** CCD2 aplicable desde el 20-nov-2026. Estado de la ley española: lo que diga R2 a fecha de F1.
+**Fecha de referencia:** CCD2 aplicable desde el 20-nov-2026. Estado de la ley española (a fecha de 2026-11-23): sin ley; anteproyecto en primera vuelta (7-ene-2026) con dos versiones (enero y septiembre); Cortes disueltas el 6-oct-2026 (RD 806/2026), elecciones el 29-nov-2026; dictamen motivado de la Comisión el 1-oct-2026 (INFR(2026)0059). Fuente: `investigacion/` y `investigacion/verificacion/informe-v1.md`.
 **Principio editorial:** el de los manuales anteriores: qué problema resuelve cada regla, a qué obliga, dónde deja margen y qué se hace con ese margen frente al supervisor, el juez y el cliente.
 
-> **Aviso:** los números de artículo de este índice son de memoria y se verifican en F1 (R1). No se
-> copian al texto del libro sin verificar.
+> **Aviso (v0.2):** los números de artículo que llevan este índice ya están verificados contra el texto
+> del DOUE (R1 y V1). Los de los capítulos sin cita se sacan de `investigacion/r1-directiva.md` §2 al
+> redactar. Toda cita del anteproyecto lleva su versión ("enero" o "septiembre, según la CNMC"): la
+> numeración cambia entre ambas. Lo marcado con (v0.2) es nuevo o movido respecto a v0.1.
 
 ---
 
@@ -83,7 +85,8 @@ y reaparece en los caps. 9, 10, 18, la Parte IV, el cap. 28 y los anexos S1-S3.
 - 1.2.2 Comercios, intermediarios y plataformas
 - 1.2.3 Supervisores: Banco de España, Consumo, comunidades autónomas, AEPD
 ### 1.3 Las cifras
-- 1.3.1 Tamaño del mercado, crecimiento y morosidad (datos de R5, con fecha)
+- 1.3.1 Tamaño del mercado, crecimiento y morosidad (datos de R5, solo del *Boletín Estadístico* del Banco de España, con fecha)
+- 1.3.3 (v0.2) Recuadro "Qué mide cada fuente": bancos frente a bancos + EFC, y las cifras de prensa que no cuadran
 - 1.3.2 Dónde se concentran las reclamaciones
 
 ## Capítulo 2 · Por qué una segunda directiva
@@ -102,7 +105,7 @@ y reaparece en los caps. 9, 10, 18, la Parte IV, el cap. 28 y los anexos S1-S3.
 ## Capítulo 3 · El mapa normativo
 ### 3.1 Capa europea
 - 3.1.1 CCD2 y su relación con la Directiva 2023/2673 de servicios financieros a distancia
-- 3.1.2 RGPD, AI Act, PSD2 y FiDA
+- 3.1.2 RGPD, AI Act y PSD2/PSR (v0.2: FiDA fuera; la Comisión anuncia su retirada, por confirmar)
 - 3.1.3 Directiva 2021/2167 de administradores y compradores de créditos
 - 3.1.4 Directrices de la EBA sobre originación y seguimiento (EBA/GL/2020/06)
 ### 3.2 Capa española
@@ -141,7 +144,7 @@ y reaparece en los caps. 9, 10, 18, la Parte IV, el cap. 28 y los anexos S1-S3.
 > Al terminar: conoces cada obligación de la CCD2, su equivalente en la Ley 16/2011 y lo que cambia.
 
 ## Capítulo 6 · Ámbito y definiciones
-- 6.1 Qué entra: umbral de importe, BNPL, créditos sin intereses, alquiler con opción de compra
+- 6.1 Qué entra: sin umbral mínimo de importe y techo de 100.000 € (art. 2); BNPL por el art. 3(3), con la exclusión del art. 2(2)(h) y sus plazos de 50 y 14 días; créditos sin intereses; alquiler con opción de compra. (v0.2) Contraste: la Ley 16/2011 no tiene techo y por encima de 75.000 € solo aplica en parte (art. 4.5)
 - 6.2 Qué sigue fuera y las opciones nacionales
 - 6.3 Definiciones que cambian la implantación: prestamista, intermediario, proveedor de bienes
 - 6.4 **[TRAMPA]** El comercio que no sabe que ahora es intermediario
@@ -158,19 +161,21 @@ y reaparece en los caps. 9, 10, 18, la Parte IV, el cap. 28 y los anexos S1-S3.
 - 8.3 Explicaciones adecuadas
 - 8.4 Servicios de asesoramiento
 - 8.5 Conocimientos y competencia del personal
+- 8.6 (v0.2) Ofertas personalizadas (art. 13) y remuneración de quien evalúa la solvencia (art. 32(3)): no puede depender de las aprobaciones
 
 ## Capítulo 9 · Solvencia y bases de datos
-- 9.1 La obligación de evaluar la solvencia: interés del consumidor, no del prestamista
+- 9.1 La obligación de evaluar la solvencia (art. 18): interés del consumidor, no del prestamista; resultado favorable antes de conceder (18(6)); anteproyecto, enero arts. 31-33 y septiembre arts. 28-30 (según la CNMC)
 - 9.2 Qué datos se pueden usar y cuáles no
-- 9.3 Decisiones automatizadas: derecho a intervención humana y a una explicación
+- 9.3 Decisiones automatizadas: derecho a intervención humana y a una explicación (art. 18(8)); no exige que la decisión sea exclusivamente automatizada
+- 9.3b (v0.2) Los apartados 18(6), 18(7), 19(5) y 19(7) con tratamiento propio
 - 9.4 Qué pasa si la evaluación es negativa
-- 9.5 Acceso a bases de datos y ficheros transfronterizos
+- 9.5 Acceso a bases de datos (art. 19) y ficheros transfronterizos; prohibidos datos sanitarios y de redes sociales. (v0.2) CIRBE: umbral de 1.000 € desde el 2-ene-2027 (Circular 1/2026)
 - 9.6 **[NÚMEROS]** La solicitud del hilo conductor bajo las reglas nuevas (remite a la Parte IV)
 
 ## Capítulo 10 · Contrato, TAE y límites de coste
 - 10.1 Información que debe contener el contrato
 - 10.2 La TAE: cálculo y supuestos (S1)
-- 10.3 Límites a tipos, TAE o coste total: la obligación de los Estados
+- 10.3 Límites a tipos, TAE o coste total: la obligación de los Estados (art. 31, verificar apartados al redactar)
 - 10.4 **[PALANCA]** Qué productos dejan de ser rentables con un límite de coste
 
 ## Capítulo 11 · Derechos durante la vida del crédito
@@ -179,17 +184,22 @@ y reaparece en los caps. 9, 10, 18, la Parte IV, el cap. 28 y los anexos S1-S3.
 - 11.3 Reembolso anticipado y compensación
 - 11.4 Cesión de derechos
 - 11.5 Cambios en el tipo deudor
+- 11.6 (v0.2) **Contratos vigentes a 20-nov-2026:** la 2008/48 sigue para ellos, salvo los de duración indefinida, a los que se aplican los arts. 23, 24, 25(1) segunda frase, 25(2), 28 y 39 (arts. 2(2)(l) y 47). Afecta a la tarjeta *revolving* en stock del hilo conductor
+- 11.7 (v0.2) Descubiertos y rebasamientos (antes cap. 12, fusionado)
+- 11.8 (v0.2) Venta de carteras en mora y deber de tolerancia: remisión a 13.5 y al cap. 30
 
-## Capítulo 12 · Descubiertos y rebasamientos
+## Capítulo 12 · (fusionado en 11.7)
+> Se conserva el número hasta F3 para no mover las remisiones; se renumera entonces.
 
 ## Capítulo 13 · Dificultades de pago
-- 13.1 Medidas de tolerancia antes de la ejecución
-- 13.2 Servicios de asesoramiento de deudas
+- 13.1 Medidas de tolerancia antes de la ejecución (art. 35)
+- 13.2 Servicios de asesoramiento de deudas (art. 36; en España no existe hoy un servicio con ese perfil)
 - 13.3 Límites a los recargos por impago
 - 13.4 Remisión a la operativa del cap. 30
+- 13.5 (v0.2) **Dos fechas de la tolerancia:** art. 16 bis de la 2008/48 (insertado por la Directiva 2021/2167, aplicable desde el 30-dic-2023, sin transponer en España) y art. 35 CCD2 (20-nov-2026). El art. 22 CCD2 procede del art. 11 bis, también de la 2021/2167
 
 ## Capítulo 14 · Prestamistas no bancarios, intermediarios y sanciones
-- 14.1 Admisión, registro y supervisión de prestamistas e intermediarios
+- 14.1 Admisión, registro y supervisión de prestamistas e intermediarios (art. 37: la exención de entidades de crédito, de pago y de dinero electrónico lo es del reconocimiento y registro, no de la supervisión)
 - 14.2 Sanciones efectivas y disuasorias
 - 14.3 Resolución alternativa de litigios
 
@@ -200,21 +210,24 @@ y reaparece en los caps. 9, 10, 18, la Parte IV, el cap. 28 y los anexos S1-S3.
 > Al terminar: sabes qué está en vigor hoy en España, qué cambiará con la ley y cómo operar mientras tanto.
 
 ## Capítulo 15 · Estado de la transposición (a fecha de F1)
-- 15.1 Cronología: anteproyecto, informes, Consejo de Estado, Cortes
-- 15.2 El procedimiento de infracción de la Comisión
-- 15.3 **[QUÉ VIENE]** Escenarios de aprobación y qué cambia en cada uno
+- 15.0 (v0.2) Dos versiones del texto: enero y septiembre (cambian capital de los EFCAL, entrada en vigor, tipo mensual de alto coste de 4 % a 6 %, revisión de topes de trimestral a semestral). Regla: citar siempre con versión
+- 15.1 Cronología: anteproyecto (7-ene-2026), informes de la CNMC (14-sep-2026) y del CES (6-oct-2026), disolución de las Cortes (6-oct-2026) y caducidad de los proyectos 121/000018, 121/000049 y 121/000096
+- 15.2 El procedimiento de infracción: dictamen motivado de 1-oct-2026 (INFR(2026)0059), plazo hacia el 1-dic-2026, art. 258 TFUE; el comparado europeo en tres grupos
+- 15.3 **[QUÉ VIENE]** Escenarios sin fechas firmes: Gobierno en funciones, real decreto-ley o Gobierno nuevo que retome el anteproyecto
 
 ## Capítulo 16 · El anteproyecto frente a la directiva
 - 16.1 Lo que transpone tal cual
 - 16.2 Lo que endurece España (*gold-plating*)
 - 16.3 Las opciones nacionales que elige
 - 16.4 El borrador de real decreto
+- 16.5 (v0.2) **La reserva de actividad:** nulidad de pleno derecho de los contratos de quien no esté autorizado, las figuras EFCAL y PACA, certificado de registro para demandar; no sujeción a la Ley de Usura (DA 12.ª, septiembre). Enlaza con los socios *fintech* y BNPL del hilo conductor
 
 ## Capítulo 17 · Vivir sin ley
 - 17.1 Qué aplica ya: la Ley 16/2011 vigente leída a la luz de la directiva
 - 17.2 Qué espera el Banco de España
 - 17.3 **[DEFENSA]** Cómo documenta una entidad sus decisiones de implantación
 - 17.4 **[CASO]** El cliente que reclama un derecho de la CCD2 que la ley española aún no recoge
+- 17.5 (v0.2) Efecto directo, interpretación conforme y responsabilidad del Estado: lo que dice la doctrina del TJUE (citar sentencias solo tras leerlas)
 
 ## Capítulo 18 · Usura y *revolving*
 - 18.1 La Ley Azcárate y su lectura moderna
@@ -225,7 +238,7 @@ y reaparece en los caps. 9, 10, 18, la Parte IV, el cap. 28 y los anexos S1-S3.
 
 ## Capítulo 19 · Supervisión de conducta y litigiosidad
 - 19.1 Banco de España: inspección de conducta, memoria de reclamaciones, criterios
-- 19.2 La nueva autoridad de atención a la clientela (Ley 10/2025)
+- 19.2 **[QUÉ VIENE]** La autoridad de atención a la clientela (Ley 10/2025): no existe y su proyecto de ley caducó
 - 19.3 Litigación masiva: lo que enseñan las cláusulas suelo y los gastos hipotecarios
 
 ---
@@ -250,6 +263,7 @@ y reaparece en los caps. 9, 10, 18, la Parte IV, el cap. 28 y los anexos S1-S3.
 - 21.2 Retirar variables sin destruir el poder predictivo (S2)
 - 21.3 Fuentes nuevas: *open banking*, ficheros positivos, datos del comercio
 - 21.4 Calidad y trazabilidad del dato
+- 21.5 (v0.2) Datos de bureau y perfilado: límite del art. 20.3 LOPDGDD, CIR a 1.000 € desde el 2-ene-2027
 
 ## Capítulo 22 · Capacidad de pago frente a probabilidad de *default*
 - 22.1 Ingresos, gastos y renta disponible: cómo se estiman
@@ -258,7 +272,7 @@ y reaparece en los caps. 9, 10, 18, la Parte IV, el cap. 28 y los anexos S1-S3.
 - 22.4 **[NÚMEROS]** Aprobación y morosidad con y sin regla de capacidad de pago (S2)
 
 ## Capítulo 23 · Explicabilidad, intervención humana y decisiones automatizadas
-- 23.1 Lo que exigen la CCD2, el RGPD y el AI Act a la vez
+- 23.1 Lo que exigen la CCD2, el RGPD (SCHUFA, C-634/21) y el AI Act a la vez. (v0.2) Alto riesgo desde el 2-dic-2027 (Digital Omnibus); modelos ya en producción, art. 111.2; autoridad española de vigilancia pendiente (el proyecto de ley que la designaba caducó)
 - 23.2 Motivos de denegación explicables
 - 23.3 Diseñar la revisión humana para que no sea un sello
 - 23.4 **[CASO]** El cliente denegado que pide una explicación
@@ -289,6 +303,7 @@ y reaparece en los caps. 9, 10, 18, la Parte IV, el cap. 28 y los anexos S1-S3.
 
 ## Capítulo 27 · El programa CCD2
 - 27.1 Análisis de *gaps* (anexo R3)
+- 27.4 (v0.2) Remuneración del personal que evalúa (art. 32(3)) y ofertas personalizadas (art. 13): revisión de incentivos
 - 27.2 Gobierno: quién es dueño de qué
 - 27.3 Calendario y dependencias de tecnología
 ## Capítulo 28 · Producto a producto
@@ -303,6 +318,8 @@ y reaparece en los caps. 9, 10, 18, la Parte IV, el cap. 28 y los anexos S1-S3.
 - 30.1 Medidas de tolerancia en la práctica
 - 30.2 Derivación a asesoramiento de deudas
 - 30.3 Recobro automatizado y canal humano
+- 30.4 (v0.2) Gastos de recobro e intereses de demora: Compendio del Banco de España, doctrina del Supremo (+2 puntos), art. 61 y DA 5.ª del anteproyecto (enero)
+- 30.5 (v0.2) Ficheros de morosos: art. 20 LOPDGDD y criterio de la AEPD (los 50 € no son un requisito legal)
 ## Capítulo 31 · El impacto en negocio
 - 31.1 Aprobación, volumen y margen
 - 31.2 Coste de cumplimiento
@@ -313,7 +330,7 @@ y reaparece en los caps. 9, 10, 18, la Parte IV, el cap. 28 y los anexos S1-S3.
 # PARTE VI · Retos [N3]
 
 ## Capítulo 32 · IA en solvencia: AI Act y CCD2 a la vez
-## Capítulo 33 · *Open finance* y FiDA
+## Capítulo 33 · *Open banking*: PSD2/PSR y datos de cuenta (v0.2: FiDA fuera)
 ## Capítulo 34 · Litigiosidad masiva: el próximo frente
 ## Capítulo 35 · Qué viene
 

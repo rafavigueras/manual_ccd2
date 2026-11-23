@@ -112,7 +112,7 @@ manual_ccd2/
 | F0 · Arranque | Carpeta, repo local, este archivo, `LANZAMIENTO.md`, índice v0.1, briefs de research, verificación y especialista, nota de seguimiento en el vault | ✅ 2026-11-23, salvo confirmar §2.2 con Rafa |
 | F1 · Research | Seis notas R1-R6 (Sonnet) | ✅ 2026-11-23 |
 | F1-bis · Verificación | `investigacion/verificacion/informe-v1.md` (Opus) y notas corregidas | ✅ 2026-11-23 (correcciones aplicadas; hallazgos en `investigacion/README.md`) |
-| F2 · Índice a 3 niveles | `00-indice-manual-ccd2.md` v0.2, aprobado por Rafa | ⏳ Pendiente |
+| F2 · Índice a 3 niveles | `00-indice-manual-ccd2.md` v0.2, aprobado por Rafa | 🟡 v0.2 escrito 2026-11-23; falta la aprobación final de Rafa |
 | F3 · Base | `estilo.css` con acento propio, `index.html`, `parte-00.html`, `revision.py` adaptado | ⏳ Pendiente |
 | F4 · Redacción | Partes I, II, III, V y VI (sesión principal) | ⏳ Pendiente |
 | F4-E · Parte IV | Modelos de admisión, por el agente especialista | ⏳ Pendiente, después de F2 |
@@ -170,7 +170,7 @@ Remisión íntegra a §6 del `PROCESO.md` del IRB. Añadidos propios de este man
 
 ## 7. Índice
 
-El índice de trabajo a 3 niveles está en `00-indice-manual-ccd2.md` (v0.1, provisional). Se cierra en
+El índice de trabajo a 3 niveles está en `00-indice-manual-ccd2.md` (v0.2, pendiente de aprobación). Se cierra en
 F2 con lo que salga del research verificado. Resumen a 2 niveles:
 
 - **Parte 0 · Cómo usar este manual**
@@ -179,14 +179,14 @@ F2 con lo que salga del research verificado. Resumen a 2 niveles:
   principio a fin
 - **Parte II · La directiva** (N2) — 6 Ámbito · 7 Publicidad y comercialización · 8 Información
   precontractual y explicaciones · 9 Solvencia y bases de datos · 10 Contrato, TAE y límites de coste ·
-  11 Derechos durante la vida del crédito · 12 Descubiertos · 13 Dificultades de pago · 14 Prestamistas
+  11 Derechos durante la vida del crédito (con contratos vigentes y descubiertos; el 12 queda fusionado y se renumera en F3) · 13 Dificultades de pago · 14 Prestamistas
   no bancarios, intermediarios y sanciones
-- **Parte III · España** (N2) — 15 Estado de la transposición · 16 El anteproyecto frente a la
-  directiva · 17 Vivir sin ley · 18 Usura y *revolving* · 19 Supervisión de conducta y litigiosidad
+- **Parte III · España** (N2) — 15 Estado de la transposición (dos versiones del texto, Cortes disueltas) · 16 El anteproyecto frente a la
+  directiva (con reserva de actividad) · 17 Vivir sin ley · 18 Usura y *revolving* · 19 Supervisión de conducta y litigiosidad
 - **Parte IV · Adaptar los modelos de admisión** (N2-N3, agente especialista) — 20 a 26
 - **Parte V · Implantación en la entidad** (N3) — 27 El programa · 28 Producto a producto · 29 El
   recorrido digital · 30 Recobro · 31 El impacto en negocio
-- **Parte VI · Retos** (N3) — 32 IA en solvencia · 33 *Open finance* · 34 Litigiosidad masiva · 35 Qué viene
+- **Parte VI · Retos** (N3) — 32 IA en solvencia · 33 *Open banking* (FiDA fuera) · 34 Litigiosidad masiva · 35 Qué viene
 - **Anexos de código** — S1 TAE · S2 *scorecard* sintética · S3 prueba de sesgo
 - **Anexos de referencia** — R1 glosario · R2 tabla de correspondencia · R3 *checklist* de *gaps* ·
   R4 fuentes · R5 autoevaluación · R6 casos
@@ -278,3 +278,7 @@ scikit-learn). Si se toca un script, hay que revisar el texto que cita sus cifra
   Hallazgo mayor: Cortes disueltas el 6-oct-2026, elecciones el 29-nov, proyectos caducados; no hay
   transposición antes de 2027. Cambios propuestos al índice en `investigacion/README.md`. **Parado antes
   de F2:** falta el OK de Rafa; luego, índice v0.2.
+- **2026-11-23** (3) — F2. Con el OK de Rafa a los cambios, índice subido a v0.2: números de artículo
+  verificados, cap. 12 fusionado en 11.7, 11.6 (contratos vigentes), 11.8, 13.5 (dos fechas de la
+  tolerancia), 15.0 y reescrito el 15, 16.5 (reserva de actividad), 17.5, 19.2 a QUÉ VIENE, 21.5, 23.1
+  con calendario del AI Act, 27.4, 30.4 y 30.5, cap. 33 sin FiDA. Pendiente: aprobación final de Rafa.
