@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Parte IV · Adaptar los modelos de admisión</title>
+<link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+
+<p class="eyebrow">Parte IV · Niveles 2 y 3</p>
+<h1>Adaptar los modelos de admisión</h1>
+<p class="subtitulo">Qué tiene que cambiar en las <i>scorecards</i>, los datos y el proceso de decisión para cumplir la CCD2, el RGPD y el AI Act a la vez, en qué orden, con qué coste y cómo se defiende.</p>
+
+<p class="lead">Esta parte está escrita para quien dirige riesgos en una entidad que presta al consumo: el CRO de un banco con modelos IRB y un equipo de cuarenta personas, o el director de riesgos de un establecimiento financiero de crédito o de una <i>fintech</i> con tres analistas y una <i>scorecard</i> de proveedor. Da por sabido qué es un Gini, una PD y un corte. Lo que añade es la traducción: qué exige cada apartado del art. 18 de la directiva a un modelo concreto, qué variables hay que retirar y qué cuesta retirarlas, cómo se monta una regla de capacidad de pago que no destruya el negocio, qué hay que poder explicar a un cliente denegado y qué se le enseña al Banco de España cuando pregunte.</p>
+
+<p>Las cifras de esta parte salen de dos anexos ejecutables, S2 (<i>scorecard</i> sintética) y S3 (pruebas de sesgo), con una cartera de 300.000 solicitudes de los tres productos de la entidad de referencia del capítulo 5: tarjeta <i>revolving</i>, préstamo personal contratado en el móvil y BNPL en comercios asociados. La cartera es sintética, con semilla fija, y está construida para que los efectos que se miden tengan el orden de magnitud que se ve en carteras reales. Ninguna cifra describe a una entidad concreta ni al mercado español. Sirven para razonar y para saber qué medir en la propia cartera, no para trasladarlas a un plan de negocio.</p>
+
+<div class="bloque b-codigo">
+<span class="etiqueta">Código</span>
+<p>Los dos anexos se ejecutan desde la raíz del proyecto con <code>.venv/bin/python -I anexos/s2_scorecard.py</code> y <code>.venv/bin/python -I anexos/s3_sesgo.py</code>. S2 genera la cartera, entrena la <i>scorecard</i> de referencia y mide la retirada de variables, la regla de capacidad de pago, las variables de cuenta, el sesgo de medir con aprobados y un ejemplo de motivos de denegación. S3 reutiliza la misma cartera y los mismos modelos para medir disparidad por nacionalidad. Cambiar un supuesto obliga a revisar las cifras de esta parte: todas se citan con el apartado del anexo del que salen.</p>
+</div>
+
+<hr/>
+
+<!-- ============================================================ -->
+<h2 id="cap20">20. Qué cambia para un modelo de admisión <span class="nivel n2">N2</span></h2>
+
+<p class="lead">La CCD2 no menciona la palabra modelo. El art. 18 regula una evaluación, no una herramienta. Pero casi toda la evaluación de solvencia del crédito al consumo en España la hace hoy un modelo, o una cadena de modelos y reglas, y cada apartado del artículo cae sobre alguna pieza de esa cadena. El trabajo del Head of Risk es hacer esa traducción antes de que la haga un inspector.</p>
+
+<h3 id="s20-1">20.1 El art. 18 traducido a requisitos de modelo</h3>
+
+<p>El capítulo 9 explica el art. 18 como norma de conducta. Aquí interesa otra lectura: qué tiene que poder hacer, demostrar o dejar registrado un sistema de admisión para que cada apartado se cumpla. La tabla es el punto de partida de cualquier diagnóstico y conviene tenerla delante durante toda la parte.</p>
+
+<div class="bloque b-norma">
+<span class="etiqueta">Norma</span>
+<p>Art. 18 de la Directiva (UE) 2023/2225: evaluación de solvencia "en profundidad", "en interés del consumidor", sobre información pertinente y exacta de ingresos, gastos y otras circunstancias, necesaria y proporcionada al crédito; sin categorías especiales de datos ni redes sociales; con intervención humana si hay tratamiento automatizado; sin poner el crédito a disposición si el resultado no es favorable. Equivalente español vigente: art. 14 de la Ley 16/2011 (evaluación con "información suficiente obtenida por los medios adecuados" y consulta de ficheros) y art. 18 de la Orden EHA/2899/2011 (préstamo responsable). Anteproyecto: arts. 31 a 33 en el texto de enero; arts. 28 a 30 en el de septiembre, según el informe de la CNMC.</p>
+</div>
+
+<div class="tabla-scroll">
+<table>
+<caption>El art. 18 CCD2 leído como especificación de un sistema de admisión. La última columna es lo que debería poder enseñarse en una inspección.</caption>
+<thead><tr><th>Apartado</th><th>Qué dice, en una frase</th><th>Qué exige al modelo o al proceso</th><th>Evidencia</th></tr></thead>
+<tbody>
+<tr><td>18(1)</td><td>Evaluación en profundidad, en interés del consumidor, contra el préstamo irresponsable y el sobreendeudamiento</td><td>Que el sistema mida la capacidad de pago del cliente, no solo el riesgo para la entidad. Una <i>scorecard</i> de PD sola no basta</td><td>Descripción del proceso con las dos preguntas separadas: riesgo y capacidad (20.2)</td></tr>
+<tr><td>18(3), párr. 1</td><td>Información de ingresos, gastos y otras circunstancias, necesaria y proporcionada; sin categorías especiales; las redes sociales no son fuente externa</td><td>Inventario de variables con su fuente y su clasificación; ninguna variable de redes sociales ni que revele categorías especiales; ingresos y gastos presentes en la decisión</td><td>Diccionario de variables clasificado (21.1)</td></tr>
+<tr><td>18(3), párr. 2</td><td>La información se verifica adecuadamente</td><td>Política de verificación por producto e importe: qué se acepta declarado y qué se comprueba</td><td>Matriz de verificación (22.1 y 22.3)</td></tr>
+<tr><td>18(4)</td><td>Procedimientos establecidos, documentados y mantenidos; información conservada</td><td>Documentación del modelo y de las reglas, versionada; registro de cada decisión con sus entradas</td><td>Documentación y registro de decisiones (21.4)</td></tr>
+<tr><td>18(5)</td><td>Solicitud conjunta sobre capacidad conjunta</td><td>Cálculo de capacidad de pago agregado del hogar solicitante</td><td>Regla de capacidad para solicitudes conjuntas</td></tr>
+<tr><td>18(6)</td><td>No se pone el crédito a disposición sin resultado que indique cumplimiento probable</td><td>Un corte, o una regla, que impida conceder cuando la evaluación es negativa, sin excepciones comerciales sin control</td><td>Política de <i>overrides</i> y su registro (23.3)</td></tr>
+<tr><td>18(7)</td><td>No se anula ni modifica el contrato contra el consumidor por un error de evaluación propio</td><td>Calidad en origen: el error del modelo lo absorbe la entidad</td><td>Pruebas de calidad del dato (21.4)</td></tr>
+<tr><td>18(8)</td><td>Con tratamiento automatizado, derecho a intervención humana: explicación, punto de vista y revisión</td><td>Motivos de denegación individuales y comprensibles; un circuito de revisión con autoridad para cambiar la decisión</td><td>Catálogo de motivos, procedimiento y estadística de revisiones (cap. 23)</td></tr>
+<tr><td>18(9)</td><td>Denegación comunicada sin demora, con remisión a asesoramiento de deudas en su caso</td><td>Comunicación automática de la denegación con el contenido exigido</td><td>Plantillas y registro de envíos</td></tr>
+<tr><td>18(10)</td><td>Reevaluar antes de un aumento significativo del importe</td><td>Modelo o regla para aumentos de límite con información actualizada; definición interna de "significativo"</td><td>Política de aumentos de límite</td></tr>
+<tr><td>18(11)</td><td>La evaluación no se basará exclusivamente en el historial crediticio</td><td>Variables distintas del <i>bureau</i> con peso real en la decisión</td><td>Análisis de contribución de variables (21.5)</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>Hay tres apartados que cambian el diseño y no solo la documentación. El 18(1), porque obliga a una segunda pregunta que muchas <i>scorecards</i> no se hacen. El 18(3), porque saca del modelo variables que hoy funcionan. Y el 18(8), porque exige poder explicar una decisión concreta a la persona afectada, lo que condiciona qué modelos se pueden usar y cómo se construyen. El resto son procedimiento, registro y política, que cuestan trabajo pero no cambian el modelo.</p>
+
+<p>Hay también lo que el artículo no dice. No fija umbrales por importe ni regímenes distintos por cuantía: la proporcionalidad entra solo por la fórmula "necesarias y proporcionadas en relación con la naturaleza, la duración, el valor y los riesgos del crédito" y por el considerando 54. No define "procesamiento automatizado" ni cita el art. 22 del RGPD. Y no exige que la decisión sea exclusivamente automatizada para que nazca el derecho a intervención humana: basta que la evaluación implique tratamiento automatizado, que es el caso de prácticamente toda la admisión de consumo.</p>
+
+<div class="bloque b-margen">
+<span class="etiqueta">Margen</span>
+<p>El art. 18 deja tres márgenes con consecuencias para el modelo. Qué significa "proporcionada": la directiva no da cifras, y el anteproyecto de enero (art. 31.9) remite a un real decreto los criterios adicionales, que no existe. Qué es un aumento "significativo" del importe en el 18(10): lo define la entidad. Y qué es una explicación "clara y comprensible" en el 18(8)(a): el considerando 56 habla de "las principales variables, la lógica y los riesgos", sin más detalle. En los tres casos lo que protege a la entidad es haber fijado un criterio por escrito, con su razonamiento, antes de que nadie lo pida.</p>
+</div>
+
+<h3 id="s20-2">20.2 De "¿me devolverá?" a "¿puede permitírselo?"</h3>
+
+<p>Una <i>scorecard</i> de admisión responde a una pregunta: entre los solicitantes que se parecen a este, ¿qué proporción dejará de pagar? Es una pregunta sobre la entidad y su pérdida esperada. El art. 18(1) obliga a hacerse otra, sobre el cliente: si concedo este crédito con esta cuota, ¿podrá pagarlo sin un perjuicio que no debería sufrir? Las dos preguntas se parecen y a menudo tienen la misma respuesta, pero no siempre, y la CCD2 obliga a tener herramientas para las dos.</p>
+
+<p>Las dos respuestas divergen en dos direcciones. Hay clientes con PD baja que no pueden permitirse el crédito: personas con un historial impecable que pagan siempre, aunque para pagar dejen de cubrir gastos básicos o se endeuden en otro sitio. La <i>scorecard</i> los aprueba porque históricamente ese perfil paga, y es verdad que paga; lo que no mide es a qué coste. Y hay clientes con PD alta que sí pueden permitírselo: un historial corto o una incidencia antigua les penaliza en el <i>score</i>, aunque su renta disponible soporte la cuota con holgura. El primer grupo es el que preocupa a la directiva; el segundo, al negocio.</p>
+
+<p>La consecuencia práctica es que la CCD2 empuja a todas las entidades a un sistema de dos piezas: un modelo de riesgo que ordena a los solicitantes por probabilidad de impago y un cálculo de capacidad de pago sobre la operación concreta. Las Directrices EBA/GL/2020/06 sobre concesión y seguimiento de préstamos, que el Banco de España adoptó como propias en julio de 2020 y que se aplican desde el 30 de junio de 2021, ya pedían lo segundo: analizar la capacidad y la perspectiva de pago, evitar el perjuicio indebido (<i>undue hardship</i>) y el sobreendeudamiento, tener en cuenta compromisos y gastos (párrs. 95 a 101), no basar la capacidad en un aumento esperado de ingresos sin prueba y hacer análisis de sensibilidad a eventos negativos en el préstamo no garantizado (párrs. 116 y 117). La novedad de la CCD2 no es la idea; es que la hace exigible a todo prestamista de consumo y la convierte en un derecho del cliente.</p>
+
+<p>Una entidad que hoy decide solo con <i>score</i> y un corte tiene que añadir la segunda pieza. Una que ya tiene una regla de endeudamiento la tiene que revisar: casi todas las que hemos visto miden cuotas sobre ingresos declarados, sin gastos del hogar y sin verificar, y eso no es una evaluación "sobre ingresos y gastos". El capítulo 22 desarrolla cómo se construye y el 22.4 mide con S2 lo que cuesta.</p>
+
+<div class="bloque b-porque">
+<span class="etiqueta">Por qué</span>
+<p>La Directiva 2008/48 pedía evaluar la solvencia "sobre la base de una información suficiente" y dejaba casi todo lo demás a los Estados. El resultado fue una obligación que cada país leyó a su manera y que en la práctica se cumplía con una consulta a un fichero y un <i>score</i>. La CCD2 responde a esa experiencia con una evaluación "en profundidad", basada en ingresos y gastos, en interés del consumidor y con una regla de no conceder si el resultado es negativo. El considerando 54 añade que el calendario de reembolso debe adaptarse a la capacidad del consumidor, y que una evaluación positiva no obliga a conceder: el prestamista conserva su libertad contractual.</p>
+</div>
+
+<div class="bloque b-trampa">
+<span class="etiqueta">Trampa</span>
+<p>Creer que una <i>scorecard</i> con buen Gini cumple el art. 18 porque "ya mide si el cliente puede pagar". Mide si el cliente paga, que no es lo mismo. Un inspector que pida el expediente de un cliente con una cuota que supera su renta disponible y vea que se aprobó por <i>score</i>, sin ningún cálculo de capacidad, no discutirá el Gini: preguntará dónde está la evaluación en interés del consumidor.</p>
+</div>
+
+<h3 id="s20-3">20.3 Diagnóstico rápido: las diez preguntas que un Head of Risk hace a su equipo</h3>
+
+<p>El primer día no hace falta un análisis de <i>gaps</i>. Hacen falta diez preguntas que cualquier equipo de admisión debería poder contestar en una semana. Si no puede, la respuesta ya es el diagnóstico.</p>
+
+<ol>
+<li><strong>¿Qué modelos, reglas y proveedores intervienen en cada decisión de admisión, por producto y por canal, y quién es su dueño?</strong> Incluidos los que aplica un comercio asociado o un socio de BNPL en nombre de la entidad. El art. 18 obliga al prestamista, no al que puntúa.</li>
+<li><strong>¿Qué variables usa cada uno, de dónde viene cada una y alguna procede de redes sociales o puede revelar salud, origen étnico u otra categoría especial?</strong> Con las de los proveedores incluidas: un <i>score</i> de "huella digital" comprado a un tercero es una variable más.</li>
+<li><strong>¿Dónde entran en la decisión los ingresos y los gastos del cliente, y qué parte es declarada, verificada o inferida?</strong></li>
+<li><strong>¿Existe alguna regla que pueda denegar a un cliente con buen <i>score</i> porque no puede pagar la cuota?</strong> Si no existe, no hay evaluación de capacidad de pago, por mucho que el <i>score</i> sea bueno.</li>
+<li><strong>¿Qué parte de las decisiones es completamente automática, por producto, quién puede cambiar una denegación y cuántas cambia de verdad?</strong></li>
+<li><strong>¿Qué se le dice hoy a un cliente denegado y podríamos darle, en días, los motivos principales de su caso concreto en un lenguaje que entienda?</strong></li>
+<li><strong>¿Cuánto pesan los datos de <i>bureau</i> y de la CIR en la decisión?</strong> Si se puede aprobar o denegar solo con el historial, el art. 18(11) tiene un problema.</li>
+<li><strong>¿Hemos medido alguna vez la tasa de aprobación por edad, sexo o nacionalidad, y tenemos los datos para hacerlo?</strong></li>
+<li><strong>¿Qué modelos aguas abajo usan el <i>score</i> de admisión como entrada?</strong> PD IRB, IFRS 9, <i>pricing</i>, <i>stress test</i>, comportamiento: cada cambio en admisión llega a todos.</li>
+<li><strong>¿Dónde está documentado el procedimiento de evaluación, cuándo se revisó por última vez y aguantaría una inspección la semana que viene?</strong></li>
+</ol>
+
+<p>Las mismas preguntas tienen respuestas distintas según el tamaño de la entidad, y conviene saber de antemano dónde suele estar cada una. Un <strong>banco grande con modelos IRB</strong> tiene casi siempre la documentación del modelo, la validación independiente y el registro de decisiones, porque el marco prudencial ya se los exigía; donde falla es en la capacidad de pago (la regla, si existe, mide cuotas sobre ingresos declarados), en los motivos individuales (el modelo se documentó para el supervisor, no para el cliente) y en la cantidad de piezas que cuelgan del <i>score</i> de admisión. Una <strong>entidad pequeña sin modelos internos</strong>, como el establecimiento financiero de crédito que sirve de entidad de referencia a este manual, suele tener el problema contrario: un proceso más sencillo y fácil de cambiar, pero una <i>scorecard</i> de proveedor que no controla, poca documentación propia y ninguna medición de disparidad. Para el primero el trabajo es sobre todo de gobierno y de coordinación; para la segunda, de conocimiento de su propio modelo y de contrato con el proveedor.</p>
+
+<p>Las preguntas 2, 4 y 6 son las que más veces quedan sin respuesta, y por eso son las que ordenan los capítulos 21, 22 y 23. La 9 es la que más tarda en contestarse en un banco grande y la que más se olvida en uno pequeño que compra la <i>scorecard</i>: el proveedor cambia el modelo y la provisión IFRS 9 se mueve sin que nadie sepa por qué. El capítulo 26 convierte las respuestas en un plan.</p>
+
+<div class="bloque b-caso">
+<span class="etiqueta">Caso</span>
+<dl>
+<dt>Qué llega</dt>
+<dd>Un requerimiento del Banco de España dentro de una revisión de préstamo responsable en consumo: descripción del procedimiento de evaluación de solvencia de cada producto, documentación de los modelos y reglas en uso, y una muestra de expedientes de préstamos concedidos en el último año con toda la información que se tuvo en cuenta para concederlos.</dd>
+<dt>Qué hay detrás</dt>
+<dd>El supervisor quiere comprobar que lo que dice el manual de riesgos coincide con lo que pasó en cada expediente. La Memoria de Supervisión 2025 del Banco de España recoge entre sus conclusiones en consumo deficiencias en modelos internos y en la aplicación de NIIF 9, y que se iniciaron trabajos para identificar buenas prácticas en la concesión. Las revisiones de consumo no son una hipótesis.</dd>
+<dt>La respuesta que funciona</dt>
+<dd>Un documento por producto que siga el orden del art. 18 y de la Ley 16/2011, art. 14: qué información se usa, de dónde viene, cómo se verifica, qué modelo y qué regla deciden, quién puede cambiar la decisión y cómo queda registrado. Y una muestra en la que cada expediente reproduce la decisión: entradas, <i>score</i>, resultado de la regla de capacidad, motivo de la decisión y, si hubo <i>override</i>, quién y por qué.</dd>
+<dt>La que empeora las cosas</dt>
+<dd>Enviar la documentación técnica del modelo, que habla de Gini y de estabilidad, y unos expedientes que solo contienen el <i>score</i> y la decisión. El supervisor no ha preguntado si el modelo discrimina bien; ha preguntado si la entidad evaluó la capacidad de pago de cada cliente, y la respuesta que recibe es que no lo sabe.</dd>
+</dl>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="cap21">21. Datos <span class="nivel n2">N2</span></h2>
+
+<p class="lead">La CCD2 regula los datos de la evaluación con más precisión que cualquier otra parte del art. 18: qué tiene que estar (ingresos y gastos), qué no puede estar (categorías especiales y redes sociales) y qué no puede ser lo único (el historial crediticio). El inventario de variables es, por eso, el primer entregable de cualquier programa de modelos, y el más barato.</p>
+
+<h3 id="s21-1">21.1 Inventario de variables y clasificación: permitidas, prohibidas, dudosas</h3>
+
+<p>El inventario tiene que cubrir todas las variables que llegan a la decisión, no solo las del modelo principal: las de las reglas de política, las de los filtros de fraude que también deniegan, las de los <i>scores</i> de proveedores y las que usa el comercio asociado en el BNPL. Para cada una, su fuente, su definición, su uso (modelo, regla, filtro) y una clasificación en cuatro grupos.</p>
+
+<div class="tabla-scroll">
+<table>
+<caption>Clasificación de variables de admisión. La norma no enumera variables concretas: la lista de ejemplos es criterio del autor, construido sobre la CCD2, el RGPD y la Ley 15/2022.</caption>
+<thead><tr><th>Grupo</th><th>Base normativa</th><th>Ejemplos habituales</th><th>Tratamiento</th></tr></thead>
+<tbody>
+<tr><td><strong>Prohibidas</strong></td><td>Arts. 18(3) y 19(5) CCD2; art. 9.1 RGPD</td><td>Salud (incluido el considerando 55: "datos sobre cáncer"), origen étnico, religión, afiliación sindical, orientación sexual; cualquier dato obtenido de redes sociales, también a través de un <i>score</i> de proveedor que las use</td><td>Retirar. No hay justificación posible</td></tr>
+<tr><td><strong>Prohibidas salvo justificación objetiva</strong></td><td>Art. 6 CCD2 (nacionalidad, residencia y motivos del art. 21 de la Carta); arts. 2.1, 4.2 y 17 Ley 15/2022</td><td>Nacionalidad, país de nacimiento, sexo, discapacidad</td><td>Retirar como regla general. Mantener solo con un análisis escrito de justificación objetiva, adecuación, necesidad y proporcionalidad, que casi nunca se sostiene</td></tr>
+<tr><td><strong>Dudosas o proxy</strong></td><td>Art. 6 CCD2 y art. 6.1.b Ley 15/2022 (discriminación indirecta); criterio de la AEPD sobre <i>proxies</i></td><td>Edad, código postal o zona, tipo de contrato, gama o tipo de dispositivo, hora de la solicitud, correo electrónico, comportamiento en la app</td><td>Mantener solo si aportan poder predictivo, tienen una lógica económica explicable y se ha medido su efecto por grupos (cap. 24)</td></tr>
+<tr><td><strong>Permitidas</strong></td><td>Art. 18(3) CCD2; EBA/GL/2020/06, párr. 85 y anexo 2</td><td>Ingresos, gastos, compromisos financieros, empleo y antigüedad, composición del hogar, historial de pagos propio y de <i>bureau</i>, finalidad</td><td>Usar, con verificación proporcional y trazabilidad</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>Dos matices sobre la tabla. El primero: "dudosa" no significa "prohibida con otro nombre". La edad, por ejemplo, es una causa de discriminación en el art. 2.1 de la Ley 15/2022, pero tiene una relación con el riesgo y con la capacidad de pago (horizonte de ingresos, jubilación) que puede justificar su uso si se documenta. Lo que no se puede hacer es usarla sin haberse hecho la pregunta. El segundo: la clasificación es de uso, no de variable. Los movimientos de cuenta son permitidos para medir ingresos y gastos y contienen pagos que revelan salud o afiliación; la variable "gasto mensual" es permitida y la variable "gasto en farmacia" no.</p>
+
+<div class="bloque b-trampa">
+<span class="etiqueta">Trampa</span>
+<p>Hacer el inventario solo sobre el modelo propio. En el BNPL y en la financiación en punto de venta, una parte de la decisión la toma a menudo el socio tecnológico o el comercio con su propio motor, y en las entidades pequeñas la <i>scorecard</i> es de un proveedor que no entrega su lista de variables. El art. 18 obliga al prestamista. Si no sabe qué variables usa su proveedor, no puede afirmar que no usa redes sociales, y tendrá que exigirlo por contrato con derecho de auditoría.</p>
+</div>
+
+<h3 id="s21-2">21.2 Retirar variables sin destruir el poder predictivo</h3>
+
+<p>La reacción de cualquier equipo de modelos ante una lista de variables a retirar es calcular cuánto Gini se pierde. Es la pregunta correcta, pero incompleta. Lo que importa al negocio no es el Gini, sino cuánta aprobación se pierde a igual morosidad, y lo que importa al supervisor es que la retirada se haya hecho bien: reentrenando, no apagando la variable, y midiendo el efecto en las decisiones.</p>
+
+<p>El método tiene cuatro pasos. <strong>Medir la contribución de cada variable</strong> por separado, reentrenando sin ella, porque las variables correlacionadas se reparten el poder predictivo y la contribución individual engaña. <strong>Reentrenar sin todas</strong> las que se retiran y recalibrar, porque la pérdida conjunta no es la suma de las individuales. <strong>Medir en aprobación a igual morosidad</strong>, que es la métrica que entiende un comité de dirección. Y <strong>buscar sustitutos legítimos</strong> para el poder perdido, que casi siempre existen: lo que una variable prohibida capturaba de verdad suele estar también en ingresos, gastos o comportamiento de pago, que son variables permitidas.</p>
+
+<div class="bloque b-numeros">
+<span class="etiqueta">Números</span>
+<p>En la cartera de S2, el modelo actual de la entidad de referencia usa catorce variables, entre ellas tres que con la CCD2 pasan a estar prohibidas o en duda: una señal de "huella digital" de un proveedor construida en parte con redes sociales, la nacionalidad y la gama del dispositivo desde el que se solicita. Con un Gini del 63,8 % y aprobando el 70 % de las solicitudes, la morosidad de los aprobados es del 3,64 %. Esa morosidad es la referencia: cada modelo se compara por la aprobación que alcanza sin superarla (S2, apartado a).</p>
+<div class="tabla-scroll">
+<table>
+<caption>Retirada de variables en la cartera sintética de S2, muestra de prueba de 149.609 solicitudes. Diferencias en puntos sobre el modelo actual.</caption>
+<thead><tr><th>Modelo</th><th>Gini</th><th>Aprobación a igual morosidad</th></tr></thead>
+<tbody>
+<tr><td>Actual (14 variables)</td><td>63,8 %</td><td>70 %</td></tr>
+<tr><td>Sin la señal de redes sociales</td><td>62,6 % (-1,2)</td><td>68,2 % (-1,8)</td></tr>
+<tr><td>Sin nacionalidad</td><td>63,8 % (0,0)</td><td>70,0 % (0,0)</td></tr>
+<tr><td>Sin gama del dispositivo</td><td>63,7 % (-0,1)</td><td>70,0 % (0,0)</td></tr>
+<tr><td>Sin las tres, reentrenado ("limpio")</td><td>62,5 % (-1,3)</td><td>68,3 % (-1,7)</td></tr>
+</tbody>
+</table>
+</div>
+<p>Tres lecturas. La nacionalidad no aporta casi nada: lo que tenía de predictivo ya estaba en el contrato, el historial y la renta, que es lo habitual. La señal de redes sociales sí aporta, porque capturaba algo del comportamiento de pago que el resto de variables no ve; retirarla cuesta casi dos puntos de aprobación. Y la pérdida conjunta, 1,7 puntos de aprobación, es el orden de magnitud que hay que llevar al comité: real, pero no dramática.</p>
+<p>Lo que pasa si no se reentrena también se ve. Si las tres variables se "apagan" sustituyéndolas por su media, el Gini es casi el mismo (62,3 %), pero con el corte de PD del modelo actual la morosidad de los aprobados sube al 3,98 %; con el modelo reentrenado y el mismo corte, al 3,78 %. Y aunque los dos modelos aprueban el mismo 70 %, coinciden en el 94,4 % de las decisiones: una de cada dieciocho solicitudes cambia de sentido, y esos clientes son los que reclamarán.</p>
+</div>
+
+<div class="bloque b-palanca">
+<span class="etiqueta">Palanca</span>
+<p>Retirar las variables prohibidas cuesta algo menos de dos puntos de aprobación a igual morosidad en la cartera sintética. Añadir datos de movimientos de cuenta lo recupera con creces: con todas las solicitudes compartiendo sus cuentas, la aprobación a la misma morosidad sube al 74,5 %, y con la mitad compartiendo, al 71,8 % (S2, apartado c). La conversación con negocio no es "la CCD2 nos quita aprobación", sino "la CCD2 nos obliga a cambiar unas variables por otras mejores, y el cambio sale a cuenta si se invierte en los datos".</p>
+</div>
+
+<h3 id="s21-3">21.3 Fuentes nuevas: <i>open banking</i>, ficheros positivos, datos del comercio</h3>
+
+<p>La CCD2 pide ingresos y gastos, y la fuente que mejor los mide son los movimientos de la cuenta donde se cobran y se pagan. En España hay tres vías para llegar a ellos: los datos propios de la entidad cuando el cliente tiene la cuenta en ella, que la Directriz EBA/GL/2020/06 permite usar respetando el RGPD (párr. 87) y que conviene integrar en una visión única del cliente (párr. 90); el acceso a cuentas de otras entidades a través de un proveedor de servicios de información sobre cuentas con el consentimiento explícito del cliente, al amparo de la PSD2; y la documentación que aporta el cliente, que es la vía más lenta y la más fácil de manipular.</p>
+
+<div class="bloque b-norma">
+<span class="etiqueta">Norma</span>
+<p>Art. 67 de la Directiva (UE) 2015/2366 (PSD2): el proveedor de información sobre cuentas presta el servicio solo con el consentimiento explícito del usuario (67.2.a) y no puede usar, almacenar ni acceder a datos para fines distintos del servicio expresamente solicitado (67.2.f). Art. 94.2: solo se tratan los datos necesarios, con consentimiento expreso. Equivalente español: sin equivalente en la Ley 16/2011; el acceso a cuentas se rige por la normativa española de servicios de pago. Encaja con el art. 18(3) CCD2: ingresos y gastos reales, a petición del propio solicitante.</p>
+</div>
+
+<p>Lo que la PSD2 permite es que el solicitante comparta su historial de cuenta para que se evalúe su solicitud. Lo que no permite es reutilizar esos datos para otra cosa: entrenar un modelo de marketing, o guardar el historial de quien no llegó a ser cliente para construir el próximo modelo sin una base jurídica propia. Esto tiene una consecuencia práctica que los equipos de modelos descubren tarde: la base de entrenamiento de un modelo con variables de cuenta solo crece con los solicitantes que consintieron y para los que hay base para conservar los datos, y su representatividad (art. 10 del AI Act, párr. 54 de la Directriz) depende de quién consiente.</p>
+
+<p>Hay además un problema de contenido. Los movimientos de cuenta contienen categorías especiales inferibles: pagos a una clínica, cuotas a un sindicato, a un partido o a una confesión religiosa. El art. 18(3) prohíbe que la evaluación incluya esas categorías y el art. 19(5) que se procesen. La norma exige el resultado y no dice cómo, así que el cómo lo tiene que decidir la entidad: una capa de categorización que agregue los movimientos en categorías económicas (ingresos, gastos esenciales, deudas, ocio) y descarte o enmascare las categorías sensibles antes de que el dato llegue al modelo o al analista. Esa capa es parte del modelo a efectos de documentación y de validación.</p>
+
+<p>Los <strong>ficheros positivos</strong> son la segunda fuente. Hoy en España los sistemas privados de información crediticia que se apoyan en el art. 20 de la LOPDGDD son de datos negativos: deudas impagadas. La CIR del Banco de España sí recoge riesgos vivos, y la Circular 1/2026 baja su umbral de declaración individualizada de 3.000 a 1.000 euros a partir del 2 de enero de 2027, lo que hará visibles muchos préstamos personales pequeños y líneas de tarjeta que hoy no aparecen. El texto de enero del anteproyecto (art. 31.5) prevé que el prestamista que concede un préstamo "podrá comunicar" a los sistemas privados el importe, las fechas, lo pendiente, el tipo y las garantías, que sería el embrión de un fichero positivo privado; mientras no sea ley, no lo es.</p>
+
+<p>La tercera fuente son los <strong>datos del comercio</strong> en el BNPL y la financiación en punto de venta: qué se compra, por qué importe, con qué historial de compras en ese comercio. Son útiles para fraude y para el modelo de riesgo, y plantean dos preguntas: si son pertinentes para la solvencia en el sentido del art. 18(3) (la cesta de la compra dice poco de la capacidad de pago y bastante de hábitos personales que pueden ser sensibles) y quién es responsable de su tratamiento. La respuesta prudente es usarlos para fraude, que el AI Act excluye del alto riesgo, y con mucha cautela para solvencia.</p>
+
+<h3 id="s21-4">21.4 Calidad y trazabilidad del dato</h3>
+
+<p>El art. 18(4) obliga a documentar y conservar la información usada en cada evaluación. Para un modelo, eso significa poder reconstruir cualquier decisión pasada: qué datos entraron, con qué valores, qué versión del modelo y de las reglas se aplicó, qué salió y quién intervino. La Directriz EBA/GL/2020/06 ya pedía granularidad por préstamo, registro de los criterios aplicados en origen y seguimiento de las excepciones y <i>overrides</i> (párrs. 60 a 62), y conservar la documentación al menos durante la vida del contrato (párr. 94). El AI Act, para los sistemas de alto riesgo, exige al responsable del despliegue conservar los registros generados por el sistema al menos seis meses (art. 26.6), plazo que en una entidad financiera queda absorbido por la conservación sectorial, mucho más larga.</p>
+
+<p>En la práctica, la trazabilidad falla en tres sitios. En los <strong>datos de terceros</strong>: la respuesta del <i>bureau</i> o del proveedor de cuentas se usa y no se guarda, y meses después no se puede saber qué decía. En las <strong>versiones</strong>: el modelo se recalibra, la regla cambia de umbral, y nadie puede decir qué versión decidió un expediente de hace un año. Y en el <strong>circuito humano</strong>: el analista que revisa cambia la decisión en una herramienta distinta del motor, sin motivo estructurado. Los tres se arreglan con un registro de decisiones que guarde, por solicitud, la foto completa de entradas, versiones, salidas e intervenciones. Es la pieza de infraestructura con mejor relación entre coste y defensa de toda la parte.</p>
+
+<div class="bloque b-defensa">
+<span class="etiqueta">Defensa</span>
+<p>Ante una reclamación individual, un juez o el Banco de España, la mejor defensa de una decisión de admisión es poder reproducirla. Un expediente que muestra qué datos se usaron, de dónde venían, qué <i>score</i> y qué resultado de capacidad de pago produjeron, qué versión del modelo estaba en vigor y quién la revisó, contesta casi cualquier pregunta. Uno que solo guarda la decisión obliga a reconstruir con testimonios, y eso no convence a nadie.</p>
+</div>
+
+<h3 id="s21-5">21.5 Datos de <i>bureau</i> y perfilado: el art. 20.3 de la LOPDGDD y la CIR a 1.000 euros</h3>
+
+<p>El historial crediticio es el centro de casi todas las <i>scorecards</i> de consumo, y la CCD2 le pone un límite que se lee rápido: la evaluación "no se basará exclusivamente en el historial crediticio" (art. 18(11)). No prohíbe que sea el factor principal. Lo que prohíbe es un sistema en el que el historial decide solo. Hay dos formas de caer en eso: un proceso en el que cualquier incidencia en un fichero deniega automáticamente, sin mirar nada más, y un modelo en el que el resto de variables pesa tan poco que la decisión es, de hecho, la del <i>bureau</i>.</p>
+
+<p>La forma de demostrar que no es el caso es un análisis de contribución: qué parte de la variabilidad del <i>score</i> explican las variables de historial, qué proporción de decisiones cambiaría si se quitaran, y cuántos clientes con historial impecable deniega la regla de capacidad de pago. Si la respuesta es "casi toda", "casi ninguna" y "ninguno", la entidad tiene un problema con el 18(11) aunque el modelo tenga diez variables.</p>
+
+<div class="bloque b-norma">
+<span class="etiqueta">Norma</span>
+<p>Art. 20 de la LOPDGDD: presunción de licitud de los sistemas comunes de información crediticia para deudas ciertas, vencidas y exigibles cuya existencia o cuantía no se haya reclamado por vía administrativa, judicial o en un procedimiento alternativo vinculante, con información previa al deudor, conservación mientras persista el impago y como máximo cinco años desde el vencimiento, y consulta solo si hay relación contractual o solicitud de financiación (art. 20.1). La presunción no ampara que el sistema añada otras informaciones "a fin de llevar a cabo un perfilado, en particular mediante la aplicación de técnicas de calificación crediticia" (art. 20.3). En la directiva: arts. 18(11) y 19. Circular 1/2026 del Banco de España: umbral de declaración a la CIR de 1.000 euros desde el 2 de enero de 2027.</p>
+</div>
+
+<p>El art. 20.3 de la LOPDGDD tiene una consecuencia que muchas entidades no han medido: un <i>score</i> que elabore el propio gestor del fichero sobre la base de sus datos no queda cubierto por la presunción de licitud del art. 20, y necesita su propia base jurídica. Si la entidad compra ese <i>score</i> y lo usa de forma determinante en la decisión, se acerca además al supuesto de la sentencia SCHUFA (cap. 23). Ninguna de las dos cosas impide usarlo, pero las dos exigen un análisis jurídico que pocas veces se ha hecho.</p>
+
+<p>La bajada del umbral de la CIR a 1.000 euros es la mejor noticia de datos para el consumo en años, y tiene dos efectos sobre los modelos. Uno positivo: desde 2027 se verán préstamos pequeños y líneas de tarjeta que hoy son invisibles, con lo que la estimación de compromisos existentes, la pieza más débil de casi todas las reglas de capacidad de pago, mejora. Otro que exige trabajo: las variables construidas con la CIR cambian de distribución el día que cambia el umbral, porque aparecen deudas que antes no estaban. Un modelo entrenado con datos anteriores verá a los mismos clientes más endeudados, sin que lo estén más. Hay que planificar el seguimiento de esas variables desde enero de 2027 y una recalibración cuando haya historia suficiente.</p>
+
+<div class="bloque b-caso">
+<span class="etiqueta">Caso</span>
+<dl>
+<dt>Qué llega</dt>
+<dd>En una revisión interna del programa CCD2 de un establecimiento financiero de crédito mediano, el área de cumplimiento pregunta qué variables usa el motor del socio tecnológico que decide el BNPL en los comercios asociados. El socio contesta que su modelo es propietario y que incluye una "señal de identidad digital" de un tercero.</dd>
+<dt>Qué hay detrás</dt>
+<dd>La señal combina antigüedad del correo electrónico, presencia en redes sociales y datos del dispositivo. Una parte es fraude, y otra entra en el <i>score</i> de riesgo. El prestamista es el establecimiento, que no conocía el detalle. El art. 18(3) dice que las redes sociales no se consideran fuente externa, y el art. 19(5) que no se procesan.</dd>
+<dt>La respuesta que funciona</dt>
+<dd>Pedir al socio la lista de variables y su origen por escrito, separar la señal en sus componentes, mantener en el filtro de fraude lo que es fraude y sacar del <i>score</i> de solvencia lo que procede de redes sociales. Reentrenar, medir el efecto como en 21.2, documentarlo y cambiar el contrato con el socio para que cualquier variable nueva requiera autorización previa del prestamista y para tener derecho de auditoría.</dd>
+<dt>La que empeora las cosas</dt>
+<dd>Aceptar una declaración genérica del socio de que "cumple la normativa" y archivarla. Si un cliente denegado pide la explicación del art. 18(8) y en ella aparece una variable de redes sociales, el problema ya no es del socio: es del prestamista, que no sabía lo que firmaba.</dd>
+</dl>
+</div>
+
+<div class="bloque b-viene">
+<span class="etiqueta">Qué viene</span>
+<p>Tres cambios en los datos de la solvencia que conviene seguir sin darlos por hechos. La revisión de la PSD2 (PSD3 y un reglamento de servicios de pago), con acuerdo político y pendiente de publicación a fecha de 2026-11-23, que busca reducir barreras al acceso a cuentas. El reglamento europeo de acceso a datos financieros (FiDA), cuya retirada ha anunciado la Comisión y que este manual no tiene en cuenta como fuente de datos. Y la comunicación de datos positivos a los sistemas privados que prevé el anteproyecto español, que cambiaría el mercado de <i>bureau</i> si llega a ley.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="cap22">22. Capacidad de pago frente a probabilidad de <i>default</i> <span class="nivel n2">N2</span></h2>
+
+<p class="lead">La capacidad de pago es la pieza que más cambia con la CCD2 y la que más miedo da a negocio, porque es la única que deniega a clientes que el modelo de riesgo aprobaría. Bien construida, cuesta unos puntos de aprobación y deja fuera a clientes que de verdad no podían pagar. Mal construida, deniega a buenos clientes con un umbral arbitrario y no protege a nadie.</p>
+
+<h3 id="s22-1">22.1 Ingresos, gastos y renta disponible: cómo se estiman</h3>
+
+<p>La capacidad de pago es una resta: ingresos, menos gastos necesarios, menos compromisos financieros existentes, menos la cuota nueva. Cada término tiene varias formas de estimarse, y la calidad de la evaluación es la del término peor medido.</p>
+
+<div class="tabla-scroll">
+<table>
+<caption>Fuentes para cada término de la renta disponible, de menor a mayor fiabilidad. La elección depende del producto y del importe (22.3).</caption>
+<thead><tr><th>Término</th><th>Declarado</th><th>Estadístico o inferido</th><th>Verificado</th></tr></thead>
+<tbody>
+<tr><td>Ingresos</td><td>Lo que dice el cliente en la solicitud. Tiende a sobrestimarse, más en quien tiene peor perfil</td><td>Modelo de ingresos con edad, ocupación, zona y datos de <i>bureau</i>. Útil para detectar declaraciones inverosímiles</td><td>Nómina, pensión o declaración de la renta; o movimientos de cuenta (ingresos recurrentes observados)</td></tr>
+<tr><td>Gastos necesarios</td><td>Lo que declara el cliente. Casi siempre se queda corto</td><td>Baremo por tamaño del hogar, construido con estadísticas oficiales de gasto de los hogares y revisado periódicamente</td><td>Gasto esencial observado en cuentas: vivienda, suministros, alimentación, transporte</td></tr>
+<tr><td>Compromisos existentes</td><td>Lo que declara el cliente</td><td>Estimación desde límites y saldos de <i>bureau</i></td><td>CIR y ficheros, más cargos recurrentes de financiación observados en cuentas (incluido el BNPL que no se ve en la CIR)</td></tr>
+<tr><td>Cuota nueva</td><td colspan="3">Se conoce. En la tarjeta <i>revolving</i> depende de la hipótesis de amortización: el art. 18.2.e) de la Orden EHA/2899/2011 manda valorar la capacidad de pago con cuotas que tengan por objetivo amortizar como mínimo el 25 % anual del límite en doce plazos mensuales iguales, salvo pacto de otro método. Es un criterio de evaluación de solvencia, no una obligación de amortizar el producto</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>Tres decisiones de método marcan el resultado. La primera es <strong>qué hacer con los gastos declarados</strong>. La práctica que funciona es tomar el mayor entre lo declarado y un baremo por tamaño del hogar: el cliente no puede declarar que vive con menos de lo que cuesta vivir. El baremo tiene que estar documentado, con su fuente y su fecha, y revisarse cuando cambian los precios; en esta parte S2 usa un baremo sintético, no una cifra oficial. La segunda es <strong>cómo se trata la incertidumbre del ingreso</strong>: un autónomo o un trabajador temporal tiene un ingreso más volátil, y la Directriz EBA/GL/2020/06 pide verificarlo con más cuidado cuando es irregular (párr. 115) y no basar la capacidad en aumentos esperados de ingresos sin prueba (párr. 116). La tercera es <strong>qué compromisos se ven</strong>: hasta que la CIR baje su umbral a 1.000 euros en enero de 2027, muchos préstamos pequeños y casi todo el BNPL de terceros no aparecen en ningún fichero, y solo se ven en los movimientos de cuenta.</p>
+
+<div class="bloque b-trampa">
+<span class="etiqueta">Trampa</span>
+<p>Calcular la capacidad de pago con el ingreso declarado y llamarlo evaluación sobre ingresos y gastos. El art. 18(3), párr. 2, exige que la información se verifique "adecuadamente". En S2, el 2,9 % de las solicitudes que el <i>score</i> aprueba y que pasan la regla con el ingreso declarado no la pasarían con el ingreso verificado en cuentas, y su morosidad es del 6,9 %, casi el doble de la de los aprobados (S2, apartado b). Es poco volumen y es exactamente el perfil que acaba en una reclamación por préstamo irresponsable.</p>
+</div>
+
+<h3 id="s22-2">22.2 Reglas de <i>affordability</i> y su interacción con la <i>scorecard</i></h3>
+
+<p>Las reglas que se usan en consumo se reducen a tres familias, que se combinan.</p>
+
+<ul>
+<li><strong>Ratio de cuotas sobre ingresos (DSTI)</strong>: suma de cuotas existentes y nueva dividida entre ingresos netos, con un máximo. Es simple y fácil de explicar, pero ignora que un hogar de cuatro con 1.500 euros tiene menos margen que una persona sola con los mismos ingresos.</li>
+<li><strong>Renta residual</strong>: ingresos menos gastos necesarios menos cuotas, que debe quedar por encima de cero o de un colchón. Es la que mejor recoge el espíritu del art. 18, porque mide si queda dinero para vivir después de pagar.</li>
+<li><strong>Prueba de sensibilidad</strong>: repetir el cálculo con un ingreso menor o una cuota mayor (si el tipo es variable o la tarjeta se usa al límite). La Directriz la pide en el préstamo no garantizado (párr. 117).</li>
+</ul>
+
+<p>La pregunta de diseño importante no es qué regla, sino cómo se combina con el <i>score</i>. Hay dos arquitecturas.</p>
+
+<p>En la <strong>secuencial</strong>, el <i>score</i> decide primero y la regla de capacidad filtra después: aprobado por <i>score</i> y que pase la regla, se concede; aprobado que no la pase, se deniega o se ofrece un importe menor. Es la más fácil de implantar y de explicar al supervisor, porque la regla es visible y se puede auditar sola. Su defecto es que trata la capacidad de pago como un sí o un no: un cliente con un DSTI del 39 % y otro del 41 % reciben decisiones opuestas aunque su riesgo sea casi igual.</p>
+
+<p>En la <strong>integrada</strong>, la carga de la operación (por ejemplo, el DSTI con la cuota nueva) entra como variable en el modelo de riesgo, que la pondera con el resto. Ordena mejor, porque el modelo aprende cuánto pesa la carga en el impago. Su defecto es que, por sí sola, no garantiza el art. 18(6): un cliente con muy buen historial puede compensar en el <i>score</i> una cuota que no puede pagar.</p>
+
+<p>La arquitectura que recomendamos es la combinación: la carga de la operación dentro del modelo, para ordenar, y una regla de capacidad de pago como suelo, para que ningún cliente sin renta disponible suficiente quede aprobado por bueno que sea su <i>score</i>. El suelo se puede poner menos exigente que la regla secuencial pura, porque ya no tiene que hacer el trabajo de ordenar. Es lo que mide 22.4.</p>
+
+<div class="bloque b-margen">
+<span class="etiqueta">Margen</span>
+<p>La directiva no fija ratios. El considerando 54 permite a los Estados dar orientaciones adicionales, por ejemplo límites de préstamo sobre ingresos, y el texto de enero del anteproyecto (art. 31.9) remite a un real decreto los criterios adicionales de solvencia. Mientras no existan, el umbral lo fija la entidad. Lo que hay que poder defender no es un número concreto, sino por qué ese número: con qué datos se calibró, qué morosidad tienen los clientes que quedan justo por encima y justo por debajo, y con qué frecuencia se revisa.</p>
+</div>
+
+<p>Dos productos tienen reglas propias. En la <strong>tarjeta <i>revolving</i></strong>, la cuota con la que se evalúa no es la que el cliente elegirá, que puede ser mínima, sino la que amortiza el 25 % anual del límite según la Orden EHA/2899/2011; y cada aumento de límite exige reevaluar con información actualizada (art. 18(10) CCD2 y art. 14.2 de la Ley 16/2011). El capítulo 11 trata qué parte de la CCD2 se aplica a las tarjetas en vigor antes del 20 de noviembre de 2026. En el <strong>BNPL</strong>, la cuota es alta en relación con el importe (tres o seis plazos) y el cliente suele tener varias operaciones abiertas en distintos proveedores, que no se ven en ningún fichero: es el producto donde más falla el término de compromisos existentes.</p>
+
+<h3 id="s22-3">22.3 Proporcionalidad: el BNPL de 50 euros frente al préstamo de 30.000</h3>
+
+<p>La CCD2 no tiene umbral mínimo de importe: un BNPL de 50 euros dentro de su ámbito exige una evaluación de solvencia como la de un préstamo de 30.000. Lo que cambia es la profundidad, por la fórmula del art. 18(3): información "necesaria y proporcionada en relación con la naturaleza, la duración, el valor y los riesgos del crédito". La proporcionalidad no exime de evaluar ingresos y gastos; permite hacerlo con menos verificación y con reglas más simples cuando el importe y el plazo son pequeños.</p>
+
+<div class="tabla-scroll">
+<table>
+<caption>Matriz de proporcionalidad orientativa. Los tramos los decide la entidad y tienen que estar justificados; los de esta tabla son ilustrativos.</caption>
+<thead><tr><th>Operación</th><th>Ingresos</th><th>Gastos</th><th>Compromisos</th><th>Regla</th></tr></thead>
+<tbody>
+<tr><td>BNPL o tarjeta de importe pequeño y plazo corto</td><td>Declarados, contrastados con un modelo de ingresos</td><td>Baremo</td><td><i>Bureau</i> y CIR</td><td>Simplificada (por ejemplo, solo DSTI)</td></tr>
+<tr><td>Préstamo personal o tarjeta de importe medio</td><td>Verificados (documento o cuentas)</td><td>Mayor entre declarado y baremo</td><td><i>Bureau</i>, CIR y declarados</td><td>DSTI y renta residual</td></tr>
+<tr><td>Importe alto o plazo largo</td><td>Verificados, con estabilidad</td><td>Observados en cuentas o documentados</td><td>Completos, con cuentas</td><td>DSTI, renta residual y sensibilidad</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>En S2 la versión proporcional de la regla aplica a los BNPL de hasta 300 euros y a las tarjetas de hasta 1.500 euros solo un DSTI máximo del 50 %, sin baremo de gastos, y la regla completa al resto. La diferencia en aprobación es pequeña (0,5 puntos en total y 0,8 en BNPL y en tarjeta) porque los importes pequeños casi nunca son los que no caben. La lección es que la proporcionalidad sirve menos para ganar aprobación que para ganar experiencia de cliente: en un BNPL de 80 euros no se le pide la nómina a nadie.</p>
+
+<div class="bloque b-trampa">
+<span class="etiqueta">Trampa</span>
+<p>Leer la proporcionalidad como un umbral por debajo del cual no se evalúa. La directiva no lo permite, y el BNPL es justamente el producto que la CCD2 trae a su ámbito por el riesgo de que pequeñas operaciones acumuladas sobreendeuden. Una política que diga "por debajo de X euros, solo fraude" no se puede defender. Una que diga "por debajo de X euros, evaluación con datos declarados, <i>bureau</i> y una regla simplificada, porque el importe y el plazo lo justifican" sí.</p>
+</div>
+
+<h3 id="s22-4">22.4 Aprobación y morosidad con y sin regla de capacidad de pago</h3>
+
+<div class="bloque b-numeros">
+<span class="etiqueta">Números</span>
+<p>Sobre el modelo limpio de 21.2, aprobando el 70 % de las solicitudes con una morosidad del 3,79 %, S2 aplica en secuencia una regla con dos condiciones: DSTI con la cuota nueva no superior al 40 % y renta residual no negativa tras un baremo de gastos por tamaño del hogar (S2, apartado b).</p>
+<div class="tabla-scroll">
+<table>
+<caption>Regla de capacidad de pago aplicada después del <i>score</i>. «Caen»: aprobados por el <i>score</i> que la regla deniega, en porcentaje de todas las solicitudes, y su morosidad observada.</caption>
+<thead><tr><th>Variante</th><th>Aprobación</th><th>Morosidad de aprobados</th><th>Caen</th><th>Morosidad de los que caen</th></tr></thead>
+<tbody>
+<tr><td>Solo <i>score</i></td><td>70,0 %</td><td>3,79 %</td><td>&ndash;</td><td>&ndash;</td></tr>
+<tr><td>Regla con ingresos declarados</td><td>63,9 %</td><td>3,50 %</td><td>6,1 %</td><td>6,8 %</td></tr>
+<tr><td>Regla proporcional por importe</td><td>64,4 %</td><td>3,53 %</td><td>5,6 %</td><td>6,8 %</td></tr>
+<tr><td>Regla con ingresos verificados en cuentas</td><td>62,5 %</td><td>3,41 %</td><td>7,5 %</td><td>6,9 %</td></tr>
+</tbody>
+</table>
+</div>
+<p>La regla cuesta unos seis puntos de aprobación y deja fuera a clientes con el doble de morosidad que los que siguen aprobados. Quién se cae: un ingreso declarado mediano de 1.379 euros frente a 2.044, hogares algo mayores (2,9 miembros frente a 2,5), más temporales (17,8 % frente a 13,7 %) y, sobre todo, un endeudamiento previo mucho mayor (DTI existente mediano del 22,8 % frente al 5,1 %). Por producto, el préstamo personal es el que más pierde (de 71,5 % a 61,8 % de aprobación) porque su cuota es la mayor; la tarjeta pasa de 69,5 % a 66,7 % y el BNPL de 68,3 % a 63,3 %.</p>
+<p>La comparación entre arquitecturas: con el DSTI dentro del modelo, el Gini sube del 62,5 % al 63,1 %. A la misma aprobación que deja la regla secuencial (63,9 %), el modelo integrado tiene una morosidad del 3,27 % frente al 3,50 %: ordena mejor y deniega a clientes más arriesgados. Y la combinación recomendada, el modelo integrado al 70 % con la regla proporcional como suelo, aprueba el 65,0 % con una morosidad del 3,59 %.</p>
+</div>
+
+<div class="bloque b-palanca">
+<span class="etiqueta">Palanca</span>
+<p>Para un comité de dirección, la cifra que importa es la caída de aprobación: unos seis puntos en la cartera sintética, más en el préstamo personal y menos en la tarjeta y el BNPL. Esa caída se compensa en parte con menor morosidad (unas tres décimas en los aprobados) y se puede reducir con dos palancas: ofrecer a los que caen un importe o un plazo que sí cabe, en vez de denegar (la regla deniega la operación, no al cliente), e integrar la carga en el modelo para que la regla actúe solo como suelo. Una entidad que hoy no tiene regla de capacidad y la introduce sin estas dos palancas verá la caída completa.</p>
+</div>
+
+<div class="bloque b-caso">
+<span class="etiqueta">Caso</span>
+<dl>
+<dt>Qué llega</dt>
+<dd>Una reclamación ante el servicio de atención al cliente, que el cliente anuncia que llevará al Banco de España y a los tribunales: le concedieron un préstamo personal en la app cuya cuota, sumada a las que ya tenía, superaba la mitad de su nómina, y ahora no puede pagar. Pide que se anule el préstamo o se le devuelvan los intereses por préstamo irresponsable.</dd>
+<dt>Qué hay detrás</dt>
+<dd>El <i>score</i> era bueno, sin incidencias y con historial largo, y el proceso no tenía regla de capacidad de pago: se aprobó por <i>score</i>. Los compromisos previos estaban en la CIR. La Ley 16/2011 vigente exige evaluar la solvencia con información suficiente (art. 14) y no prevé una sanción civil específica por hacerlo mal; un juez puede leer ese artículo a la luz del art. 18 de la directiva, que se aplica desde el 20 de noviembre de 2026 (cap. 17).</dd>
+<dt>La respuesta que funciona</dt>
+<dd>Reconocer el hecho con el expediente en la mano, ofrecer una medida de reestructuración del capítulo 13 (plazo, carencia o reducción de cuota, sin nueva evaluación si no aumenta significativamente el importe adeudado, art. 35(1) CCD2) y, en paralelo, corregir el proceso: la regla de capacidad de pago entra en producción, y se revisan los préstamos concedidos con la misma laguna para ofrecer la misma medida a quien la necesite antes de que reclame.</dd>
+<dt>La que empeora las cosas</dt>
+<dd>Contestar que el cliente tenía un buen <i>score</i> y que la entidad cumplió la normativa porque consultó los ficheros. Es verdad que los consultó; lo que la respuesta enseña es que vio los compromisos previos y no hizo nada con ellos. Si el expediente llega a un juzgado con otros iguales, deja de ser una reclamación y pasa a ser un patrón.</dd>
+</dl>
+</div>
+
+<div class="bloque b-viene">
+<span class="etiqueta">Qué viene</span>
+<p>El anteproyecto prevé consecuencias civiles por incumplir la evaluación de solvencia, con pérdida o reducción de intereses, según el informe de la CNMC sobre la versión de septiembre. Si llegan a ley, un fallo de capacidad de pago dejará de ser solo un riesgo de reclamación y de sanción administrativa y tendrá un coste directo por contrato. Es una razón más para que la regla de capacidad esté en producción antes de que exista la ley, no después.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="cap23">23. Explicabilidad, intervención humana y decisiones automatizadas <span class="nivel n2">N2</span></h2>
+
+<p class="lead">Tres normas se ocupan a la vez de la decisión automatizada de crédito: la CCD2, el RGPD y el AI Act. No se contradicen, pero tampoco dicen lo mismo, y la forma más barata de cumplirlas es diseñar un solo proceso que satisfaga a la más exigente en cada punto. Este capítulo trata la parte que toca al modelo y al proceso de admisión; el capítulo 32 vuelve sobre el AI Act como reto de gobierno de la IA en toda la entidad.</p>
+
+<h3 id="s23-1">23.1 Lo que exigen la CCD2, el RGPD y el AI Act a la vez</h3>
+
+<div class="tabla-scroll">
+<table>
+<caption>Las tres capas sobre la decisión automatizada de solvencia (a fecha de 2026-11-23). El AI Act se aplica directamente, sin ley española; la autoridad nacional de vigilancia está pendiente.</caption>
+<thead><tr><th></th><th>CCD2</th><th>RGPD</th><th>AI Act</th></tr></thead>
+<tbody>
+<tr><td>Cuándo se aplica</td><td>Si la evaluación "implica" tratamiento automatizado de datos personales (art. 18(8)). No exige que sea exclusivamente automatizada</td><td>Si la decisión se basa "únicamente" en tratamiento automatizado con efectos jurídicos o similares (art. 22.1). Tras SCHUFA, también si el <i>score</i> se usa de manera determinante</td><td>Sistemas de IA para evaluar la solvencia o establecer la calificación crediticia de personas físicas (anexo III, punto 5, letra b), salvo fraude. Siempre de alto riesgo si elaboran perfiles (art. 6.3, último párrafo)</td></tr>
+<tr><td>Qué da a la persona</td><td>Explicación clara de la evaluación, "incluida la lógica y los riesgos"; expresar su punto de vista; revisión de la evaluación y de la decisión (art. 18(8)). Información de la denegación sin demora (art. 18(9))</td><td>Intervención humana, punto de vista e impugnación (art. 22.3); información significativa sobre la lógica aplicada (art. 15.1.h)</td><td>Explicaciones claras y significativas del papel del sistema y de los elementos principales de la decisión (art. 86), salvo que ya lo garantice otra norma de la Unión</td></tr>
+<tr><td>Qué exige a la entidad</td><td>Procedimientos documentados (art. 18(4)); informar del derecho</td><td>Medidas adecuadas; evaluación de impacto (art. 35)</td><td>Como responsable del despliegue: supervisión humana por personas con competencia, formación y autoridad (art. 26.2), registros (26.6), informar a las personas (26.11), evaluación de impacto en derechos fundamentales antes de desplegar (art. 27). Si desarrolla el modelo, además las obligaciones de proveedor (arts. 8 a 17)</td></tr>
+<tr><td>Desde cuándo</td><td>20 de noviembre de 2026</td><td>Ya</td><td>Obligaciones de alto riesgo del anexo III desde el 2 de diciembre de 2027, tras el aplazamiento del Reglamento <i>Digital Omnibus</i> sobre IA, firmado el 8 de julio de 2026</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="bloque b-norma">
+<span class="etiqueta">Norma</span>
+<p>Art. 18(8) y 18(9) CCD2. Equivalente español vigente: sin equivalente en la Ley 16/2011, que solo obliga a informar del resultado de la consulta a ficheros cuando la denegación se basa en ella (art. 15). Anteproyecto, texto de enero: art. 32.3 (derecho a intervención humana con explicación, punto de vista y revisión) y art. 32.4, que va más allá de la directiva: la denegación se comunica por escrito, "debidamente justificada", especificando "las razones concretas" en que se funda. Versión de septiembre: art. 29, según la CNMC.</p>
+</div>
+
+<p>Cuatro puntos del cuadro piden comentario.</p>
+
+<p><strong>La sentencia SCHUFA cambia el perímetro del art. 22 RGPD.</strong> El TJUE (C-634/21, de 7 de diciembre de 2023) declaró que el cálculo automatizado por una agencia de un valor de probabilidad sobre la capacidad futura de pago es una "decisión individual automatizada" cuando el tercero que lo recibe se basa de manera determinante en él para contratar. La sentencia trata el <i>score</i> de una agencia; aplicarla al <i>score</i> interno del banco es una lectura extendida pero razonable: si un <i>score</i> insuficiente lleva casi siempre a la denegación, la decisión es automatizada aunque haya una persona en el circuito que nunca cambia nada. La CCD2 llega más lejos todavía: el art. 18(8) no pregunta si la decisión es exclusivamente automatizada, solo si la evaluación implica tratamiento automatizado. Un proceso con revisión humana real de todos los rechazos puede quedar fuera del art. 22 del RGPD, pero seguirá dentro del art. 18(8).</p>
+
+<p><strong>La explicación tiene que ser del caso, no del algoritmo.</strong> Según el comunicado del TJUE sobre la sentencia Dun &amp; Bradstreet Austria (C-203/22, de 27 de febrero de 2025), el responsable debe describir el procedimiento y los principios concretamente aplicados para que la persona entienda qué datos suyos se usaron y cómo; puede ser adecuado decirle en qué medida una variación de sus datos habría cambiado el resultado; y la mera comunicación de un algoritmo no basta. Si la entidad alega secreto comercial, la información se entrega a la autoridad de control o al juez, que pondera. Lo que se deduce para el modelo es que hay que poder generar, por solicitud, los motivos principales y un contrafactual. Es lo que trata 23.2.</p>
+
+<p><strong>Si una <i>scorecard</i> logística es un "sistema de IA" es una pregunta abierta.</strong> La definición del art. 3.1 del AI Act y las directrices de la Comisión sobre ella deciden si un modelo estadístico clásico entra; las fuentes de este manual no lo cierran. Nuestra recomendación es no apostar por la respuesta favorable: el coste de gobernar una <i>scorecard</i> como si fuera de alto riesgo es bajo para una entidad financiera, porque el propio Reglamento integra buena parte de las obligaciones en la gobernanza sectorial (el sistema de gestión de la calidad del art. 17 se entiende cumplido con las normas de gobierno interno, salvo algunas letras, art. 17.4), y el coste de equivocarse es una sanción de hasta 15 millones de euros o el 3 % del volumen de negocios mundial (art. 99.4). La Autoridad Bancaria Europea concluyó en noviembre de 2025 que no hay contradicciones significativas entre el AI Act y la normativa bancaria y que son complementarios.</p>
+
+<p><strong>Los modelos en producción tienen un régimen transitorio que depende de una palabra.</strong> Con el art. 111.2 en la redacción del <i>Omnibus</i>, los sistemas de alto riesgo puestos en servicio antes del 2 de diciembre de 2027 solo quedan sujetos si después sufren cambios significativos en su diseño. Una <i>scorecard</i> que se reentrena cada año con nuevas variables probablemente los sufrirá; una que solo se recalibra, quizá no. Qué es un cambio significativo de diseño no está definido para este caso, y la entidad tiene que fijar un criterio propio por escrito, coherente con su política de cambios de modelo (cap. 25). Dejar los modelos actuales congelados para esquivar el AI Act es una mala idea: esos mismos modelos tienen que cambiar por la CCD2.</p>
+
+<div class="bloque b-viene">
+<span class="etiqueta">Qué viene</span>
+<p>Tres piezas pendientes. La autoridad española de vigilancia del mercado para el <i>scoring</i> bancario: un proyecto de ley orgánica designaba al Banco de España, pero caducó con la disolución de las Cortes; mientras no haya ley, el art. 74.6 del AI Act apunta a la autoridad de supervisión financiera competente. Las directrices definitivas de la Comisión sobre clasificación de alto riesgo, de las que se conoce un borrador. Y el criterio sobre qué es un cambio significativo de diseño a efectos del art. 111.2. Ninguna de las tres cambia lo que hay que hacer en el modelo; cambian quién lo inspeccionará y con qué vara.</p>
+</div>
+
+<h3 id="s23-2">23.2 Motivos de denegación explicables</h3>
+
+<p>Una explicación que cumpla a la vez el art. 18(8)(a) CCD2, el art. 22 y el 15.1.h del RGPD y el art. 86 del AI Act tiene tres capas. Una <strong>general</strong>, igual para todos: qué tipo de información se usa, que hay un modelo estadístico que estima la probabilidad de impago y una regla de capacidad de pago, y qué peso relativo tienen los grandes bloques (historial, ingresos y gastos, situación laboral). Una <strong>individual</strong>: los dos o tres motivos que más han pesado en la decisión de esa persona, en lenguaje llano. Y una <strong>contrafactual</strong>: qué tendría que ser distinto para que la decisión cambiara, cuando se puede decir de forma honesta (un importe menor, un plazo mayor, una deuda menos).</p>
+
+<p>En una <i>scorecard</i> la capa individual sale directamente de los puntos: cada variable aporta puntos al <i>score</i>, y los motivos son las variables en las que el solicitante pierde más puntos frente a una referencia (el solicitante medio o el mejor atributo de cada variable). La elección de la referencia cambia los motivos y hay que documentarla. En un modelo no lineal se puede hacer lo mismo con métodos de atribución, pero con dos riesgos que la entidad tiene que medir antes de usarlos ante clientes: que los motivos no sean estables (dos clientes casi iguales reciben motivos distintos) y que no sean fieles al modelo (el método explica algo que el modelo no hace). La Directriz EBA/GL/2020/06 lo resume en una línea: si se requieren explicaciones, considerar un modelo interpretable (párr. 53.d).</p>
+
+<div class="bloque b-numeros">
+<span class="etiqueta">Números</span>
+<p>Un solicitante de la cartera de S2, elegido porque su motivo principal es el que trata el capítulo 22: préstamo personal de 28.200 euros, cuota de 467 euros, ingreso declarado de 1.282 euros, 24 años, contrato temporal con cinco meses de antigüedad. El modelo integrado le asigna una PD del 10,21 %, por encima del corte del 9,42 % que aprueba el 70 % de las solicitudes, y tampoco pasa la regla de capacidad de pago. Con la escala de puntos habitual (20 puntos duplican las probabilidades), las tres variables que más le restan frente al solicitante medio son la carga de cuotas sobre ingresos con el préstamo nuevo (-28 puntos), el contrato temporal (-12) y la antigüedad en el empleo (-6). El contrafactual, que exige a la vez quedar por debajo del corte y pasar la regla: con un importe de 18.330 euros, el 65 % del solicitado, la solicitud se aprobaría (S2, apartado e).</p>
+<p>En lenguaje de cliente: "Su solicitud no se ha aprobado principalmente porque la cuota del préstamo, sumada a las que ya paga, representa una parte demasiado alta de sus ingresos; también han influido su tipo de contrato y el poco tiempo que lleva en su empleo actual. Con un importe de unos 18.000 euros la solicitud podría aprobarse. Si cree que algún dato no es correcto o quiere que una persona revise la decisión, puede pedirlo aquí."</p>
+</div>
+
+<p>Tres reglas para el catálogo de motivos. Cada motivo se redacta una vez, lo revisan cumplimiento y atención al cliente, y se versiona. Ningún motivo menciona una variable que el cliente no pueda entender o no pueda cambiar sin dar a entender algo que no se pretende ("su zona de residencia"): si una variable da motivos así, es una razón más para revisar si debe estar en el modelo (cap. 24). Y el contrafactual solo se ofrece si es verdad y si la entidad está dispuesta a conceder en esas condiciones: ofrecer 18.000 euros y denegarlos después es peor que no decir nada.</p>
+
+<div class="bloque b-codigo">
+<span class="etiqueta">Código</span>
+<p>El apartado e de S2 muestra cómo se obtienen los motivos de una <i>scorecard</i> logística: los puntos de cada variable son su coeficiente por la distancia del solicitante a la media, multiplicados por el factor de escala (20 dividido por el logaritmo de 2). El contrafactual busca, reduciendo el importe en pasos del 5 %, el primero con el que la PD queda por debajo del corte y la operación pasa la regla de capacidad de pago: un contrafactual que solo mirase el <i>score</i> ofrecería un importe que la regla después denegaría.</p>
+</div>
+
+<h3 id="s23-3">23.3 Diseñar la revisión humana para que no sea un sello</h3>
+
+<p>La intervención humana del art. 18(8) tiene tres contenidos (explicación, punto de vista y revisión) y la AEPD ha dicho qué la hace significativa: un revisor con competencia y autoridad real para cambiar el resultado, con formación específica, independiente frente a la presión y frente al sesgo de automatización, y con medios y tiempo para revisar (entrada de su blog de 4 de marzo de 2024). El AI Act lo repite para el responsable del despliegue: personas con competencia, formación y autoridad (art. 26.2). Lo difícil no es escribirlo en la política; es que ocurra.</p>
+
+<p>Un circuito de revisión que funciona tiene seis piezas.</p>
+
+<ol>
+<li><strong>Quién revisa.</strong> Analistas de riesgos, no comerciales, con delegación de facultades para conceder o denegar dentro de límites. El art. 32(3)(b) CCD2 prohíbe que la remuneración de quien evalúa la solvencia dependa del número o la proporción de solicitudes aceptadas: un revisor con objetivos de aprobación no es independiente.</li>
+<li><strong>Qué ve.</strong> El expediente completo, los motivos del modelo y lo que aporta el cliente, no solo el <i>score</i>. Un revisor que solo ve el <i>score</i> lo confirma.</li>
+<li><strong>Qué puede hacer.</strong> Mantener, cambiar la decisión o proponer otra operación (importe, plazo), con un motivo estructurado. Es la política de <i>overrides</i> que la Directriz pide dentro del marco de decisión, con juicio experto y límites cuantitativos (párr. 54.d).</li>
+<li><strong>Cuánto tiempo tiene.</strong> Un objetivo de plazo de respuesta al cliente, y un tiempo por revisión que permita leer el expediente.</li>
+<li><strong>Qué se registra.</strong> Cada revisión, con quién, cuándo, qué vio, qué decidió y por qué, en el mismo registro que la decisión automática (21.4).</li>
+<li><strong>Cómo se controla.</strong> Indicadores por revisor y por equipo: tasa de cambio de decisión en cada sentido, morosidad de los <i>overrides</i> positivos, tiempo medio, y una muestra periódica revisada por una segunda línea.</li>
+</ol>
+
+<p>La tasa de cambio de decisión es la métrica que mejor delata un sello. Si es cero, la revisión no existe aunque esté en el organigrama; si es muy alta, el modelo no sirve o el revisor aplica criterios comerciales. No hay una cifra correcta, pero sí una pregunta que validación interna debe hacerse cada trimestre: ¿los clientes cuya denegación se revocó pagan como los aprobados de su tramo? Si pagan peor, los revisores conceden por presión; si pagan igual o mejor, la revisión está corrigiendo errores del modelo, y esos errores son información para el siguiente reentrenamiento.</p>
+
+<div class="bloque b-trampa">
+<span class="etiqueta">Trampa</span>
+<p>Poner a una persona a "validar" todas las denegaciones automáticas para salir del art. 22 del RGPD, con objetivos de productividad que le dejan segundos por expediente. Tras SCHUFA, y según la AEPD, la presencia formal de una persona no convierte la decisión en humana. Y aunque lo hiciera, el art. 18(8) CCD2 seguiría aplicándose. El resultado es el peor de los dos mundos: el coste de un equipo de revisión y ninguna de sus ventajas.</p>
+</div>
+
+<h3 id="s23-4">23.4 El cliente denegado que pide una explicación</h3>
+
+<div class="bloque b-caso">
+<span class="etiqueta">Caso</span>
+<dl>
+<dt>Qué llega</dt>
+<dd>Un cliente al que la app ha denegado una tarjeta escribe al servicio de atención al cliente: quiere saber por qué, quiere que lo revise una persona y advierte de que, si no recibe una respuesta concreta, reclamará ante la AEPD por el art. 22 del RGPD y ante el Banco de España por la directiva de crédito al consumo.</dd>
+<dt>Qué hay detrás</dt>
+<dd>La decisión la tomó el motor con el <i>score</i> y una regla de capacidad de pago, sin intervención humana. El cliente tiene derecho a la explicación y a la revisión por el art. 18(8) CCD2, aplicable desde el 20 de noviembre de 2026, y por el art. 22.3 RGPD, que ya se aplicaba. La plantilla de respuesta que existe dice que "la decisión se basa en criterios internos de riesgo".</dd>
+<dt>La respuesta que funciona</dt>
+<dd>Responder en plazo con los motivos principales de su caso, en lenguaje llano y sin códigos internos, con lo que tendría que cambiar si se puede decir; invitarle a aportar lo que crea que el sistema no ha tenido en cuenta (un ingreso nuevo, una deuda ya cancelada); y pasar el expediente a un analista con autoridad para cambiar la decisión, que contesta con su resultado. Todo queda en el registro. Si la revisión mantiene la denegación, se le dice y se le explica de nuevo por qué. El considerando 56 es claro en que la revisión no tiene que acabar en concesión.</dd>
+<dt>La que empeora las cosas</dt>
+<dd>Contestar con la plantilla de "criterios internos de riesgo", o enviar una descripción técnica del modelo. La primera no es una explicación según el comunicado del TJUE sobre Dun &amp; Bradstreet; la segunda tampoco, porque la mera comunicación de un algoritmo no basta. Las dos convierten una consulta en una reclamación ante la AEPD, que pedirá a la entidad lo mismo que pedía el cliente, con plazo y por escrito.</dd>
+</dl>
+</div>
+
+<div class="bloque b-defensa">
+<span class="etiqueta">Defensa</span>
+<p>Ante la AEPD o el Banco de España, el argumento no es que el modelo sea bueno, sino que el proceso garantiza los tres derechos del art. 18(8) en la práctica: un catálogo de motivos aprobado y versionado, una estadística de solicitudes de revisión con su plazo de respuesta y su resultado, revisores sin objetivos de aprobación y con facultades para cambiar la decisión, y una muestra de expedientes que lo demuestra. Es más fácil de enseñar que de improvisar, y casi imposible de reconstruir hacia atrás si no se registró.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="cap24">24. Sesgo y discriminación <span class="nivel n2">N2</span></h2>
+
+<p class="lead">Un modelo de crédito discrimina por definición: separa a quien pagará de quien no. Lo que la norma prohíbe no es diferenciar, sino hacerlo por motivos que no se pueden justificar o con efectos desproporcionados sobre grupos protegidos. La frontera no la marca una métrica; la marca un razonamiento que la entidad tiene que poder escribir y que las métricas sirven para comprobar.</p>
+
+<h3 id="s24-1">24.1 Qué se considera discriminación y qué no</h3>
+
+<div class="bloque b-norma">
+<span class="etiqueta">Norma</span>
+<p>Art. 6 CCD2: las condiciones para obtener un crédito no discriminarán por nacionalidad, lugar de residencia ni por cualquier motivo del art. 21 de la Carta de los Derechos Fundamentales, salvo diferencias "debidamente justificadas por criterios objetivos". Equivalente español: sin equivalente en la Ley 16/2011; la Ley 15/2022, integral para la igualdad de trato y la no discriminación, prohíbe discriminar en el acceso a servicios financieros (art. 17), por causas que incluyen la edad, la discapacidad, el sexo, el origen racial o étnico, la enfermedad, la situación socioeconómica y cualquier otra condición personal o social (art. 2.1), también de forma indirecta (art. 6.1.b), salvo justificación objetiva con un medio adecuado, necesario y proporcionado (art. 4.2).</p>
+</div>
+
+<p>De ahí salen dos tipos de problema, que se tratan de forma distinta.</p>
+
+<p>La <strong>discriminación directa</strong> es usar el atributo protegido como criterio: la nacionalidad, el sexo o la edad como variables del modelo o como reglas de política. Con la CCD2 y la Ley 15/2022, usar la nacionalidad o el sexo en un modelo de admisión necesita una justificación objetiva que en la práctica no se sostiene, sobre todo porque, como mostró 21.2, su poder predictivo suele ser residual una vez se tienen en cuenta las variables económicas. La edad es el caso difícil: tiene relación con el horizonte de ingresos y con la jubilación, y puede justificarse si se documenta, pero no se puede usar sin haberse hecho la pregunta.</p>
+
+<p>La <strong>discriminación indirecta</strong> es un criterio neutro en apariencia que produce una desventaja particular a un grupo protegido. Aquí está el riesgo real de los modelos de consumo, porque casi todas las variables útiles (tipo de contrato, antigüedad del historial, zona, ingresos) se distribuyen de forma distinta por edad, nacionalidad o sexo. Que una variable afecte más a un grupo no la hace ilícita; la hace sospechosa. Lo que la ley pide es que el criterio tenga una finalidad legítima (predecir el impago o la capacidad de pago lo es), que sea adecuado (que prediga de verdad), necesario (que no haya una alternativa con efecto menor y poder parecido) y proporcionado.</p>
+
+<p>Dos causas de la lista del art. 2.1 de la Ley 15/2022 merecen un comentario propio porque chocan de frente con la evaluación de solvencia. La <strong>situación socioeconómica</strong> es causa de discriminación, y la CCD2 obliga a evaluar ingresos, gastos y patrimonio. La contradicción es aparente: la evaluación de la capacidad de pago es una finalidad legítima que la propia directiva impone, y usar la renta para decidir si una cuota cabe supera el test de justificación objetiva casi por definición. Lo que no lo supera es usar indicadores de nivel socioeconómico que no miden la capacidad de pago, sino el estatus (la gama del teléfono, el barrio, el tipo de correo electrónico), que es exactamente lo que se retiró en 21.2 y 24.3. La <strong>edad</strong> es el otro caso: un cliente de 24 años y uno de 64 tienen horizontes de ingresos distintos, y la edad puede entrar en la evaluación de la duración razonable de un préstamo o del efecto de la jubilación en la capacidad de pago. Lo que es difícil de justificar es penalizar la juventud o la edad avanzada en sí mismas, sin relación con los ingresos. En la cartera de S2 la edad no aporta poder predictivo propio una vez se tienen en cuenta el empleo, el historial y la renta: retirarla del modelo limpio deja el Gini en el 62,5 % y la aprobación a igual morosidad pasa del 68,3 % al 68,2 % (S2, apartado a). En una cartera real hay que medirlo antes de decidir, porque el resultado puede ser otro.</p>
+
+<p>La Ley 15/2022 añade una regla procesal que cambia la conversación: cuando quien alega discriminación aporta indicios fundados, corresponde al demandado probar que no la hay (art. 30). Una entidad que nunca ha medido la disparidad de sus decisiones no tiene con qué probarlo. Su art. 23, el que habla de inteligencia artificial, es programático y no impone obligaciones concretas a las entidades privadas: la obligación real nace de los arts. 4, 6 y 17. Las multas van de 300 a 500.000 euros (art. 48), poca cosa al lado del coste de reputación de un titular de prensa.</p>
+
+<p>Para medir hace falta el atributo. La nacionalidad la conoce la entidad por la diligencia debida de prevención del blanqueo y no es una categoría especial del art. 9 del RGPD. El origen étnico sí lo es, y la CCD2 prohíbe usarlo para evaluar (arts. 18(3) y 19(5)). El AI Act permite a los proveedores de sistemas de alto riesgo tratar excepcionalmente categorías especiales para detectar y corregir sesgos, con condiciones estrictas (art. 10.5), y el <i>Omnibus</i> añade un régimen propio en un nuevo art. 4 bis. La coordinación entre las dos normas es razonable: se pueden tratar para auditar el sesgo, nunca para puntuar. Pero exige separar físicamente los datos de auditoría de los de decisión, y documentar que nunca se cruzan.</p>
+
+<h3 id="s24-2">24.2 Métricas y pruebas</h3>
+
+<p>No hay una métrica de equidad que la norma exija, y las que se usan miden cosas distintas que no se pueden cumplir todas a la vez cuando los grupos tienen un riesgo real distinto. Las cuatro que recomendamos medir siempre, y presentar juntas, son estas.</p>
+
+<ul>
+<li><strong>Tasa de aprobación por grupo y su cociente.</strong> La más intuitiva y la que verá cualquiera desde fuera. En Estados Unidos se usa como referencia una regla de cuatro quintos (un cociente por debajo de 0,8 se considera indicio de impacto adverso); es una convención de aquel país, no una norma europea, pero es útil como alarma.</li>
+<li><strong>Igualdad de oportunidades.</strong> La tasa de aprobación entre quienes no impagan, por grupo. Responde a la pregunta que importa para la discriminación indirecta: entre los buenos pagadores, ¿se aprueba igual a unos que a otros?</li>
+<li><strong>Morosidad de los aprobados por grupo.</strong> Si los aprobados de un grupo pagan mejor que los del otro, el modelo es más exigente con ellos de lo que su riesgo justifica. Tiene una trampa: cuando los grupos tienen distribuciones de riesgo distintas, el grupo de más riesgo tiene más aprobados cerca del corte y su morosidad de aprobados sale más alta aunque el modelo sea justo. No se puede leer sola.</li>
+<li><strong>Calibración por grupo.</strong> PD media estimada frente a impago observado, global y por tramos de <i>score</i>. Un modelo bien calibrado para los dos grupos asigna el mismo riesgo a quien tiene el mismo riesgo: es la condición mínima de un modelo que no discrimina directamente.</li>
+</ul>
+
+<div class="bloque b-numeros">
+<span class="etiqueta">Números</span>
+<p>En la cartera de S2, el 14,0 % de las solicitudes de la muestra de prueba son de extranjeros. Su impago observado es del 12,3 %, frente al 9,2 % de los nacionales, porque tienen más contratos temporales (30,8 % frente a 16,7 %), un historial crediticio más corto (mediana de 18 meses frente a 59) y viven en zonas de índice más alto. La nacionalidad no tiene efecto causal directo en el impago: su relación con él pasa por esas variables (S3, apartado 0).</p>
+<div class="tabla-scroll">
+<table>
+<caption>Disparidad por nacionalidad con el corte que aprueba el 70 % de las solicitudes (S3, apartados 2 y 5). «Referencia»: un modelo que viera además el rasgo de comportamiento y la carga real, que ninguna entidad observa; su disparidad es la que explica el riesgo.</caption>
+<thead><tr><th>Modelo</th><th>Gini</th><th>Aprobación nacionales / extranjeros</th><th>Cociente</th><th>Aprobación de quienes no impagan</th><th>Morosidad de aprobados</th></tr></thead>
+<tbody>
+<tr><td>Actual, con nacionalidad</td><td>63,8 %</td><td>71,5 % / 61,1 %</td><td>0,85</td><td>75,9 % / 66,8 % (-9,1)</td><td>3,58 % / 4,10 %</td></tr>
+<tr><td>Integrado, sin nacionalidad</td><td>63,1 %</td><td>71,5 % / 60,6 %</td><td>0,85</td><td>75,9 % / 66,3 % (-9,6)</td><td>3,67 % / 4,12 %</td></tr>
+<tr><td>Integrado, sin zona postal</td><td>63,0 %</td><td>71,2 % / 62,5 %</td><td>0,88</td><td>75,6 % / 68,3 % (-7,4)</td><td>3,65 % / 4,22 %</td></tr>
+<tr><td>Referencia (no observable)</td><td>70,1 %</td><td>&ndash;</td><td>0,90</td><td>(-5,8)</td><td>&ndash;</td></tr>
+</tbody>
+</table>
+</div>
+<p>La primera lección está en las dos primeras filas: quitar la nacionalidad del modelo no cambia la disparidad. El cociente se queda en 0,85 y la brecha de igualdad de oportunidades incluso se abre algo, de 9,1 a 9,6 puntos. El modelo sin la variable sigue aprobando menos a los extranjeros porque las variables que quedan la reconstruyen, y sin ella el modelo ya no puede compensar lo que esas variables cargan de más. La segunda está en la tercera fila, que trata 24.3. La tercera, en la morosidad de los aprobados: los extranjeros aprobados impagan algo más que los nacionales aprobados, lo que en principio diría que el modelo no es más duro con ellos; es el efecto de la distribución de riesgo descrito arriba, y por eso esa métrica no se lee sola.</p>
+<p>La calibración es buena en los dos grupos: el modelo integrado estima una PD media del 9,27 % para un impago del 9,25 % en los nacionales, y del 12,42 % para un 12,32 % en los extranjeros, y por tramos de <i>score</i> la mayor diferencia entre grupos del error de calibración es de 1,3 puntos (S3, apartado 3). Sin la zona postal, la PD media de los extranjeros baja al 11,87 %, algo por debajo de su impago observado: ninguna de las dos desviaciones es grande.</p>
+</div>
+
+<div class="bloque b-codigo">
+<span class="etiqueta">Código</span>
+<p>S3 importa la cartera y los modelos de S2, de modo que las cifras de los dos anexos son coherentes. Mide la reconstrucción del atributo (apartado 1), la disparidad con el corte común (apartado 2), la calibración por tramos (apartado 3), el coste de retirar la variable proxy (apartado 4) y la disparidad que deja un modelo de referencia que conociera el riesgo real (apartado 5).</p>
+</div>
+
+<h3 id="s24-3">24.3 Variables proxy</h3>
+
+<p>Una variable es proxy de un atributo protegido cuando permite reconstruirlo. La prueba es directa: entrenar un modelo que prediga el atributo con la variable, o con todas las del modelo, y medir su capacidad de discriminación. Si una variable sola reconstruye bien el atributo, retirar el atributo del modelo no sirve de nada mientras ella siga.</p>
+
+<p>En S3, la zona postal sola predice la nacionalidad con un AUC de 0,771; la antigüedad del historial crediticio, con 0,806; el tipo de contrato, con 0,585. Todas las variables del modelo integrado juntas, con 0,876, y todas menos la zona, con 0,822 (S3, apartado 1). La variable que más revela la nacionalidad no es la zona, sino el historial, y sin embargo la conclusión no es retirar el historial.</p>
+
+<p>Esa es la clave del análisis de proxies: el poder de reconstrucción no decide. Decide el test de la Ley 15/2022 aplicado a cada variable. El <strong>historial crediticio</strong> tiene una relación causal y explicable con el impago, es central en la evaluación de solvencia que la propia directiva prevé (art. 18(3) y (11)) y no tiene sustituto con poder parecido: es adecuado y necesario, y su efecto sobre los extranjeros, que llegan con historial corto, es la consecuencia de una diferencia de riesgo real. La <strong>zona postal</strong> tiene un efecto propio pequeño sobre el impago y reconstruye la nacionalidad casi tan bien como el historial: es el ejemplo de manual de proxy que no supera el test de necesidad.</p>
+
+<p>S3 lo cuantifica. Retirar la zona baja el Gini una décima (del 63,1 % al 63,0 %) y no reduce la aprobación a igual morosidad, que queda en el 70,2 %. A cambio, el cociente de aprobación sube de 0,85 a 0,88 y la brecha de igualdad de oportunidades baja de 9,6 a 7,4 puntos, cerca de la que deja el modelo de referencia que conoce el riesgo real (0,90 y 5,8 puntos). Dicho de otra forma: la mayor parte de la disparidad que queda sin la zona es la que explica el riesgo, y la que añadía la zona no la explicaba. Con esos números, mantener la zona sería difícil de defender.</p>
+
+<p>Cuando aparece una disparidad, el procedimiento que recomendamos tiene cinco pasos y se documenta entero:</p>
+
+<ol>
+<li><strong>Comprobar el dato.</strong> Que el atributo y el resultado estén bien medidos y que la disparidad no sea un artefacto de una muestra pequeña.</li>
+<li><strong>Separar la parte que explica el riesgo.</strong> Comparar con el impago observado por grupo y con la calibración por tramos. Una disparidad que acompaña a una diferencia de riesgo real, con un modelo calibrado para los dos grupos, es en principio una diferencia justificada.</li>
+<li><strong>Buscar los proxies.</strong> Medir qué variables reconstruyen el atributo y qué aporta cada una al riesgo.</li>
+<li><strong>Probar alternativas.</strong> Retirar o sustituir los proxies sin justificación y medir el coste en aprobación a igual morosidad y la mejora en disparidad.</li>
+<li><strong>Decidir y escribirlo.</strong> Qué se retira, qué se mantiene y por qué, con las cifras.</li>
+</ol>
+
+<div class="bloque b-trampa">
+<span class="etiqueta">Trampa</span>
+<p>Corregir la disparidad con cortes distintos por grupo, aprobando a los extranjeros con una PD más alta que a los nacionales para igualar la tasa de aprobación. Es usar la nacionalidad como criterio de decisión, que es exactamente lo que el art. 6 CCD2 prohíbe, y además obliga a conceder a clientes cuya evaluación, con el criterio común, es negativa (art. 18(6)). La corrección va por las variables, no por el corte.</p>
+</div>
+
+<div class="bloque b-caso">
+<span class="etiqueta">Caso</span>
+<dl>
+<dt>Qué llega</dt>
+<dd>Una asociación de consumidores publica que la app de préstamos de una entidad deniega mucho más a solicitantes extranjeros, con un muestreo propio, y anuncia una demanda por discriminación al amparo de la Ley 15/2022. La prensa lo recoge y el Banco de España pide información.</dd>
+<dt>Qué hay detrás</dt>
+<dd>La entidad no usa la nacionalidad en el modelo y lo cree suficiente. Nunca ha medido la tasa de aprobación por nacionalidad. Con los indicios que aporta la asociación, el art. 30 de la Ley 15/2022 traslada a la entidad la carga de probar que la diferencia está justificada.</dd>
+<dt>La respuesta que funciona</dt>
+<dd>Medir en días lo que no se había medido: aprobación, igualdad de oportunidades, calibración y proxies, como en S3. Si la disparidad se explica por riesgo y el modelo está calibrado para los dos grupos, documentarlo y presentarlo con las cifras. Si hay una variable que añade disparidad sin justificación, retirarla, decir que se ha retirado y desde cuándo, y ofrecer la revisión de las solicitudes denegadas en el periodo afectado.</dd>
+<dt>La que empeora las cosas</dt>
+<dd>Contestar en público que "el modelo no usa la nacionalidad, por lo que no puede discriminar". Es falso como razonamiento, como enseña S3, y la asociación lo sabe. Deja a la entidad sin argumento el día en que tenga que probar ante un juez que la diferencia está justificada.</dd>
+</dl>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="cap25">25. Impacto en el resto del ecosistema de modelos <span class="nivel n3">N3</span></h2>
+
+<p class="lead">El <i>score</i> de admisión no vive solo. En un banco con modelos internos es una variable de la PD IRB, una entrada de la PD de IFRS 9, un eje del <i>pricing</i> y un segmento de los modelos de <i>stress test</i>. Cambiarlo por la CCD2 mueve todo eso, y el que no lo haya previsto lo descubrirá en el cierre trimestral o en la siguiente revisión del supervisor.</p>
+
+<h3 id="s25-1">25.1 Modelos IRB: cuando el <i>score</i> de admisión es un <i>driver</i> de PD</h3>
+
+<p>En la mayoría de los sistemas de calificación IRB minoristas de consumo, el <i>score</i> de admisión es el <i>driver</i> principal de la PD en los primeros meses de vida de la operación, hasta que el comportamiento toma el relevo. Un cambio en la <i>scorecard</i> de admisión es, por tanto, un cambio en el sistema de calificación, y entra en la política de cambios de modelo del banco y en el marco europeo de materialidad.</p>
+
+<div class="bloque b-norma">
+<span class="etiqueta">Norma</span>
+<p>Reglamento Delegado (UE) 529/2014: clasifica las extensiones y cambios del método IRB en materiales (requieren aprobación del supervisor), de notificación previa (dos meses antes de su aplicación) y de notificación posterior, con criterios cualitativos y umbrales cuantitativos basados en el efecto en los activos ponderados por riesgo. Sin equivalente en la directiva de crédito al consumo: es normativa prudencial. El art. 174 del CRR regula el uso de modelos estadísticos, el juicio humano y los <i>overrides</i> en el sistema de calificación.</p>
+</div>
+
+<p>La materialidad de un cambio de <i>scorecard</i> de admisión depende de cómo esté construido el sistema de calificación, y no es posible dar una regla general sin leer la política de cada banco. Lo que sí se puede decir es dónde están los tres efectos que hay que evaluar:</p>
+
+<ul>
+<li><strong>Efecto directo en la PD.</strong> Si el <i>score</i> de admisión entra en la PD como variable, el nuevo <i>score</i> con las variables retiradas y la carga de la operación añadida (21.2 y 22.2) cambia la asignación a grados. Hay que medir la migración entre grados y el efecto en APR con la cartera actual, como cualquier otro cambio.</li>
+<li><strong>Efecto en la población.</strong> La regla de capacidad de pago cambia quién entra: en S2, deja fuera a clientes con el doble de morosidad que el resto de aprobados (22.4). La nueva originación tiene una composición distinta, y la calibración de la PD se hizo con la antigua. No es un cambio de modelo, pero sí un cambio de cartera que el seguimiento tiene que detectar.</li>
+<li><strong>Efecto en los <i>overrides</i>.</strong> El art. 174 del CRR y la Directriz EBA/GL/2020/06 piden controlar los <i>overrides</i>; la revisión humana del art. 18(8) CCD2 (23.3) los multiplica. Una revisión humana que cambie decisiones de admisión con frecuencia altera la población que llega al sistema IRB, y eso debe estar previsto en la política de <i>overrides</i>.</li>
+</ul>
+
+<p>La recomendación práctica es tratar el rediseño de admisión por la CCD2 como un proyecto con dos entregables para el supervisor prudencial: el análisis de materialidad del cambio en el sistema IRB, con sus cifras, y el plan de seguimiento de la nueva originación. En un banco con modelos IRB, el calendario del rediseño lo marca a menudo el plazo de notificación previa, no el desarrollo.</p>
+
+<p>Una entidad sin modelos internos, como la entidad de referencia, no tiene el problema de la materialidad IRB, pero sí sus equivalentes. Su provisión IFRS 9 usa casi siempre el <i>score</i> de admisión, propio o del proveedor, como variable de segmentación o de PD; su <i>pricing</i> depende de él; y su plan de negocio supone una tasa de aprobación que la CCD2 cambia. Si el proveedor reentrena la <i>scorecard</i> para quitar variables, la entidad tiene que saberlo antes de que ocurra, con el efecto medido en su cartera, porque el cambio se verá en la provisión del trimestre siguiente. Es una cláusula más del contrato con el proveedor (26.4).</p>
+
+<p>Un apunte sobre el AI Act. El considerando 58 excluye del alto riesgo los sistemas usados para calcular requisitos de capital. Un mismo <i>score</i> que sirve para admitir y para la PD IRB no se beneficia de esa exclusión en su uso de admisión: es de alto riesgo por lo que hace en la puerta, aunque también se use para capital.</p>
+
+<div class="bloque b-viene">
+<span class="etiqueta">Qué viene</span>
+<p>La EBA publicó en marzo de 2026 un proyecto de normas técnicas que modifica el Reglamento Delegado 529/2014, para adaptarlo al CRR3 y reducir el número de cambios materiales: los criterios cualitativos solo harían material un cambio si además rompe el umbral cuantitativo, salvo cambios tan fundamentales como un rediseño completo. A fecha de 2026-11-23 no consta su adopción por la Comisión. Si se adopta, muchos cambios de admisión que hoy serían de notificación previa pasarían a serlo de notificación posterior.</p>
+</div>
+
+<h3 id="s25-2">25.2 IFRS 9, <i>pricing</i> y <i>stress test</i></h3>
+
+<p><strong>IFRS 9.</strong> El <i>score</i> de origen aparece en dos sitios del modelo de pérdida esperada: como variable de la PD a doce meses y de la vida residual en las operaciones jóvenes, y como referencia para el aumento significativo del riesgo de crédito, que compara el riesgo actual con el de origen. El segundo es el más delicado. Si la entidad recalcula la PD de origen con el modelo nuevo, cambia la referencia de la clasificación en fase 2 de toda la cartera viva; si no la recalcula, compara PD actuales calculadas con un modelo con PD de origen calculadas con otro. La solución es guardar la PD de origen tal como se calculó, por operación, y documentar cómo se tratan las operaciones originadas con cada versión del modelo. La Memoria de Supervisión 2025 del Banco de España señala deficiencias en modelos internos y en la aplicación de NIIF 9 en consumo: no es el momento de introducir una discontinuidad sin documentar.</p>
+
+<p><strong><i>Pricing</i>.</strong> Si el precio depende del <i>score</i>, el cambio de <i>score</i> cambia el precio, y el precio personalizado con tratamiento automatizado obliga a informar al cliente (art. 13 CCD2, y la información precontractual del art. 10(5)(m)). Según el borrador de directrices de la Comisión sobre clasificación de alto riesgo, un sistema de <i>pricing</i> puro no entra en el anexo III, punto 5, letra b), pero uno integrado con la evaluación de solvencia sí. Un <i>score</i> que decide a la vez si se concede y a qué precio es de alto riesgo en sus dos usos.</p>
+
+<p><strong><i>Stress test</i> y comportamiento.</strong> Los modelos satélite de PD de consumo suelen segmentar por <i>score</i> o por grado, y los modelos de comportamiento se entrenan con la cartera que admitió el modelo viejo. Los dos necesitan un periodo de convivencia: segmentar por versión del modelo de admisión mientras la cartera nueva no tenga historia propia, y no mezclar en una misma calibración cosechas admitidas con criterios distintos sin una variable que las distinga.</p>
+
+<h3 id="s25-3">25.3 Gobierno y validación: lo que preguntará validación interna</h3>
+
+<p>Validación interna hará al nuevo modelo las preguntas de siempre (discriminación, calibración, estabilidad, documentación) y cuatro nuevas, que conviene tener contestadas antes de que las haga:</p>
+
+<ol>
+<li><strong>¿Cómo se ha decidido qué variables se retiran?</strong> Con el inventario clasificado de 21.1 y el análisis de 21.2.</li>
+<li><strong>¿Cómo se ha calibrado la regla de capacidad de pago y qué ocurre en su frontera?</strong> Con la morosidad de los clientes justo por encima y justo por debajo de cada umbral (22.4).</li>
+<li><strong>¿Se ha medido la disparidad por grupos y qué se ha hecho con ella?</strong> Con las cuatro métricas de 24.2 y el análisis de proxies de 24.3.</li>
+<li><strong>¿Con qué datos se ha evaluado un modelo que va a decidir sobre una población que el modelo anterior rechazaba?</strong> Es la más difícil, y merece apartado propio.</li>
+</ol>
+
+<h4 id="s25-3-1">25.3.1 El problema de evaluar un modelo nuevo con datos generados por el viejo</h4>
+
+<p>Un modelo de admisión solo conoce el resultado de quienes fueron aprobados. Cuando se construye uno nuevo, se entrena y se evalúa con esa población, y el resultado engaña de dos maneras. El poder discriminante medido en aprobados es mucho menor que el que tendrá el modelo sobre todos los solicitantes, porque la población está truncada por el corte. Y la calibración en la zona que el modelo viejo rechazaba es desconocida: si el modelo nuevo aprueba a clientes que el viejo rechazaba, su PD para ellos es una extrapolación.</p>
+
+<div class="bloque b-numeros">
+<span class="etiqueta">Números</span>
+<p>En S2, el modelo integrado tiene un Gini del 63,1 % sobre todas las solicitudes, pero medido solo sobre los aprobados por el modelo actual el Gini es del 36,7 %: el mismo modelo, con poco más de la mitad aparente de poder. Si se entrena solo con aprobados, el Gini sobre toda la población apenas cambia (63,0 %), pero la calibración en la zona de rechazo se resiente: los rechazados por el modelo actual tienen un impago real del 23,7 %, el modelo entrenado con todos les asigna una PD media del 23,1 % y el entrenado solo con aprobados, del 20,5 %, tres puntos por debajo (S2, apartado d). Un modelo nuevo que amplíe la aprobación hacia esa zona con la PD del segundo infravalora su riesgo.</p>
+</div>
+
+<p>Las técnicas de <i>reject inference</i> (asignar un resultado probable a los rechazados, por reparto o por ponderación) reducen el problema, pero no lo resuelven, porque se apoyan en supuestos que no se pueden comprobar con los propios datos. Hay dos fuentes de información mejores. La primera son los datos de <i>bureau</i> de los rechazados: si obtuvieron crédito en otra entidad, su comportamiento posterior en los ficheros es una observación real, con las limitaciones de uso del art. 20 de la LOPDGDD. La segunda es la experimentación controlada: aprobar una muestra pequeña por debajo del corte para observar su comportamiento.</p>
+
+<p>La CCD2 limita esa segunda vía. El art. 18(6) prohíbe poner el crédito a disposición si la evaluación no indica que es probable que el consumidor cumpla. Una muestra de exploración solo puede tomarse dentro de la zona en la que la evaluación de solvencia es positiva, aunque el <i>score</i> esté por debajo del corte comercial: es decir, entre el corte de riesgo que la entidad elige por rentabilidad y el suelo de capacidad de pago, que no se puede cruzar. Separar los dos cortes, el comercial y el de solvencia, es por eso una decisión de diseño que además de cumplir la norma permite seguir aprendiendo.</p>
+
+<h4 id="s25-3-2">25.3.2 El seguimiento después del despliegue</h4>
+
+<p>El primer año de un modelo de admisión rediseñado por la CCD2 se parece poco a los anteriores, porque cambian a la vez el modelo, la regla de capacidad, la población que entra y, desde enero de 2027, las variables de la CIR. El seguimiento ordinario (estabilidad de la población, poder discriminante por cosecha, calibración) se queda corto y conviene añadir tres cosas. Un seguimiento por <strong>versión del modelo y de la regla</strong>, para poder atribuir cada movimiento de la morosidad temprana a su causa. Un seguimiento de la <strong>frontera de la regla de capacidad</strong>: la morosidad de los clientes aprobados justo por encima del umbral y, cuando se ofrezca una operación menor, la de quienes la aceptaron. Y un seguimiento de las <strong>revisiones humanas</strong>, cuyas decisiones revocadas son a la vez un control del proceso y la única muestra de la zona que el modelo rechaza. Validación interna debería revisar el modelo nuevo con datos propios a los seis meses de su despliegue, no al año, con un informe que el comité de modelos pueda usar para decidir si la recalibración se adelanta.</p>
+
+<div class="bloque b-caso">
+<span class="etiqueta">Caso</span>
+<dl>
+<dt>Qué llega</dt>
+<dd>En el seguimiento anual del sistema de calificación IRB minorista de consumo de un banco, el supervisor prudencial pregunta por una migración de la nueva originación hacia los mejores grados de PD en los dos últimos trimestres y por qué no se notificó ningún cambio en el sistema.</dd>
+<dt>Qué hay detrás</dt>
+<dd>El área de admisión retiró variables y añadió una regla de capacidad de pago por la CCD2. Lo trató como un cambio de política de admisión, no de modelo, y no pasó por el comité de modelos IRB. La nueva originación es de mejor calidad, la calibración de la PD es la antigua y los grados se han desplazado.</dd>
+<dt>La respuesta que funciona</dt>
+<dd>Reconocer que el cambio afectaba al sistema de calificación y debió evaluarse con la política de cambios de modelo, presentar ese análisis de materialidad hecho ahora, con la migración y el efecto en APR medidos, y un plan de recalibración con calendario. Y cambiar el gobierno para que cualquier cambio en admisión pase por el comité de modelos.</dd>
+<dt>La que empeora las cosas</dt>
+<dd>Defender que una regla de política no es un cambio de modelo y que la mejora de calidad demuestra que el sistema funciona. El supervisor no discute la calidad de la cartera, sino el control del banco sobre su propio sistema de calificación, y ese argumento le confirma que no lo tiene.</dd>
+</dl>
+</div>
+
+<div class="bloque b-defensa">
+<span class="etiqueta">Defensa</span>
+<p>Ante validación interna y el supervisor prudencial, el rediseño de admisión por la CCD2 se defiende como un cambio planificado del sistema de calificación con tres piezas: el análisis de materialidad con sus cifras, el plan de convivencia de modelos (PD de origen guardada, segmentación por versión, seguimiento de la nueva originación) y la evaluación de la calibración en la zona nueva, con la fuente de datos usada para cubrir la zona que el modelo anterior rechazaba.</p>
+</div>
+
+<!-- ============================================================ -->
+<h2 id="cap26">26. Hoja de ruta para un Head of Risk <span class="nivel n3">N3</span></h2>
+
+<p class="lead">Los capítulos anteriores dicen qué cambiar. Este dice en qué orden, con qué recursos y cómo se demuestra. La premisa es la del capítulo 17: la directiva se aplica desde el 20 de noviembre de 2026, la ley española no llegará antes de 2027 y una parte de lo que pide la CCD2 ya era exigible antes por otras normas. Esperar a la ley no es una opción; hacerlo todo a la vez tampoco.</p>
+
+<h3 id="s26-1">26.1 Diagnóstico en 30 días</h3>
+
+<p>Un mes basta para saber dónde está la entidad si se trabaja sobre cuatro entregables concretos y no sobre un análisis de <i>gaps</i> abierto.</p>
+
+<ol>
+<li><strong>Mapa de decisión</strong> por producto y canal: qué modelos, reglas, filtros y proveedores intervienen, en qué orden, quién es el dueño de cada pieza y qué decide cada una. Incluye lo que decide un socio o un comercio. Es la respuesta a las preguntas 1, 5 y 9 de 20.3.</li>
+<li><strong>Inventario de variables clasificado</strong> en los cuatro grupos de 21.1, con la fuente de cada variable y su uso. Incluye las de proveedores; si un proveedor no entrega su lista, eso ya es un hallazgo.</li>
+<li><strong>Muestra de expedientes reproducidos</strong>: una muestra de solicitudes aprobadas y denegadas de cada producto en la que se intenta reconstruir la decisión con lo que hay registrado. El porcentaje de expedientes que no se pueden reproducir mide el estado de la trazabilidad mejor que cualquier cuestionario.</li>
+<li><strong>Primera medición</strong>: tasa de aprobación y morosidad por producto; cuántos aprobados tienen una cuota que no cabe en su renta disponible con un cálculo sencillo; aprobación por edad, sexo y nacionalidad si hay datos; peso del <i>bureau</i> en la decisión.</li>
+</ol>
+
+<p>Con esos cuatro entregables se escribe una lista de brechas contra la tabla de 20.1, cada una con su base normativa, su gravedad y una estimación de esfuerzo. Esa lista es la que se lleva al comité de dirección, y la que se enseña al supervisor si pregunta qué ha hecho la entidad desde el 20 de noviembre.</p>
+
+<p>En una entidad pequeña con <i>scorecard</i> de proveedor, el diagnóstico es más corto pero depende del proveedor. La primera acción es pedirle por escrito, con plazo, la lista de variables y su origen, la documentación del modelo, cómo genera motivos de denegación y si ha medido disparidad por grupos. Lo que conteste, y lo que no, decide si se puede seguir con él.</p>
+
+<h3 id="s26-2">26.2 Priorización: lo exigible ya, lo prudente y lo que puede esperar a la ley</h3>
+
+<p>La directiva no tiene efecto directo horizontal: sin ley española, un cliente no puede invocarla directamente contra una entidad privada en un pleito, aunque un juez sí interpretará la Ley 16/2011 a la luz de ella (caps. 4 y 17). Eso no deja a la entidad sin obligaciones. Casi todo lo que la CCD2 pide a los modelos ya se podía exigir antes por otras normas en vigor, y lo que no, es lo que el Banco de España mirará primero cuando revise préstamo responsable. La priorización que recomendamos tiene tres niveles.</p>
+
+<div class="tabla-scroll">
+<table>
+<caption>Priorización de la adaptación de los modelos de admisión (a fecha de 2026-11-23). La columna de base indica por qué es exigible o prudente sin ley de transposición.</caption>
+<thead><tr><th>Nivel</th><th>Qué</th><th>Base sin ley de transposición</th></tr></thead>
+<tbody>
+<tr><td rowspan="5"><strong>Exigible ya</strong></td><td>Evaluar la capacidad de pago con información suficiente, consultar ficheros e informar si se deniega por ellos</td><td>Ley 16/2011, arts. 14 y 15; Orden EHA/2899/2011, art. 18</td></tr>
+<tr><td>Capacidad de pago con gastos y compromisos, análisis de sensibilidad, control de <i>overrides</i>, documentación y prevención de sesgos en modelos automatizados</td><td>EBA/GL/2020/06, adoptada por el Banco de España (párrs. 53 a 55, 95 a 101 y 114 a 117), para las entidades en su ámbito</td></tr>
+<tr><td>Intervención humana, punto de vista, impugnación e información sobre la lógica cuando la decisión se basa en un <i>score</i> de forma determinante</td><td>RGPD, arts. 22 y 15.1.h, y sentencia SCHUFA</td></tr>
+<tr><td>No usar categorías especiales de datos para puntuar</td><td>RGPD, art. 9</td></tr>
+<tr><td>No discriminar en el acceso al crédito, ni directa ni indirectamente</td><td>Ley 15/2022, arts. 4, 6 y 17</td></tr>
+<tr><td rowspan="5"><strong>Prudente ya</strong></td><td>Retirar variables de redes sociales, también las de proveedores</td><td>Art. 18(3) y 19(5) CCD2, que un juez usará para interpretar el art. 14 de la Ley 16/2011</td></tr>
+<tr><td>Regla de capacidad de pago como suelo que impide conceder con resultado negativo</td><td>Art. 18(6) CCD2</td></tr>
+<tr><td>Explicación y revisión humana para toda evaluación con tratamiento automatizado, no solo para las decisiones únicamente automatizadas</td><td>Art. 18(8) CCD2</td></tr>
+<tr><td>Comprobar que la decisión no se basa solo en el historial crediticio</td><td>Art. 18(11) CCD2</td></tr>
+<tr><td>Remuneración de quien evalúa sin relación con las aprobaciones</td><td>Art. 32(3)(b) CCD2</td></tr>
+<tr><td rowspan="3"><strong>Puede esperar</strong></td><td>Criterios adicionales de solvencia que desarrolle un real decreto</td><td>Anteproyecto, texto de enero, art. 31.9</td></tr>
+<tr><td>Documentación de proveedor del AI Act y evaluación de impacto en derechos fundamentales</td><td>Aplicable desde el 2 de diciembre de 2027; prepararla durante 2027</td></tr>
+<tr><td>Comunicación de datos positivos a sistemas privados de información crediticia</td><td>Anteproyecto, texto de enero, art. 31.5</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>Dos advertencias sobre la tabla. "Puede esperar" no significa "no hacer nada": significa que el plazo lo marca una fecha o una norma que aún no existe, y que conviene tener preparado el trabajo para no empezar de cero. Y "prudente ya" no es opcional en la práctica: es lo que separa una entidad que puede explicar ante un juez por qué su proceso era razonable a la luz de la directiva de una que no.</p>
+
+<h3 id="s26-3">26.3 Plan a 90, 180 y 365 días</h3>
+
+<div class="tabla-scroll">
+<table>
+<caption>Plan tipo. En un banco con modelos IRB el ritmo lo marca a menudo la política de cambios de modelo (25.1); en una entidad pequeña, la respuesta del proveedor.</caption>
+<thead><tr><th>Horizonte</th><th>Modelos y datos</th><th>Proceso</th><th>Gobierno y documentación</th></tr></thead>
+<tbody>
+<tr><td><strong>30 días</strong></td><td>Inventario clasificado; primera medición</td><td>Mapa de decisión; muestra de expedientes</td><td>Lista de brechas aprobada por el comité de dirección</td></tr>
+<tr><td><strong>90 días</strong></td><td>Variables de redes sociales fuera (también de proveedores); regla de capacidad de pago provisional en producción, con baremo de gastos</td><td>Catálogo de motivos de denegación y plantillas; circuito de revisión humana con revisores sin objetivos de aprobación</td><td>Procedimiento de evaluación documentado por producto (art. 18(4)); criterio escrito de "aumento significativo" y de proporcionalidad</td></tr>
+<tr><td><strong>180 días</strong></td><td><i>Scorecards</i> reentrenadas sin variables prohibidas ni proxies sin justificación, con la carga de la operación integrada; primera medición de disparidad completa</td><td>Registro de decisiones con entradas, versiones, salidas e intervenciones; verificación de ingresos proporcional por importe</td><td>Análisis de materialidad IRB y notificación si procede; validación interna del nuevo modelo</td></tr>
+<tr><td><strong>365 días</strong></td><td>Variables de movimientos de cuenta en producción para quien consiente; plan de seguimiento de las variables de CIR tras el cambio de umbral de enero de 2027</td><td>Indicadores de revisión humana y de disparidad en el cuadro de mando trimestral</td><td>Inventario de sistemas de IA y criterio de "cambio significativo de diseño"; preparación de la documentación del AI Act para el 2 de diciembre de 2027</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>El orden no es arbitrario. Lo primero que sale de producción es lo que no tiene defensa posible (redes sociales). Lo segundo que entra es lo que más protege con menos desarrollo (una regla de capacidad de pago provisional y un circuito de revisión), aunque se afine después. El reentrenamiento va a los 180 días porque necesita el inventario, la regla y la medición de disparidad para hacerse una sola vez y bien. Y el <i>open banking</i> va al final no porque importe menos (es la palanca que más aprobación recupera, 21.2), sino porque depende de integraciones y de contratos que tardan.</p>
+
+<h3 id="s26-4">26.4 Presupuesto, equipo y proveedores</h3>
+
+<p>El esfuerzo depende mucho de la entidad, y cualquier cifra general es una estimación. Con esa advertencia, y con supuestos explícitos que cada entidad debe sustituir por los suyos, S2 da un orden de magnitud.</p>
+
+<div class="tabla-scroll">
+<table>
+<caption>Esfuerzo del programa de modelos en persona-mes, estimación del autor con los supuestos de S2, apartado f. No incluye licencias, motor de decisión ni desarrollo de canales.</caption>
+<thead><tr><th>Frente de trabajo</th><th>Banco grande con IRB</th><th>Entidad pequeña con proveedor</th></tr></thead>
+<tbody>
+<tr><td>Diagnóstico e inventario de modelos, reglas y variables</td><td>6</td><td>1,5</td></tr>
+<tr><td>Reentrenamiento y validación de <i>scorecards</i></td><td>30</td><td>5</td></tr>
+<tr><td>Regla de capacidad de pago y estimación de gastos</td><td>8</td><td>2</td></tr>
+<tr><td>Integración y variables de <i>open banking</i></td><td>12</td><td>3</td></tr>
+<tr><td>Motivos de denegación, explicaciones y revisión humana</td><td>10</td><td>3</td></tr>
+<tr><td>Pruebas de sesgo y gobierno del dato</td><td>6</td><td>1,5</td></tr>
+<tr><td>Impacto en IRB, IFRS 9, <i>pricing</i> y <i>stress test</i></td><td>12</td><td>1</td></tr>
+<tr><td>Documentación (art. 18(4) CCD2 y AI Act)</td><td>8</td><td>2</td></tr>
+<tr><td><strong>Total</strong></td><td><strong>92</strong></td><td><strong>19</strong></td></tr>
+<tr><td>Coste con 13.000 y 11.000 euros por persona-mes</td><td>1,20 millones de euros</td><td>0,21 millones de euros</td></tr>
+</tbody>
+</table>
+</div>
+
+<p>Lo que pesa en el banco grande es el reentrenamiento de varias <i>scorecards</i> con su validación y el impacto en el ecosistema IRB; en la entidad pequeña, la gestión del proveedor y la regla de capacidad de pago, que casi nunca viene en la <i>scorecard</i> comprada. En los dos casos, la partida que se suele olvidar es la de revisión humana: no es un desarrollo, es un equipo permanente cuyo tamaño depende del número de solicitudes de revisión, que nadie conoce hasta que el derecho se comunica a los clientes.</p>
+
+<p>Sobre <strong>proveedores</strong>, tres cláusulas que conviene exigir a cualquiera que puntúe o decida en nombre de la entidad: la lista completa de variables y su origen, con autorización previa para añadir variables nuevas; la capacidad de generar motivos de denegación por solicitud y de entregar la información que pida una autoridad o un juez; y el derecho de auditoría, incluida la medición de disparidad. Un proveedor que no acepte las tres pone a la entidad en la situación del caso de 21.5.</p>
+
+<p>Sobre <strong>equipo</strong>, la pieza escasa no son los modelizadores, sino las personas que entienden a la vez el modelo y la norma: quien pueda explicar a cumplimiento por qué una variable es proxy y a negocio cuánto cuesta retirarla. En un banco grande suele ser un responsable de modelos de admisión con un jurista de referencia; en una entidad pequeña, el propio director de riesgos con apoyo externo puntual.</p>
+
+<h3 id="s26-5">26.5 Indicadores de seguimiento</h3>
+
+<p>Un cuadro de mando trimestral para el comité de riesgos, con una docena de indicadores agrupados en cuatro bloques. Los umbrales de alerta los fija la entidad; lo importante es la tendencia y la explicación de cada movimiento.</p>
+
+<div class="tabla-scroll">
+<table>
+<caption>Indicadores de seguimiento de la adaptación de los modelos de admisión.</caption>
+<thead><tr><th>Bloque</th><th>Indicador</th><th>Para qué</th></tr></thead>
+<tbody>
+<tr><td rowspan="3">Negocio y riesgo</td><td>Tasa de aprobación por producto y canal</td><td>Medir el efecto de cada cambio</td></tr>
+<tr><td>Morosidad temprana por cosecha y versión del modelo</td><td>Detectar pronto si la nueva originación se comporta como se esperaba</td></tr>
+<tr><td>Proporción de solicitudes denegadas por la regla de capacidad de pago, y de ellas a cuántas se ofreció otra operación</td><td>Saber cuánto pesa la regla y si se está usando para reconducir y no solo para denegar</td></tr>
+<tr><td rowspan="3">Datos</td><td>Proporción de ingresos verificados, por producto e importe</td><td>Cumplir el art. 18(3), párr. 2, con proporcionalidad</td></tr>
+<tr><td>Estabilidad de las variables de CIR y <i>bureau</i></td><td>Detectar el salto de enero de 2027</td></tr>
+<tr><td>Proporción de decisiones reproducibles desde el registro</td><td>Medir la trazabilidad (art. 18(4))</td></tr>
+<tr><td rowspan="4">Intervención humana</td><td>Solicitudes de explicación y de revisión, y plazo de respuesta</td><td>Saber si el derecho del art. 18(8) funciona</td></tr>
+<tr><td>Proporción de revisiones que cambian la decisión, en cada sentido</td><td>Detectar un sello o una revisión comercial</td></tr>
+<tr><td>Morosidad de las denegaciones revocadas frente a los aprobados de su tramo</td><td>Saber si la revisión corrige errores o concede por presión</td></tr>
+<tr><td>Reclamaciones por solvencia o por falta de explicación</td><td>El indicador que verá el supervisor</td></tr>
+<tr><td rowspan="2">Equidad</td><td>Cociente de aprobación e igualdad de oportunidades por edad, sexo y nacionalidad</td><td>Las métricas de 24.2, con su tendencia</td></tr>
+<tr><td>Calibración por grupo</td><td>La condición mínima de un modelo que no discrimina</td></tr>
+</tbody>
+</table>
+</div>
+
+<h3 id="s26-6">26.6 Lo que pedirá el supervisor y cómo se le enseña</h3>
+
+<p>No hay una guía del Banco de España sobre modelos de admisión o inteligencia artificial en la concesión de crédito al consumo; la referencia supervisora operativa es la Directriz EBA/GL/2020/06. En la circulación profesional se ha atribuido al Banco de España una circular de 2026 que exigiría revisión humana y ausencia de sesgos; no consta en ninguna fuente oficial y no debe citarse. Lo que sí se sabe es qué mira el supervisor en una revisión de préstamo responsable en consumo, y con eso se prepara el expediente.</p>
+
+<div class="bloque b-defensa">
+<span class="etiqueta">Defensa</span>
+<p>El expediente de la adaptación de los modelos de admisión a la CCD2, listo para entregar, tiene ocho piezas:</p>
+<ol>
+<li>El procedimiento de evaluación de solvencia por producto, en el orden del art. 18 y de la Ley 16/2011, art. 14.</li>
+<li>El inventario de variables clasificado, con la decisión y el razonamiento sobre cada variable dudosa.</li>
+<li>La documentación del modelo y de la regla de capacidad de pago, con la calibración de los umbrales y su revisión periódica.</li>
+<li>El análisis del efecto de los cambios: retirada de variables, regla de capacidad y, en su caso, materialidad IRB, con sus cifras.</li>
+<li>Las mediciones de disparidad y el análisis de proxies, con lo que se decidió.</li>
+<li>El catálogo de motivos de denegación, el procedimiento de revisión humana y su estadística.</li>
+<li>Una muestra de expedientes reproducidos, aprobados y denegados, con revisiones humanas incluidas.</li>
+<li>El plan pendiente, con calendario y responsable, y lo que se ha decidido esperar a la ley con su motivo.</li>
+</ol>
+<p>Lo que convence no es que todo esté terminado, sino que la entidad sabe dónde está, ha decidido con criterio qué hacer primero y lo ha dejado escrito antes de que nadie lo pidiera.</p>
+</div>
+
+<div class="bloque b-caso">
+<span class="etiqueta">Caso</span>
+<dl>
+<dt>Qué llega</dt>
+<dd>Tras una revisión de préstamo responsable en consumo, el Banco de España envía sus conclusiones: la evaluación de la capacidad de pago se basa en ingresos declarados sin verificar y sin estimación de gastos; las denegaciones automáticas no informan del derecho a revisión; no se ha medido la disparidad de resultados. Pide un plan de acción con calendario.</dd>
+<dt>Qué hay detrás</dt>
+<dd>Las tres conclusiones corresponden a obligaciones con base en normas en vigor (art. 14 de la Ley 16/2011 y la Directriz EBA/GL/2020/06; art. 22 del RGPD; Ley 15/2022) y a la vez a artículos de la CCD2 (18(3), 18(8) y 6). El supervisor hará seguimiento del plan en sus siguientes actuaciones.</dd>
+<dt>La respuesta que funciona</dt>
+<dd>Un plan que siga la estructura de 26.3, con cada conclusión asignada a una acción, un responsable y una fecha, y con las medidas provisionales que se aplican ya (la regla de capacidad provisional, la comunicación del derecho a revisión) separadas de las definitivas (el reentrenamiento). Y un compromiso de informar del avance antes de que lo pida.</dd>
+<dt>La que empeora las cosas</dt>
+<dd>Responder que la entidad está esperando a la ley española para adaptar sus procesos. Dos de las tres conclusiones se apoyan en normas que ya obligaban, y la tercera en una directiva que ya se aplica. El supervisor lo leerá como que la entidad no ha entendido de dónde nacen sus obligaciones.</dd>
+</dl>
+</div>
+
+<div class="objetivos">
+<span class="etiqueta">Qué deberías saber hacer ahora</span>
+<ul>
+<li>Traducir cada apartado del art. 18 de la CCD2 a un requisito de modelo, de proceso o de evidencia, y hacer a tu equipo las diez preguntas del diagnóstico.</li>
+<li>Clasificar las variables de admisión en prohibidas, prohibidas salvo justificación, dudosas y permitidas, y retirar las que toca reentrenando y midiendo el efecto en aprobación a igual morosidad.</li>
+<li>Diseñar una regla de capacidad de pago con ingresos, gastos y compromisos, proporcional al importe, integrada en el modelo y con un suelo que impida conceder con resultado negativo.</li>
+<li>Generar motivos de denegación individuales y un contrafactual, y montar una revisión humana que no sea un sello.</li>
+<li>Medir disparidad con cuatro métricas, identificar proxies y decidir con el test de justificación objetiva qué variable se queda.</li>
+<li>Anticipar el efecto del rediseño en IRB, IFRS 9, <i>pricing</i> y <i>stress test</i>, y evaluar un modelo nuevo sin dejarse engañar por los datos del viejo.</li>
+<li>Priorizar entre lo exigible ya, lo prudente y lo que puede esperar, presupuestarlo y enseñárselo al supervisor.</li>
+</ul>
+</div>
+
+<nav class="nav">
+<p><a href="parte-03.html">← Parte III: España</a> · <a href="index.html">Índice general</a> · <a href="parte-05.html">Parte V: Implantación en la entidad →</a></p>
+</nav>
+
+</body>
+</html>

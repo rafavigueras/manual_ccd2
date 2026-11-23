@@ -115,8 +115,8 @@ manual_ccd2/
 | F2 · Índice a 3 niveles | `00-indice-manual-ccd2.md` v0.2, aprobado por Rafa | ✅ v0.2 aprobado por Rafa, 2026-11-23 |
 | F3 · Base | `estilo.css` con acento propio, `index.html`, `parte-00.html`, `revision.py` adaptado | ✅ 2026-11-23 (portada y `construir_kindle` completos en F7) |
 | F4 · Redacción | Partes I, II, III, V y VI (sesión principal) | 🟡 Partes I y II hechas 2026-11-23; III, V y VI pendientes del OK de Rafa |
-| F4-E · Parte IV | Modelos de admisión, por el agente especialista | 🟡 Lanzado 2026-11-23, en curso |
-| F5 · Anexos de código | S1-S3 ejecutados | 🟡 S1 ejecutado; S2 y S3 con el especialista |
+| F4-E · Parte IV | Modelos de admisión, por el agente especialista | ✅ 2026-11-23 (revisada por la sesión principal; decisiones de fondo para Rafa en `especialista/decisiones-parte-04.md`) |
+| F5 · Anexos de código | S1-S3 ejecutados | ✅ S1, S2 y S3 ejecutados 2026-11-23 |
 | F6 · Revisión | `revision.py` en OK, QUÉ VIENE inventariados, fugas revisadas | ⏳ Pendiente |
 | F7 · Publicación | `manual-completo.html`, EPUB, AZW3, portada | ⏳ Pendiente |
 
@@ -295,3 +295,10 @@ scikit-learn). Si se toca un script, hay que revisar el texto que cita sus cifra
   consolidado del BOE (corregidas: publicidad art. 9, TAE art. 32; la ley no tiene techo de exclusión,
   solo aplicación parcial sobre 75.000 EUR). `revision.py` OK. Pendiente: volver el especialista, revisar
   S2 y S3, y pedir OK a Rafa antes de III, V y VI.
+- **2026-11-23** (6) — F4-E. Vuelve el especialista: `manual/parte-04.html` (caps. 20-26, ~18.500
+  palabras, 7 CASO), `anexos/s2_scorecard.py`, `anexos/s3_sesgo.py` y `especialista/decisiones-parte-04.md`.
+  Revisión: `revision.py` OK, sin rayas ni asteriscos; S2 y S3 reejecutados (deterministas) y todas las
+  cifras con decimales del texto coinciden con la salida (las dos únicas fuera, 0,5 y 0,8 puntos, son
+  diferencias de la propia salida). Visual en claro y oscuro OK. Pendiente de Rafa (ver decisiones §3 y
+  §5): costes de 26.4 son estimaciones del autor; tres afirmaciones de conocimiento propio por verificar;
+  C-203/22 sin leer. Parado antes de las Partes III, V y VI.
