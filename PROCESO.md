@@ -114,9 +114,9 @@ manual_ccd2/
 | F1-bis · Verificación | `investigacion/verificacion/informe-v1.md` (Opus) y notas corregidas | ✅ 2026-11-23 (correcciones aplicadas; hallazgos en `investigacion/README.md`) |
 | F2 · Índice a 3 niveles | `00-indice-manual-ccd2.md` v0.2, aprobado por Rafa | ✅ v0.2 aprobado por Rafa, 2026-11-23 |
 | F3 · Base | `estilo.css` con acento propio, `index.html`, `parte-00.html`, `revision.py` adaptado | ✅ 2026-11-23 (portada y `construir_kindle` completos en F7) |
-| F4 · Redacción | Partes I, II, III, V y VI (sesión principal) | ⏳ Pendiente |
-| F4-E · Parte IV | Modelos de admisión, por el agente especialista | ⏳ Pendiente, después de F2 |
-| F5 · Anexos de código | S1-S3 ejecutados | ⏳ Pendiente |
+| F4 · Redacción | Partes I, II, III, V y VI (sesión principal) | 🟡 Partes I y II hechas 2026-11-23; III, V y VI pendientes del OK de Rafa |
+| F4-E · Parte IV | Modelos de admisión, por el agente especialista | 🟡 Lanzado 2026-11-23, en curso |
+| F5 · Anexos de código | S1-S3 ejecutados | 🟡 S1 ejecutado; S2 y S3 con el especialista |
 | F6 · Revisión | `revision.py` en OK, QUÉ VIENE inventariados, fugas revisadas | ⏳ Pendiente |
 | F7 · Publicación | `manual-completo.html`, EPUB, AZW3, portada | ⏳ Pendiente |
 
@@ -288,3 +288,10 @@ scikit-learn). Si se toca un script, hay que revisar el texto que cita sus cifra
   las partes que faltan. `construir_kindle.py`: una sola `parte-03.html` y títulos nuevos. Pendiente de
   F7: portada (`generar_portada.py` sigue con el motivo de stress test). Verificación visual en claro y
   oscuro con copias de CSS incrustado en `.capturas/`. `revision.py`: OK. Parado antes de F4.
+- **2026-11-23** (5) — F4. `.venv` creado (numpy, pandas, scipy, scikit-learn). Lanzado el especialista Opus
+  para la Parte IV. Mientras, `anexos/s1_tae.py` ejecutado (TAE: tarjeta 23,75 %, préstamo 11,51 %, BNPL
+  corto 0 %, BNPL largo 5,63 %) y redactadas la Parte I (caps. 1-5, ~5.700 palabras) y la Parte II (caps.
+  6-14, ~6.600 palabras, cap. 12 fusionado en 11.7). Referencias a la Ley 16/2011 contrastadas con el
+  consolidado del BOE (corregidas: publicidad art. 9, TAE art. 32; la ley no tiene techo de exclusión,
+  solo aplicación parcial sobre 75.000 EUR). `revision.py` OK. Pendiente: volver el especialista, revisar
+  S2 y S3, y pedir OK a Rafa antes de III, V y VI.
