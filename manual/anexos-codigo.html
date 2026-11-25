@@ -17,7 +17,7 @@
 <hr/>
 
 <h2 id="S1">Anexo S1 · La TAE de los productos de la entidad de referencia</h2>
-<p>Resuelve la ecuación de la TAE del anexo III de la Directiva (UE) 2023/2225 con los flujos de una tarjeta <i>revolving</i>, un préstamo personal y dos formas de BNPL, y los compara con tres referencias (TEDR de tarjetas, margen de seis puntos del Supremo y tope transitorio del texto de enero del anteproyecto). Los supuestos son del programa, no los del anexo III.</p>
+<p>Resuelve la ecuación de la TAE del anexo III de la Directiva (UE) 2023/2225 con los flujos de una tarjeta <i>revolving</i>, un préstamo personal y dos formas de BNPL, y los compara con tres referencias (TEDR de tarjetas, margen de seis puntos del Supremo y tope transitorio del 22 % del Real Decreto-ley 44/2026). Los supuestos son del programa, no los del anexo III.</p>
 <p class="small">Se usa en: capítulos 5, 10, 18 y 28. Ejecución: <code>.venv/bin/python -I anexos/s1_tae.py</code>.</p>
 <h3>s1_tae.py</h3>
 <pre><code>&quot;&quot;&quot;S1. TAE de los tres productos de la entidad de referencia.
@@ -35,7 +35,8 @@ Referencias de comparacion (ilustrativas, ver cap. 18 del manual):
   - TEDR de tarjetas de credito y revolving, ago-2026 (provisional): 18,26 % (Banco de Espana).
   - Margen de 6 puntos sobre el tipo medio de la categoria que usa el Supremo
     (STS 258/2023, segun nota del CGPJ).
-  - Tope transitorio del anteproyecto, texto de enero de 2026: 22 (DT 2.a); aun no es derecho.
+  - Tope transitorio del Real Decreto-ley 44/2026: TAE maxima del 22 % (DT 3.a),
+    aplicable desde los tres meses de su publicacion y hasta el reglamento.
 
 Uso:  .venv/bin/python -I anexos/s1_tae.py
 &quot;&quot;&quot;
@@ -43,7 +44,7 @@ from scipy.optimize import brentq
 
 TEDR_TARJETAS = 18.26
 MARGEN_SUPREMO = 6.0
-TOPE_ANTEPROYECTO_ENERO = 22.0
+TOPE_TRANSITORIO_RDL = 22.0
 
 
 def tae(disposiciones, pagos):
@@ -106,7 +107,7 @@ def main():
     ref_sup = TEDR_TARJETAS + MARGEN_SUPREMO
     print(f&quot;Referencias: TEDR tarjetas {TEDR_TARJETAS:.2f} %; &quot;
           f&quot;TEDR + {MARGEN_SUPREMO:.0f} puntos = {ref_sup:.2f} %; &quot;
-          f&quot;tope transitorio anteproyecto (enero) {TOPE_ANTEPROYECTO_ENERO:.0f}\n&quot;)
+          f&quot;tope transitorio RDL 44/2026 {TOPE_TRANSITORIO_RDL:.0f} %\n&quot;)
     for nombre, (disp, pagos, capital, tin) in casos:
         x = tae(disp, pagos)
         total = sum(p for _, p in pagos)
@@ -116,15 +117,14 @@ def main():
               f&quot;coste total {total - sum(a for _, a in disp):9.2f}&quot;)
         print(f&quot;  TIN {tin*100:5.2f} % (equivalente anual {tin_equiv:5.2f} %) | TAE {x:6.2f} %&quot;)
         if x &gt; 0:
-            print(f&quot;  frente a TEDR + 6: {x - ref_sup:+6.2f} puntos | frente a 22: {x - TOPE_ANTEPROYECTO_ENERO:+6.2f} puntos&quot;)
+            print(f&quot;  frente a TEDR + 6: {x - ref_sup:+6.2f} puntos | frente a 22: {x - TOPE_TRANSITORIO_RDL:+6.2f} puntos&quot;)
         print()
 
 
 if __name__ == &quot;__main__&quot;:
-    main()
-</code></pre>
+    main()</code></pre>
 <h3>Salida de la ejecución</h3>
-<pre class="salida">Referencias: TEDR tarjetas 18.26 %; TEDR + 6 puntos = 24.26 %; tope transitorio anteproyecto (enero) 22
+<pre class="salida">Referencias: TEDR tarjetas 18.26 %; TEDR + 6 puntos = 24.26 %; tope transitorio RDL 44/2026 22 %
 
 Tarjeta revolving (3.000 EUR, TIN 21,5 %)
   Importe recibido    3000.00 | pagos totales    4316.88 | coste total   1316.88
@@ -144,9 +144,7 @@ BNPL corto (120 EUR en 3 pagos, sin coste)
 BNPL largo (600 EUR a 12 m, comisión 3 %)
   Importe recibido     600.00 | pagos totales     618.00 | coste total     18.00
   TIN  0.00 % (equivalente anual  0.00 %) | TAE   5.63 %
-  frente a TEDR + 6: -18.63 puntos | frente a 22: -16.37 puntos
-
-</pre>
+  frente a TEDR + 6: -18.63 puntos | frente a 22: -16.37 puntos</pre>
 <hr/>
 
 <h2 id="S2">Anexo S2 · <i>Scorecard</i> sintética de admisión</h2>

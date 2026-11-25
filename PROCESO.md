@@ -328,3 +328,20 @@ scikit-learn). Si se toca un script, hay que revisar el texto que cita sus cifra
   quita la fila de costes de 26.4; sin revisar en un Kindle real. Huecos sin verificar: ver nota (7).
 
 - **2026-11-23** — Publicado a petición de Rafa en repo **privado**: https://github.com/rafavigueras/manual_ccd2 (remoto `origin`). Sin GitHub Pages.
+
+- **2026-11-25** — **Actualización por el Real Decreto-ley 44/2026** (BOE 25-nov-2026, BOE-A-2026-24702), a
+  petición de Rafa. Nueva nota `investigacion/r7-rdl-44-2026.md` (lectura directa del BOE; copia en
+  `fuentes/R7-…txt`). Cambia la premisa del manual: ya no es "directiva sin ley" sino "norma española
+  por tramos (2, 3 y 6 meses) pendiente de convalidación y de reglamento". Cambios: Parte III caps.
+  15-17 reescritos (15 · El RDL 44/2026; 16 · El RDL frente a la directiva, con 16.6 consecuencias
+  civiles; 17 · La transición, con 17.6 contratos vivos), 18.4 rehecho (topes y usura por tramo; la
+  tarjeta de S1 cumple la regla de stock, TIN 21,5 %, pero no el tope de producción, TAE 23,75 %),
+  19.2 y autoevaluación; Parte 0 (lead, 0.3.2, 0.3.3, trampa, conversación); Parte I (4.3.1 y
+  referencias); Parte II (todos los NORMA con artículo del RDL); Parte IV solo referencias normativas
+  (anotado en `especialista/decisiones-parte-04.md` §7); Parte V (calendario, revolving, 30.4, nueva
+  30.6 venta de carteras y vulnerables, escenarios de 31.3); Parte VI; anexos R1, R2 (columna RDL en
+  la tabla de correspondencia, mapeo propio), R3, R4, R5, R6; S1 reejecutado (constante
+  `TOPE_TRANSITORIO_RDL`; cifras sin cambios). Índice v0.3 en `00-indice-manual-ccd2.md` e `index.html`.
+  `revision.py` OK; EPUB y AZW3 regenerados; captura de la Parte III en `.capturas/p3-rdl.png`.
+  **Sin commit ni push.** Huecos: convalidación, reglamento (segmentos, márgenes, umbral de alto
+  coste, FICAC), qué partes de la CCD2 quedan sin transponer, fecha exacta de entrada en vigor.

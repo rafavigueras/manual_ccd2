@@ -34,7 +34,7 @@
 
 <div class="bloque b-norma">
 <span class="etiqueta">Norma</span>
-<p>Art. 18 de la Directiva (UE) 2023/2225: evaluación de solvencia "en profundidad", "en interés del consumidor", sobre información pertinente y exacta de ingresos, gastos y otras circunstancias, necesaria y proporcionada al crédito; sin categorías especiales de datos ni redes sociales; con intervención humana si hay tratamiento automatizado; sin poner el crédito a disposición si el resultado no es favorable. Equivalente español vigente: art. 14 de la Ley 16/2011 (evaluación con "información suficiente obtenida por los medios adecuados" y consulta de ficheros) y art. 18 de la Orden EHA/2899/2011 (préstamo responsable). Anteproyecto: arts. 31 a 33 en el texto de enero; arts. 28 a 30 en el de septiembre, según el informe de la CNMC.</p>
+<p>Art. 18 de la Directiva (UE) 2023/2225: evaluación de solvencia "en profundidad", "en interés del consumidor", sobre información pertinente y exacta de ingresos, gastos y otras circunstancias, necesaria y proporcionada al crédito; sin categorías especiales de datos ni redes sociales; con intervención humana si hay tratamiento automatizado; sin poner el crédito a disposición si el resultado no es favorable. Equivalente español vigente: art. 14 de la Ley 16/2011 (evaluación con "información suficiente obtenida por los medios adecuados" y consulta de ficheros) y art. 18 de la Orden EHA/2899/2011 (préstamo responsable). Real Decreto-ley 44/2026: arts. 28 a 30, para los contratos firmados desde su entrada en vigor, hacia el 25 de enero de 2027.</p>
 </div>
 
 <div class="tabla-scroll">
@@ -63,7 +63,7 @@
 
 <div class="bloque b-margen">
 <span class="etiqueta">Margen</span>
-<p>El art. 18 deja tres márgenes con consecuencias para el modelo. Qué significa "proporcionada": la directiva no da cifras, y el anteproyecto de enero (art. 31.9) remite a un real decreto los criterios adicionales, que no existe. Qué es un aumento "significativo" del importe en el 18(10): lo define la entidad. Y qué es una explicación "clara y comprensible" en el 18(8)(a): el considerando 56 habla de "las principales variables, la lógica y los riesgos", sin más detalle. En los tres casos lo que protege a la entidad es haber fijado un criterio por escrito, con su razonamiento, antes de que nadie lo pida.</p>
+<p>El art. 18 deja tres márgenes con consecuencias para el modelo. Qué significa "proporcionada": la directiva no da cifras, y el Real Decreto-ley 44/2026 (art. 28.10) remite a un real decreto los criterios adicionales y la definición de aumento significativo, que todavía no existe. Qué es un aumento "significativo" del importe en el 18(10): lo define la entidad. Y qué es una explicación "clara y comprensible" en el 18(8)(a): el considerando 56 habla de "las principales variables, la lógica y los riesgos", sin más detalle. En los tres casos lo que protege a la entidad es haber fijado un criterio por escrito, con su razonamiento, antes de que nadie lo pida.</p>
 </div>
 
 <h3 id="s20-2">20.2 De "¿me devolverá?" a "¿puede permitírselo?"</h3>
@@ -190,11 +190,13 @@
 <p>Art. 67 de la Directiva (UE) 2015/2366 (PSD2): el proveedor de información sobre cuentas presta el servicio solo con el consentimiento explícito del usuario (67.2.a) y no puede usar, almacenar ni acceder a datos para fines distintos del servicio expresamente solicitado (67.2.f). Art. 94.2: solo se tratan los datos necesarios, con consentimiento expreso. Equivalente español: sin equivalente en la Ley 16/2011; el acceso a cuentas se rige por la normativa española de servicios de pago. Encaja con el art. 18(3) CCD2: ingresos y gastos reales, a petición del propio solicitante.</p>
 </div>
 
+<p>El Real Decreto-ley 44/2026 da a esta fuente un papel propio en un segmento concreto. Un prestamista de alto coste solo puede conceder un segundo crédito a quien tiene otro vivo si hace una «evaluación reforzada», y la norma la define como la que incorpora, con autorización del consumidor, verificación automatizada de ingresos, endeudamiento y patrones de gasto (art. 19.5 y 19.9). Es la primera vez que una norma española describe, en la práctica, el análisis de movimientos de cuenta como estándar de diligencia. Una entidad que no sea prestamista de alto coste no está obligada por esa regla, pero un juez que valore si una evaluación fue «rigurosa» (art. 28.1) tendrá a mano esa referencia.</p>
+
 <p>Lo que la PSD2 permite es que el solicitante comparta su historial de cuenta para que se evalúe su solicitud. Lo que no permite es reutilizar esos datos para otra cosa: entrenar un modelo de marketing, o guardar el historial de quien no llegó a ser cliente para construir el próximo modelo sin una base jurídica propia. Esto tiene una consecuencia práctica que los equipos de modelos descubren tarde: la base de entrenamiento de un modelo con variables de cuenta solo crece con los solicitantes que consintieron y para los que hay base para conservar los datos, y su representatividad (art. 10 del AI Act, párr. 54 de la Directriz) depende de quién consiente.</p>
 
 <p>Hay además un problema de contenido. Los movimientos de cuenta contienen categorías especiales inferibles: pagos a una clínica, cuotas a un sindicato, a un partido o a una confesión religiosa. El art. 18(3) prohíbe que la evaluación incluya esas categorías y el art. 19(5) que se procesen. La norma exige el resultado y no dice cómo, así que el cómo lo tiene que decidir la entidad: una capa de categorización que agregue los movimientos en categorías económicas (ingresos, gastos esenciales, deudas, ocio) y descarte o enmascare las categorías sensibles antes de que el dato llegue al modelo o al analista. Esa capa es parte del modelo a efectos de documentación y de validación.</p>
 
-<p>Los <strong>ficheros positivos</strong> son la segunda fuente. Hoy en España los sistemas privados de información crediticia que se apoyan en el art. 20 de la LOPDGDD son de datos negativos: deudas impagadas. La CIR del Banco de España sí recoge riesgos vivos, y la Circular 1/2026 baja su umbral de declaración individualizada de 3.000 a 1.000 euros a partir del 2 de enero de 2027, lo que hará visibles muchos préstamos personales pequeños y líneas de tarjeta que hoy no aparecen. El texto de enero del anteproyecto (art. 31.5) prevé que el prestamista que concede un préstamo "podrá comunicar" a los sistemas privados el importe, las fechas, lo pendiente, el tipo y las garantías, que sería el embrión de un fichero positivo privado; mientras no sea ley, no lo es.</p>
+<p>Los <strong>ficheros positivos</strong> son la segunda fuente. Hoy en España los sistemas privados de información crediticia que se apoyan en el art. 20 de la LOPDGDD son de datos negativos: deudas impagadas. La CIR del Banco de España sí recoge riesgos vivos, y la Circular 1/2026 baja su umbral de declaración individualizada de 3.000 a 1.000 euros a partir del 2 de enero de 2027, lo que hará visibles muchos préstamos personales pequeños y líneas de tarjeta que hoy no aparecen. El Real Decreto-ley 44/2026 (art. 28.6) permite que el prestamista que concede un préstamo comunique a los sistemas privados el importe original, las fechas de inicio y vencimiento, la cuota mensual, lo vencido y pendiente, lo no vencido y el tipo de crédito, siempre que lo advierta en el contrato. Es el embrión de un fichero positivo privado, con dos límites: es una facultad, no una obligación, de modo que su valor depende de cuántas entidades la usen; y esos datos solo pueden usarse para evaluar solvencia, nunca para perfilado comercial (art. 30.6). Los sistemas privados, además, deben recoger de los declarantes al menos el tipo de crédito, el prestamista y la situación de mora (art. 30.3). La CIR sigue sin abrirse a ellos.</p>
 
 <p>La tercera fuente son los <strong>datos del comercio</strong> en el BNPL y la financiación en punto de venta: qué se compra, por qué importe, con qué historial de compras en ese comercio. Son útiles para fraude y para el modelo de riesgo, y plantean dos preguntas: si son pertinentes para la solvencia en el sentido del art. 18(3) (la cesta de la compra dice poco de la capacidad de pago y bastante de hábitos personales que pueden ser sensibles) y quién es responsable de su tratamiento. La respuesta prudente es usarlos para fraude, que el AI Act excluye del alto riesgo, y con mucha cautela para solvencia.</p>
 
@@ -240,7 +242,7 @@
 
 <div class="bloque b-viene">
 <span class="etiqueta">Qué viene</span>
-<p>Tres cambios en los datos de la solvencia que conviene seguir sin darlos por hechos. La revisión de la PSD2 (PSD3 y un reglamento de servicios de pago), con acuerdo político y pendiente de publicación a fecha de 2026-11-23, que busca reducir barreras al acceso a cuentas. El reglamento europeo de acceso a datos financieros (FiDA), cuya retirada ha anunciado la Comisión y que este manual no tiene en cuenta como fuente de datos. Y la comunicación de datos positivos a los sistemas privados que prevé el anteproyecto español, que cambiaría el mercado de <i>bureau</i> si llega a ley.</p>
+<p>Tres cambios en los datos de la solvencia que conviene seguir sin darlos por hechos. La revisión de la PSD2 (PSD3 y un reglamento de servicios de pago), con acuerdo político y pendiente de publicación a fecha de 2026-11-23, que busca reducir barreras al acceso a cuentas. El reglamento europeo de acceso a datos financieros (FiDA), cuya retirada ha anunciado la Comisión y que este manual no tiene en cuenta como fuente de datos. Y el uso real de la comunicación de datos positivos a los sistemas privados que permite ya el Real Decreto-ley 44/2026 (art. 28.6): cambiará el mercado de <i>bureau</i> solo si las entidades grandes deciden comunicar.</p>
 </div>
 
 <!-- ============================================================ -->
@@ -292,7 +294,7 @@
 
 <div class="bloque b-margen">
 <span class="etiqueta">Margen</span>
-<p>La directiva no fija ratios. El considerando 54 permite a los Estados dar orientaciones adicionales, por ejemplo límites de préstamo sobre ingresos, y el texto de enero del anteproyecto (art. 31.9) remite a un real decreto los criterios adicionales de solvencia. Mientras no existan, el umbral lo fija la entidad. Lo que hay que poder defender no es un número concreto, sino por qué ese número: con qué datos se calibró, qué morosidad tienen los clientes que quedan justo por encima y justo por debajo, y con qué frecuencia se revisa.</p>
+<p>La directiva no fija ratios. El considerando 54 permite a los Estados dar orientaciones adicionales, por ejemplo límites de préstamo sobre ingresos, y el Real Decreto-ley 44/2026 (art. 28.10) remite a un real decreto los criterios adicionales de solvencia. Mientras no existan, el umbral lo fija la entidad. Lo que hay que poder defender no es un número concreto, sino por qué ese número: con qué datos se calibró, qué morosidad tienen los clientes que quedan justo por encima y justo por debajo, y con qué frecuencia se revisa.</p>
 </div>
 
 <p>Dos productos tienen reglas propias. En la <strong>tarjeta <i>revolving</i></strong>, la cuota con la que se evalúa no es la que el cliente elegirá, que puede ser mínima, sino la que amortiza el 25 % anual del límite según la Orden EHA/2899/2011; y cada aumento de límite exige reevaluar con información actualizada (art. 18(10) CCD2 y art. 14.2 de la Ley 16/2011). El capítulo 11 trata qué parte de la CCD2 se aplica a las tarjetas en vigor antes del 20 de noviembre de 2026. En el <strong>BNPL</strong>, la cuota es alta en relación con el importe (tres o seis plazos) y el cliente suele tener varias operaciones abiertas en distintos proveedores, que no se ven en ningún fichero: es el producto donde más falla el término de compromisos existentes.</p>
@@ -362,7 +364,7 @@
 
 <div class="bloque b-viene">
 <span class="etiqueta">Qué viene</span>
-<p>El anteproyecto prevé consecuencias civiles por incumplir la evaluación de solvencia, con pérdida o reducción de intereses, según el informe de la CNMC sobre la versión de septiembre. Si llegan a ley, un fallo de capacidad de pago dejará de ser solo un riesgo de reclamación y de sanción administrativa y tendrá un coste directo por contrato. Es una razón más para que la regla de capacidad esté en producción antes de que exista la ley, no después.</p>
+<p>El Real Decreto-ley 44/2026 fija la consecuencia civil de evaluar mal la solvencia: si el incumplimiento del art. 28.1 causa un perjuicio significativo al consumidor, la entidad pierde el derecho a cobrarle gastos de recobro e intereses de demora (art. 76). No reduce el interés ordinario, como se anticipaba con el anteproyecto, pero un fallo de capacidad de pago deja de ser solo un riesgo de reclamación y de sanción administrativa y tiene un coste directo por contrato, concentrado justo en los contratos que acaban en mora. Es una razón más para que la regla de capacidad esté en producción antes de la entrada en vigor, hacia el 25 de enero de 2027, no después.</p>
 </div>
 
 <!-- ============================================================ -->
@@ -374,7 +376,7 @@
 
 <div class="tabla-scroll">
 <table>
-<caption>Las tres capas sobre la decisión automatizada de solvencia (a fecha de 2026-11-23). El AI Act se aplica directamente, sin ley española; la autoridad nacional de vigilancia está pendiente.</caption>
+<caption>Las tres capas sobre la decisión automatizada de solvencia (a fecha de 2026-11-25). El AI Act se aplica directamente, sin ley española; la autoridad nacional de vigilancia está pendiente.</caption>
 <thead><tr><th></th><th>CCD2</th><th>RGPD</th><th>AI Act</th></tr></thead>
 <tbody>
 <tr><td>Cuándo se aplica</td><td>Si la evaluación "implica" tratamiento automatizado de datos personales (art. 18(8)). No exige que sea exclusivamente automatizada</td><td>Si la decisión se basa "únicamente" en tratamiento automatizado con efectos jurídicos o similares (art. 22.1). Tras SCHUFA, también si el <i>score</i> se usa de manera determinante</td><td>Sistemas de IA para evaluar la solvencia o establecer la calificación crediticia de personas físicas (anexo III, punto 5, letra b), salvo fraude. Siempre de alto riesgo si elaboran perfiles (art. 6.3, último párrafo)</td></tr>
@@ -387,7 +389,7 @@
 
 <div class="bloque b-norma">
 <span class="etiqueta">Norma</span>
-<p>Art. 18(8) y 18(9) CCD2. Equivalente español vigente: sin equivalente en la Ley 16/2011, que solo obliga a informar del resultado de la consulta a ficheros cuando la denegación se basa en ella (art. 15). Anteproyecto, texto de enero: art. 32.3 (derecho a intervención humana con explicación, punto de vista y revisión) y art. 32.4, que va más allá de la directiva: la denegación se comunica por escrito, "debidamente justificada", especificando "las razones concretas" en que se funda. Versión de septiembre: art. 29, según la CNMC.</p>
+<p>Art. 18(8) y 18(9) CCD2. Equivalente español vigente: sin equivalente en la Ley 16/2011, que solo obliga a informar del resultado de la consulta a ficheros cuando la denegación se basa en ella (art. 15). Real Decreto-ley 44/2026: art. 29.3 (derecho a intervención humana con explicación clara y comprensible de la lógica y los riesgos, punto de vista y revisión, que se informa al comunicar la concesión o la denegación) y art. 29.4 (denegación sin demora, remisión al asesoramiento en deudas cuando sea pertinente y detalle gratuito de la consulta a ficheros si fue la causa principal). El texto de enero del anteproyecto iba más allá y exigía una denegación por escrito con «las razones concretas»; el real decreto-ley no lo recoge.</p>
 </div>
 
 <p>Cuatro puntos del cuadro piden comentario.</p>
@@ -656,7 +658,7 @@
 <!-- ============================================================ -->
 <h2 id="cap26">26. Hoja de ruta para un Head of Risk <span class="nivel n3">N3</span></h2>
 
-<p class="lead">Los capítulos anteriores dicen qué cambiar. Este dice en qué orden, con qué recursos y cómo se demuestra. La premisa es la del capítulo 17: la directiva se aplica desde el 20 de noviembre de 2026, la ley española no llegará antes de 2027 y una parte de lo que pide la CCD2 ya era exigible antes por otras normas. Esperar a la ley no es una opción; hacerlo todo a la vez tampoco.</p>
+<p class="lead">Los capítulos anteriores dicen qué cambiar. Este dice en qué orden, con qué recursos y cómo se demuestra. La premisa es la de los capítulos 15 y 17: la directiva se aplica desde el 20 de noviembre de 2026, el Real Decreto-ley 44/2026 la hace exigible para los contratos nuevos hacia el 25 de enero de 2027, y una parte de lo que pide la CCD2 ya era exigible antes por otras normas. Esperar al reglamento no es una opción; hacerlo todo a la vez tampoco.</p>
 
 <h3 id="s26-1">26.1 Diagnóstico en 30 días</h3>
 
@@ -673,28 +675,28 @@
 
 <p>En una entidad pequeña con <i>scorecard</i> de proveedor, el diagnóstico es más corto pero depende del proveedor. La primera acción es pedirle por escrito, con plazo, la lista de variables y su origen, la documentación del modelo, cómo genera motivos de denegación y si ha medido disparidad por grupos. Lo que conteste, y lo que no, decide si se puede seguir con él.</p>
 
-<h3 id="s26-2">26.2 Priorización: lo exigible ya, lo prudente y lo que puede esperar a la ley</h3>
+<h3 id="s26-2">26.2 Priorización: lo exigible ya, lo prudente y lo que puede esperar al reglamento</h3>
 
-<p>La directiva no tiene efecto directo horizontal: sin ley española, un cliente no puede invocarla directamente contra una entidad privada en un pleito, aunque un juez sí interpretará la Ley 16/2011 a la luz de ella (caps. 4 y 17). Eso no deja a la entidad sin obligaciones. Casi todo lo que la CCD2 pide a los modelos ya se podía exigir antes por otras normas en vigor, y lo que no, es lo que el Banco de España mirará primero cuando revise préstamo responsable. La priorización que recomendamos tiene tres niveles.</p>
+<p>La directiva no tiene efecto directo horizontal: hasta la entrada en vigor del Real Decreto-ley 44/2026, un cliente no puede invocarla directamente contra una entidad privada en un pleito, aunque un juez sí interpretará la Ley 16/2011 a la luz de ella (caps. 4 y 17). Eso no deja a la entidad sin obligaciones. Casi todo lo que la CCD2 pide a los modelos ya se podía exigir antes por otras normas en vigor, y lo que no, es lo que el Banco de España mirará primero cuando revise préstamo responsable. La priorización que recomendamos tiene tres niveles.</p>
 
 <div class="tabla-scroll">
 <table>
-<caption>Priorización de la adaptación de los modelos de admisión (a fecha de 2026-11-23). La columna de base indica por qué es exigible o prudente sin ley de transposición.</caption>
-<thead><tr><th>Nivel</th><th>Qué</th><th>Base sin ley de transposición</th></tr></thead>
+<caption>Priorización de la adaptación de los modelos de admisión (a fecha de 2026-11-25). La columna de base indica por qué es exigible o prudente hoy y, entre corchetes, el artículo del Real Decreto-ley 44/2026 que lo hace exigible desde su entrada en vigor.</caption>
+<thead><tr><th>Nivel</th><th>Qué</th><th>Base</th></tr></thead>
 <tbody>
 <tr><td rowspan="5"><strong>Exigible ya</strong></td><td>Evaluar la capacidad de pago con información suficiente, consultar ficheros e informar si se deniega por ellos</td><td>Ley 16/2011, arts. 14 y 15; Orden EHA/2899/2011, art. 18</td></tr>
 <tr><td>Capacidad de pago con gastos y compromisos, análisis de sensibilidad, control de <i>overrides</i>, documentación y prevención de sesgos en modelos automatizados</td><td>EBA/GL/2020/06, adoptada por el Banco de España (párrs. 53 a 55, 95 a 101 y 114 a 117), para las entidades en su ámbito</td></tr>
 <tr><td>Intervención humana, punto de vista, impugnación e información sobre la lógica cuando la decisión se basa en un <i>score</i> de forma determinante</td><td>RGPD, arts. 22 y 15.1.h, y sentencia SCHUFA</td></tr>
 <tr><td>No usar categorías especiales de datos para puntuar</td><td>RGPD, art. 9</td></tr>
 <tr><td>No discriminar en el acceso al crédito, ni directa ni indirectamente</td><td>Ley 15/2022, arts. 4, 6 y 17</td></tr>
-<tr><td rowspan="5"><strong>Prudente ya</strong></td><td>Retirar variables de redes sociales, también las de proveedores</td><td>Art. 18(3) y 19(5) CCD2, que un juez usará para interpretar el art. 14 de la Ley 16/2011</td></tr>
-<tr><td>Regla de capacidad de pago como suelo que impide conceder con resultado negativo</td><td>Art. 18(6) CCD2</td></tr>
-<tr><td>Explicación y revisión humana para toda evaluación con tratamiento automatizado, no solo para las decisiones únicamente automatizadas</td><td>Art. 18(8) CCD2</td></tr>
-<tr><td>Comprobar que la decisión no se basa solo en el historial crediticio</td><td>Art. 18(11) CCD2</td></tr>
-<tr><td>Remuneración de quien evalúa sin relación con las aprobaciones</td><td>Art. 32(3)(b) CCD2</td></tr>
-<tr><td rowspan="3"><strong>Puede esperar</strong></td><td>Criterios adicionales de solvencia que desarrolle un real decreto</td><td>Anteproyecto, texto de enero, art. 31.9</td></tr>
+<tr><td rowspan="5"><strong>Prudente ya</strong></td><td>Retirar variables de redes sociales, también las de proveedores</td><td>Art. 18(3) y 19(5) CCD2, que un juez usará para interpretar el art. 14 de la Ley 16/2011 [arts. 28.5 y 30.2]</td></tr>
+<tr><td>Regla de capacidad de pago como suelo que impide conceder con resultado negativo</td><td>Art. 18(6) CCD2 [art. 29.1]</td></tr>
+<tr><td>Explicación y revisión humana para toda evaluación con tratamiento automatizado, no solo para las decisiones únicamente automatizadas</td><td>Art. 18(8) CCD2 [art. 29.3]</td></tr>
+<tr><td>Comprobar que la decisión no se basa solo en el historial crediticio</td><td>Art. 18(11) CCD2 [art. 28.6]</td></tr>
+<tr><td>Remuneración de quien evalúa sin relación con las aprobaciones</td><td>Art. 32(3)(b) CCD2 [art. 67]</td></tr>
+<tr><td rowspan="3"><strong>Puede esperar</strong></td><td>Criterios adicionales de solvencia que desarrolle un real decreto</td><td>Real Decreto-ley 44/2026, art. 28.10, pendiente de reglamento</td></tr>
 <tr><td>Documentación de proveedor del AI Act y evaluación de impacto en derechos fundamentales</td><td>Aplicable desde el 2 de diciembre de 2027; prepararla durante 2027</td></tr>
-<tr><td>Comunicación de datos positivos a sistemas privados de información crediticia</td><td>Anteproyecto, texto de enero, art. 31.5</td></tr>
+<tr><td>Comunicación de datos positivos a sistemas privados de información crediticia</td><td>Real Decreto-ley 44/2026, art. 28.6: facultad, no obligación</td></tr>
 </tbody>
 </table>
 </div>
@@ -787,7 +789,7 @@
 <li>Las mediciones de disparidad y el análisis de proxies, con lo que se decidió.</li>
 <li>El catálogo de motivos de denegación, el procedimiento de revisión humana y su estadística.</li>
 <li>Una muestra de expedientes reproducidos, aprobados y denegados, con revisiones humanas incluidas.</li>
-<li>El plan pendiente, con calendario y responsable, y lo que se ha decidido esperar a la ley con su motivo.</li>
+<li>El plan pendiente, con calendario y responsable, y lo que se ha decidido dejar para el reglamento con su motivo.</li>
 </ol>
 <p>Lo que convence no es que todo esté terminado, sino que la entidad sabe dónde está, ha decidido con criterio qué hacer primero y lo ha dejado escrito antes de que nadie lo pidiera.</p>
 </div>
@@ -802,7 +804,7 @@
 <dt>La respuesta que funciona</dt>
 <dd>Un plan que siga la estructura de 26.3, con cada conclusión asignada a una acción, un responsable y una fecha, y con las medidas provisionales que se aplican ya (la regla de capacidad provisional, la comunicación del derecho a revisión) separadas de las definitivas (el reentrenamiento). Y un compromiso de informar del avance antes de que lo pida.</dd>
 <dt>La que empeora las cosas</dt>
-<dd>Responder que la entidad está esperando a la ley española para adaptar sus procesos. Dos de las tres conclusiones se apoyan en normas que ya obligaban, y la tercera en una directiva que ya se aplica. El supervisor lo leerá como que la entidad no ha entendido de dónde nacen sus obligaciones.</dd>
+<dd>Responder que la entidad está esperando a que entre en vigor el real decreto-ley para adaptar sus procesos. Dos de las tres conclusiones se apoyan en normas que ya obligaban, y la tercera en una directiva que ya se aplica. El supervisor lo leerá como que la entidad no ha entendido de dónde nacen sus obligaciones.</dd>
 </dl>
 </div>
 

@@ -209,25 +209,27 @@ y reaparece en los caps. 9, 10, 18, la Parte IV, el cap. 28 y los anexos S1-S3.
 
 > Al terminar: sabes qué está en vigor hoy en España, qué cambiará con la ley y cómo operar mientras tanto.
 
-## Capítulo 15 · Estado de la transposición (a fecha de F1)
-- 15.0 (v0.2) Dos versiones del texto: enero y septiembre (cambian capital de los EFCAL, entrada en vigor, tipo mensual de alto coste de 4 % a 6 %, revisión de topes de trimestral a semestral). Regla: citar siempre con versión
-- 15.1 Cronología: anteproyecto (7-ene-2026), informes de la CNMC (14-sep-2026) y del CES (6-oct-2026), disolución de las Cortes (6-oct-2026) y caducidad de los proyectos 121/000018, 121/000049 y 121/000096
-- 15.2 El procedimiento de infracción: dictamen motivado de 1-oct-2026 (INFR(2026)0059), plazo hacia el 1-dic-2026, art. 258 TFUE; el comparado europeo en tres grupos
-- 15.3 **[QUÉ VIENE]** Escenarios sin fechas firmes: Gobierno en funciones, real decreto-ley o Gobierno nuevo que retome el anteproyecto
+## Capítulo 15 · El Real Decreto-ley 44/2026 (v0.3, 2026-11-25)
+- 15.0 De anteproyecto a real decreto-ley: RDL 44/2026, de 24-nov (BOE 25-nov-2026); sigue la versión de septiembre; incorpora 2021/2167, 2023/2225 (parcialmente), 2023/2673 y parte de 2024/1640; deroga Ley 16/2011 con vigencia provisional (DT 11.ª); convalidación pendiente
+- 15.1 Cronología, de la primera vuelta (7-ene-2026) al BOE (25-nov-2026)
+- 15.2 Calendario de aplicación (DF 14.ª): 2, 3 y 6 meses y piezas que esperan al reglamento. **[QUÉ VIENE]** convalidación y reglamento
+- 15.3 Infracción de la Comisión y contexto europeo; **[CASO]** el comité que tenía un plan «a la espera de la ley»
 
-## Capítulo 16 · El anteproyecto frente a la directiva
+## Capítulo 16 · El real decreto-ley frente a la directiva
 - 16.1 Lo que transpone tal cual
-- 16.2 Lo que endurece España (*gold-plating*)
+- 16.2 Lo que endurece España (*gold-plating*), con artículos del RDL
 - 16.3 Las opciones nacionales que elige
-- 16.4 El borrador de real decreto
-- 16.5 (v0.2) **La reserva de actividad:** nulidad de pleno derecho de los contratos de quien no esté autorizado, las figuras EFCAL y PACA, certificado de registro para demandar; no sujeción a la Ley de Usura (DA 12.ª, septiembre). Enlaza con los socios *fintech* y BNPL del hilo conductor
+- 16.4 **[QUÉ VIENE]** Lo que queda para el reglamento; mecánica del tope (DA 8.ª y 9.ª)
+- 16.5 La reserva de actividad, transitorias de autorización; **[CASO]** plataforma originadora
+- 16.6 (v0.3) Consecuencias civiles del incumplimiento (arts. 56 y 73 a 77)
 
-## Capítulo 17 · Vivir sin ley
-- 17.1 Qué aplica ya: la Ley 16/2011 vigente leída a la luz de la directiva
+## Capítulo 17 · La transición
+- 17.1 El periodo sin ley: del 20-nov-2026 a la entrada en vigor
 - 17.2 Qué espera el Banco de España
 - 17.3 **[DEFENSA]** Cómo documenta una entidad sus decisiones de implantación
-- 17.4 **[CASO]** El cliente que reclama un derecho de la CCD2 que la ley española aún no recoge
-- 17.5 (v0.2) Efecto directo, interpretación conforme y responsabilidad del Estado: lo que dice la doctrina del TJUE (citar sentencias solo tras leerlas)
+- 17.4 **[CASO]** El cliente que reclama un derecho antes de que entre en vigor
+- 17.5 Efecto directo, interpretación conforme y responsabilidad del Estado (acotado al hueco y a lo no transpuesto)
+- 17.6 (v0.3) Los contratos vivos (DT 1.ª y 2.ª); **[TRAMPA]**
 
 ## Capítulo 18 · Usura y *revolving*
 - 18.1 La Ley Azcárate y su lectura moderna
@@ -289,7 +291,7 @@ y reaparece en los caps. 9, 10, 18, la Parte IV, el cap. 28 y los anexos S1-S3.
 
 ## Capítulo 26 · Hoja de ruta para un Head of Risk
 - 26.1 Diagnóstico en 30 días
-- 26.2 Priorización: lo exigible ya, lo prudente y lo que puede esperar a la ley
+- 26.2 Priorización: lo exigible ya, lo prudente y lo que puede esperar al reglamento
 - 26.3 Plan a 90, 180 y 365 días
 - 26.4 Presupuesto, equipo y proveedores
 - 26.5 Indicadores de seguimiento
@@ -318,8 +320,9 @@ y reaparece en los caps. 9, 10, 18, la Parte IV, el cap. 28 y los anexos S1-S3.
 - 30.1 Medidas de tolerancia en la práctica
 - 30.2 Derivación a asesoramiento de deudas
 - 30.3 Recobro automatizado y canal humano
-- 30.4 (v0.2) Gastos de recobro e intereses de demora: Compendio del Banco de España, doctrina del Supremo (+2 puntos), art. 61 y DA 5.ª del anteproyecto (enero)
+- 30.4 (v0.2) Gastos de recobro e intereses de demora: Compendio del Banco de España, doctrina del Supremo (+2 puntos), art. 58 y DA 5.ª del RDL 44/2026 (v0.3)
 - 30.5 (v0.2) Ficheros de morosos: art. 20 LOPDGDD y criterio de la AEPD (los 50 € no son un requisito legal)
+- 30.6 (v0.3) Venta de carteras y deudores vulnerables: art. 66.3 y DT 16.ª (plan de pagos con quitas), libro segundo
 ## Capítulo 31 · El impacto en negocio
 - 31.1 Aprobación, volumen y margen
 - 31.2 Coste de cumplimiento

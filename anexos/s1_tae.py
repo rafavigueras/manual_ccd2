@@ -13,7 +13,8 @@ Referencias de comparacion (ilustrativas, ver cap. 18 del manual):
   - TEDR de tarjetas de credito y revolving, ago-2026 (provisional): 18,26 % (Banco de Espana).
   - Margen de 6 puntos sobre el tipo medio de la categoria que usa el Supremo
     (STS 258/2023, segun nota del CGPJ).
-  - Tope transitorio del anteproyecto, texto de enero de 2026: 22 (DT 2.a); aun no es derecho.
+  - Tope transitorio del Real Decreto-ley 44/2026: TAE maxima del 22 % (DT 3.a),
+    aplicable desde los tres meses de su publicacion y hasta el reglamento.
 
 Uso:  .venv/bin/python -I anexos/s1_tae.py
 """
@@ -21,7 +22,7 @@ from scipy.optimize import brentq
 
 TEDR_TARJETAS = 18.26
 MARGEN_SUPREMO = 6.0
-TOPE_ANTEPROYECTO_ENERO = 22.0
+TOPE_TRANSITORIO_RDL = 22.0
 
 
 def tae(disposiciones, pagos):
@@ -84,7 +85,7 @@ def main():
     ref_sup = TEDR_TARJETAS + MARGEN_SUPREMO
     print(f"Referencias: TEDR tarjetas {TEDR_TARJETAS:.2f} %; "
           f"TEDR + {MARGEN_SUPREMO:.0f} puntos = {ref_sup:.2f} %; "
-          f"tope transitorio anteproyecto (enero) {TOPE_ANTEPROYECTO_ENERO:.0f}\n")
+          f"tope transitorio RDL 44/2026 {TOPE_TRANSITORIO_RDL:.0f} %\n")
     for nombre, (disp, pagos, capital, tin) in casos:
         x = tae(disp, pagos)
         total = sum(p for _, p in pagos)
@@ -94,7 +95,7 @@ def main():
               f"coste total {total - sum(a for _, a in disp):9.2f}")
         print(f"  TIN {tin*100:5.2f} % (equivalente anual {tin_equiv:5.2f} %) | TAE {x:6.2f} %")
         if x > 0:
-            print(f"  frente a TEDR + 6: {x - ref_sup:+6.2f} puntos | frente a 22: {x - TOPE_ANTEPROYECTO_ENERO:+6.2f} puntos")
+            print(f"  frente a TEDR + 6: {x - ref_sup:+6.2f} puntos | frente a 22: {x - TOPE_TRANSITORIO_RDL:+6.2f} puntos")
         print()
 
 

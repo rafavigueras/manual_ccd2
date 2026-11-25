@@ -67,3 +67,25 @@ Bloques: 7 CASO (uno por capítulo), 5 NÚMEROS (21.2, 22.4, 23.2, 24.2, 25.3.1)
 - Los enlaces a `parte-03.html` y `parte-05.html` (navegación) quedan como pendientes hasta que existan. Las remisiones a otros capítulos van en texto ("cap. 17"), sin enlace.
 - `anexos-codigo.html`: presentar S2 y S3 con su salida. Coordinar con S1 si se quiere que el préstamo tipo use también la comisión de apertura del 1,5 % del cap. 5 (S2 no la modela).
 - Si en la revisión se discrepa del fondo (arquitectura integrada más suelo, tratamiento de la *scorecard* como sistema de IA, retirada de la zona, cifras de presupuesto), anotarlo aquí y consultarlo con Rafa, como dice `PROCESO.md` §9.
+
+## 7. Actualización por el Real Decreto-ley 44/2026 (sesión principal, 2026-11-25)
+
+Rafa pidió actualizar el manual con la transposición publicada (BOE de 2026-11-25; nota
+`investigacion/r7-rdl-44-2026.md`). En la Parte IV solo se han tocado **referencias normativas**, no
+el fondo ni las cifras de S2 y S3:
+
+- Citas del anteproyecto (enero/septiembre) sustituidas por artículos del RDL: solvencia arts. 28-30;
+  intervención humana art. 29.3; criterios adicionales art. 28.10; datos positivos art. 28.6.
+- Hueco 5.6 cerrado: la consecuencia civil del RDL por evaluar mal la solvencia es la **pérdida de
+  gastos de recobro e intereses de demora** con perjuicio significativo (art. 76), no una reducción
+  del interés ordinario. Reescrito el párrafo de 22.4 (antes "pérdida o reducción de intereses").
+- El RDL **no recoge** la denegación por escrito con "razones concretas" del art. 32.4 del texto de
+  enero; se dice en el bloque NORMA de 23.1.
+- Tabla de priorización (26.2): la columna "Base sin ley de transposición" pasa a "Base", con el
+  artículo del RDL entre corchetes para lo que era "prudente ya" (exigible desde su entrada en vigor).
+- Datos positivos (21.3): ya son facultad legal (art. 28.6), con prohibición de perfilado comercial
+  (art. 30.6). Añadido un párrafo en 21.3 sobre la "evaluación reforzada" de los PACA (art. 19.9:
+  verificación automatizada de ingresos, endeudamiento y patrones de gasto) como referencia de
+  diligencia.
+
+Sin discrepancias de fondo con el especialista.
