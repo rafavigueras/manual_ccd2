@@ -320,7 +320,7 @@ y reaparece en los caps. 9, 10, 18, la Parte IV, el cap. 28 y los anexos S1-S3.
 - 30.1 Medidas de tolerancia en la práctica
 - 30.2 Derivación a asesoramiento de deudas
 - 30.3 Recobro automatizado y canal humano
-- 30.4 (v0.2) Gastos de recobro e intereses de demora: Compendio del Banco de España, doctrina del Supremo (+2 puntos), art. 58 y DA 5.ª del RDL 44/2026 (v0.3)
+- 30.4 (v0.2) Gastos de recobro e intereses de demora: Compendio del Banco de España, doctrina del Supremo (+2 puntos), art. 58 del RDL 44/2026 como régimen general y DA 5.ª solo para los gastos limitados (v0.3)
 - 30.5 (v0.2) Ficheros de morosos: art. 20 LOPDGDD y criterio de la AEPD (los 50 € no son un requisito legal)
 - 30.6 (v0.3) Venta de carteras y deudores vulnerables: art. 66.3 y DT 16.ª (plan de pagos con quitas), libro segundo
 ## Capítulo 31 · El impacto en negocio

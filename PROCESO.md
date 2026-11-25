@@ -345,3 +345,22 @@ scikit-learn). Si se toca un script, hay que revisar el texto que cita sus cifra
   `revision.py` OK; EPUB y AZW3 regenerados; captura de la Parte III en `.capturas/p3-rdl.png`.
   **Sin commit ni push.** Huecos: convalidación, reglamento (segmentos, márgenes, umbral de alto
   coste, FICAC), qué partes de la CCD2 quedan sin transponer, fecha exacta de entrada en vigor.
+
+- **2026-11-25** (2) — **Correcciones al manual tras contrastar el RDL 44/2026 con el BOE** (once hallazgos). Cambios por
+  capítulo: **13.3**: el régimen general de gastos de recobro es el art. 58.1; los 15 y 45 euros de la DA 5.ª solo cubren los
+  «gastos limitados» (arts. 2.e, 4.h, 4.i, 7.3.a, 7.3.b y 58.3). **7.2**: arts. 59 y 60 (la activación o aceptación electrónica
+  explícita sigue siendo válida; lo prohibido es la concesión sin solicitud y el consentimiento tácito o por casilla; art. 59.3:
+  pago *revolving* no fijable por defecto, también en el vivo, DT 2.ª.1.h). **15.2**: la CIR a los 6 meses no vale para los
+  administradores de créditos dudosos (24 meses, DT 15.ª). **16.2**: tabla de recobro (art. 58.1 frente a DA 5.ª) y certificado
+  de registro solo en contratos posteriores (DF 2.ª, DT 12.ª.2). **16.5** y su CASO: art. 6 (nulidad si concede quien no está
+  autorizado) frente a art. 9.1 (comercio que solo intermedia sin inscripción: infracción del prestamista). **16.6**: art. 29.2,
+  art. 75.1, 75.3 y 75.4 (subsanación solo de errores de aplicación; no evita la sanción) y párrafo nuevo con la capa
+  administrativa (arts. 85.2, 85.3, 86.1 y 88.3). **17.6** y **18.4**: novación = régimen nuevo y tope del 22 % de TAE (DT 1.ª.2,
+  DT 1.ª.3 y DT 3.ª.1 párr. 3, con la tarjeta de TIN 21,5 % y TAE 23,75 %); la cancelación del *revolving* vivo se comunica al
+  entrar en vigor el RDL (DT 2.ª.3). **28.1** y **28.3**: arts. 59 y 60, DT 2.ª.3, novación, art. 6 frente a art. 9.1.
+  **30.3** a **30.6**: art. 58.4 (recobro respetuoso con la privacidad, proporcional y no excesivo), DA 5.ª acotada, art. 66.3 (sin
+  obligación si hubo soluciones parejas rechazadas o impagadas ni si hay concurso; la vulnerabilidad la acredita el consumidor).
+  **34.2**: arts. 29.2 y 9.1; DT 12.ª.2. Anexos **R2** (fila 35), **R3**, **R5** y **R6** (caso 2) ajustados; nota
+  `investigacion/r7-rdl-44-2026.md` (§1, §4, §5, §6, §7) e índice `00-indice-manual-ccd2.md` (30.4) corregidos. **Parte IV no
+  tocada** (no tiene mención directa a consecuencias civiles que cambiar; nada que anotar en `decisiones-parte-04.md`).
+  `revision.py` OK; libro regenerado; sin raya en `manual-completo.html`. **Sin commit ni push.**
